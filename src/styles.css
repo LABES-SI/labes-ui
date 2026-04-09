@@ -1,0 +1,49 @@
+:root {
+  color-scheme: dark;
+  --bg: #07111f;
+  --bg-alt: #0d1b2f;
+  --surface: rgba(13, 27, 47, 0.78);
+  --surface-border: rgba(164, 182, 220, 0.18);
+  --text: #f4f7fb;
+  --muted: #b4c0d4;
+  --accent: #73fbd3;
+  --accent-strong: #7ca7ff;
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(124, 167, 255, 0.22), transparent 32%),
+    radial-gradient(circle at right, rgba(115, 251, 211, 0.16), transparent 28%),
+    linear-gradient(180deg, #040816 0%, var(--bg) 100%);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--text);
+  font-family: 'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif;
+  background: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(115, 251, 211, 0.35);
+  color: #ffffff;
+}
