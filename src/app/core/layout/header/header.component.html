@@ -1,0 +1,22 @@
+<header class="header">
+  <a class="brand" routerLink="/inicio" aria-label="SIE - página inicial">
+    <span class="brand-mark">SIE</span>
+    <span>Síntese de Indicadores Educacionais</span>
+  </a>
+
+  <nav class="nav" aria-label="Navegação principal">
+    @for (link of links; track link.label) {
+      @if (link.enabled && link.route) {
+        <a
+          [routerLink]="link.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ link.label }}
+        </a>
+      } @else {
+        <span class="disabled" aria-disabled="true">{{ link.label }}</span>
+      }
+    }
+  </nav>
+</header>

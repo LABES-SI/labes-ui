@@ -1,0 +1,24 @@
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        @for (coluna of colunas(); track coluna.chave) {
+          <th scope="col">{{ coluna.titulo }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (linha of linhas(); track linha) {
+        <tr>
+          @for (coluna of colunas(); track coluna.chave) {
+            <td>{{ valorCelula(linha, coluna.chave) }}</td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="colunas().length">Nenhum dado disponível.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

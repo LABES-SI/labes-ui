@@ -1,0 +1,69 @@
+<div class="page inicio-page">
+  <section class="hero">
+    <p class="eyebrow">Observatório de Dados Educacionais</p>
+    <h1>Síntese de Indicadores Educacionais</h1>
+    <p>
+      Estrutura inicial para consulta de indicadores, filtros, gráficos, tabelas e informações sobre
+      escolas.
+    </p>
+  </section>
+
+  <section class="placeholder-section">
+    <app-titulo-secao
+      titulo="Indicadores principais"
+      descricao="Cards iniciais com dados mockados vindos da facade da feature."
+    />
+
+    <div class="indicadores-grid">
+      @if (possuiIndicadores()) {
+        @for (indicador of indicadores(); track indicador.titulo) {
+          <app-indicador-card
+            [titulo]="indicador.titulo"
+            [valor]="indicador.valor"
+            [descricao]="indicador.descricao"
+          />
+        }
+      }
+    </div>
+  </section>
+
+  <section class="placeholder-section">
+    <app-titulo-secao
+      titulo="Filtros de consulta"
+      descricao="Base para os filtros que orientarão as consultas de indicadores."
+    />
+    <app-painel-filtros (consultar)="onConsultarFiltros()" />
+  </section>
+
+  <section class="placeholder-section">
+    <app-titulo-secao titulo="Gráficos" descricao="Espaço reservado para visualizações futuras." />
+    <div class="graficos-grid">
+      <app-grafico-card titulo="Evolução de matrículas" />
+      <app-grafico-card titulo="Distribuição por etapa" />
+    </div>
+  </section>
+
+  <section class="placeholder-section">
+    <app-titulo-secao
+      titulo="Escolas em destaque"
+      descricao="Tabela inicial para apresentar unidades escolares relevantes."
+    />
+    <app-tabela-dados [colunas]="escolasColunas" [linhas]="escolasDestaque()" />
+  </section>
+
+  <section class="placeholder-section">
+    <app-titulo-secao
+      titulo="Áreas do observatório"
+      descricao="Pontos de entrada previstos para evolução da aplicação."
+    />
+
+    <div class="areas-grid">
+      @for (area of areasObservatorio(); track area.titulo) {
+        <article>
+          <h3>{{ area.titulo }}</h3>
+          <p>{{ area.descricao }}</p>
+        </article>
+      }
+    </div>
+  </section>
+</div>

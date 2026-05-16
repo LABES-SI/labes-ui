@@ -1,0 +1,16 @@
+.titulo-secao {
+  margin-bottom: 16px;
+}
+
+h2 {
+  margin: 0;
+  color: var(--sie-color-text);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+
+p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: var(--sie-color-muted);
+  line-height: 1.6;
+}

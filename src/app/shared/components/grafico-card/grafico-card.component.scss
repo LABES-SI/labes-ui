@@ -1,0 +1,21 @@
+.grafico-card {
+  padding: 20px;
+  border: 1px solid var(--sie-color-border);
+  border-radius: 8px;
+  background: var(--sie-color-surface);
+}
+
+h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+}
+
+.placeholder {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  border: 1px dashed var(--sie-color-border);
+  border-radius: 8px;
+  color: var(--sie-color-muted);
+  background: #f1f5f9;
+}

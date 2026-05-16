@@ -1,0 +1,44 @@
+.painel-filtros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+  gap: 16px;
+  align-items: end;
+  padding: 20px;
+  border: 1px solid var(--sie-color-border);
+  border-radius: 8px;
+  background: var(--sie-color-surface);
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--sie-color-muted);
+  font-size: 0.9rem;
+}
+
+select,
+button {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 8px;
+}
+
+select {
+  border: 1px solid var(--sie-color-border);
+  padding: 0 12px;
+  background: #ffffff;
+}
+
+button {
+  border: 0;
+  padding: 0 18px;
+  color: var(--sie-color-primary-contrast);
+  background: var(--sie-color-primary);
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .painel-filtros {
+    grid-template-columns: 1fr;
+  }
+}

@@ -3,17 +3,19 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./core/layouts/app-shell/app-shell.component').then((m) => m.AppShellComponent),
-    children: [
-      {
-        path: '',
-        loadChildren: () => import('./features/home/home.routes').then((m) => m.homeRoutes),
-      },
-    ],
+    pathMatch: 'full',
+    redirectTo: 'inicio',
+  },
+  {
+    path: 'inicio',
+    loadChildren: () => import('./features/inicio/inicio.routes').then((m) => m.inicioRoutes),
+  },
+  {
+    path: 'sobre',
+    loadChildren: () => import('./features/sobre/sobre.routes').then((m) => m.sobreRoutes),
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'inicio',
   },
 ];

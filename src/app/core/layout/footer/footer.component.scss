@@ -1,0 +1,26 @@
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px clamp(16px, 4vw, 48px);
+  border-top: 1px solid var(--sie-color-border);
+  color: var(--sie-color-muted);
+  background: var(--sie-color-surface);
+}
+
+.footer strong {
+  display: block;
+  color: var(--sie-color-text);
+}
+
+.footer p {
+  margin: 4px 0 0;
+}
+
+@media (max-width: 760px) {
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,26 @@
+.indicador-card {
+  min-height: 136px;
+  padding: 20px;
+  border: 1px solid var(--sie-color-border);
+  border-radius: 8px;
+  background: var(--sie-color-surface);
+  box-shadow: var(--sie-shadow-sm);
+}
+
+span {
+  color: var(--sie-color-muted);
+  font-size: 0.9rem;
+}
+
+strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--sie-color-primary);
+  font-size: 2rem;
+}
+
+p {
+  margin: 8px 0 0;
+  color: var(--sie-color-muted);
+  line-height: 1.5;
+}

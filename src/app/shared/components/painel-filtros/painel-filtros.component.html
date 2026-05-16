@@ -1,0 +1,21 @@
+<section class="painel-filtros" aria-label="Filtros de consulta">
+  <div>
+    <label for="ano">Ano</label>
+    <select id="ano">
+      <option>2025</option>
+      <option>2024</option>
+      <option>2023</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="territorio">Território</label>
+    <select id="territorio">
+      <option>Brasil</option>
+      <option>Estado</option>
+      <option>Município</option>
+    </select>
+  </div>
+
+  <button type="button" (click)="consultar.emit()">Consultar</button>
+</section>
