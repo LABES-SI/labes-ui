@@ -36,6 +36,60 @@
 
     .filter-actions {
       margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        &.btn-reset {
+          background-color: #ef4444;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+
+          &:hover {
+            background-color: #dc2626;
+          }
+        }
+      }
+    }
+  }
+
+  .search-bar {
+    margin: 1rem 0;
+
+    .search-results {
+      margin-top: 0.5rem;
+      max-height: 260px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+
+      .search-result-item {
+        display: flex;
+        gap: 1rem;
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .escola-nome {
+          flex: 1;
+          word-break: break-word;
+        }
+
+        .escola-municipio {
+          flex: 0 0 auto;
+          white-space: nowrap;
+        }
+
+        .btn-mostrar {
+          white-space: nowrap;
+        }
+      }
     }
   }
 }

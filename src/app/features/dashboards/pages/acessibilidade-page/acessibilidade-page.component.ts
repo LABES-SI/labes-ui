@@ -11,6 +11,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as L from 'leaflet';
@@ -45,7 +46,7 @@ type PontoPopupModel = MapaPontoModel & {
 @Component({
   selector: 'app-acessibilidade-page',
   standalone: true,
-  imports: [CommonModule, PlotlyComponent, GraficoCardComponent],
+  imports: [CommonModule, FormsModule, PlotlyComponent, GraficoCardComponent],
   templateUrl: './acessibilidade-page.component.html',
   styleUrl: './acessibilidade-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,9 +69,15 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected tpLocalizacoes: string[] = [];
   protected selectedAno: number | null = null;
   protected selectedMunicipios: string[] = [];
-  protected selectedMetrica: string | null = null;
+  protected selectedMetricas: string[] = [];
   protected selectedRedeEnsino: string[] = [];
   protected selectedTpLocalizacao: string[] = [];
+
+  protected searchTerm: string = '';
+  protected searchResults: MapaPontoModel[] = [];
+
+  private allSchools: MapaPontoModel[] = [];
+  private schoolMarkersById = new Map<number, L.Marker>();
 
   ngAfterViewInit(): void {
     this.map = L.map(this.mapContainer.nativeElement, {
@@ -110,7 +117,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
           chave: String(metrica.chave),
           label: String(metrica.label),
         }));
-        this.selectedMetrica = this.metricas[0]?.chave ?? null;
+        this.selectedMetricas = [];
         this.redesEnsino = (painel.dadosFiltros.rede_ensino ?? []).map((rede) => String(rede));
         this.tpLocalizacoes = ['Urbana', 'Rural'];
         this.graficos = Object.entries(painel.graficos ?? {}).map(([chave, grafico]) => ({
@@ -134,6 +141,16 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     void this.loadMap(this.buildParams());
   }
 
+  protected resetFiltros(): void {
+    this.selectedMetricas = [];
+    this.selectedMunicipios = [];
+    this.selectedRedeEnsino = [];
+    this.selectedTpLocalizacao = [];
+    this.definirAnoPadrao();
+    this.cd.markForCheck();
+    this.aplicarFiltros();
+  }
+
   protected onMunicipioChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedMunicipios = Array.from(select.selectedOptions)
@@ -141,8 +158,15 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .filter((value) => value.length > 0);
   }
 
-  protected onMetricaChange(metrica: string): void {
-    this.selectedMetrica = metrica;
+  protected onMetricaChange(metrica: string, event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      if (!this.selectedMetricas.includes(metrica)) {
+        this.selectedMetricas = [...this.selectedMetricas, metrica];
+      }
+    } else {
+      this.selectedMetricas = this.selectedMetricas.filter((m) => m !== metrica);
+    }
   }
 
   protected onRedeEnsinoChange(event: Event): void {
@@ -157,6 +181,46 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     this.selectedTpLocalizacao = Array.from(select.selectedOptions)
       .map((option) => option.value)
       .filter((value) => value.length > 0);
+  }
+
+  protected buscarEscola(): void {
+    const termo = this.searchTerm.toLowerCase().trim();
+    if (termo.length === 0) {
+      this.searchResults = [];
+      this.cd.markForCheck();
+      return;
+    }
+
+    this.searchResults = this.allSchools.filter((escola) =>
+      String(escola.nome ?? '')
+        .toLowerCase()
+        .includes(termo),
+    );
+    this.cd.markForCheck();
+  }
+
+  protected mostrarEscola(escola: MapaPontoModel): void {
+    if (!this.map || !Number.isFinite(escola.latitude) || !Number.isFinite(escola.longitude)) {
+      this.cd.markForCheck();
+      return;
+    }
+
+    this.searchResults = [];
+    this.map.setView([escola.latitude, escola.longitude], 15);
+    const marker = this.getOrCreateSchoolMarker(escola);
+    if (marker) {
+      marker.openPopup();
+    }
+
+    this.cd.markForCheck();
+  }
+
+  protected fecharPopups(): void {
+    for (const marker of this.schoolMarkersById.values()) {
+      marker.closePopup();
+    }
+
+    this.cd.markForCheck();
   }
 
   private definirAnoPadrao(): void {
@@ -177,7 +241,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   } {
     return {
       ano: this.selectedAno ?? null,
-      variaveis: this.selectedMetrica ? [this.selectedMetrica] : null,
+      variaveis: this.selectedMetricas.length ? this.selectedMetricas : null,
       municipios: this.selectedMunicipios.length ? this.selectedMunicipios : null,
       rede_ensino: this.selectedRedeEnsino.length ? this.selectedRedeEnsino : null,
       tp_localizacao: this.selectedTpLocalizacao.length ? this.selectedTpLocalizacao : null,
@@ -219,6 +283,11 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
 
     const geoJsonCollection: Parameters<typeof L.geoJSON>[0] = collection;
 
+    for (const marker of this.schoolMarkersById.values()) {
+      marker.remove();
+    }
+    this.schoolMarkersById.clear();
+
     this.municipalitiesLayer = L.geoJSON(geoJsonCollection, {
       style: (feature) => {
         const cor = String(feature?.properties?.['cor'] ?? '#94a3b8');
@@ -247,10 +316,12 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       },
     }).addTo(this.map!);
 
+    const pontosValidos = pontos.filter(
+      (ponto) => Number.isFinite(ponto.latitude) && Number.isFinite(ponto.longitude),
+    );
+    this.allSchools = pontosValidos;
+
     if (shouldShowSchools) {
-      const pontosValidos = pontos.filter(
-        (ponto) => Number.isFinite(ponto.latitude) && Number.isFinite(ponto.longitude),
-      );
       const scorePorMunicipio = new Map<string, { min: number; max: number }>();
 
       for (const ponto of pontosValidos) {
@@ -281,9 +352,12 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         const marker = L.marker([ponto.latitude, ponto.longitude], {
           icon: this.createPinIcon(cor),
         });
+        this.schoolMarkersById.set(Number(ponto.co_entidade), marker);
 
         const nome = String(ponto.nome ?? 'Escola');
         marker.bindPopup(this.buildSchoolPopup(ponto, nome, municipio, score, cor), {
+          autoClose: false,
+          closeOnClick: false,
           maxWidth: 320,
         });
 
@@ -295,6 +369,45 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     if (bounds.isValid()) {
       this.map?.fitBounds(bounds, { padding: [16, 16] });
     }
+  }
+
+  private getOrCreateSchoolMarker(escola: MapaPontoModel): L.Marker | null {
+    const id = Number(escola.co_entidade);
+    const existente = this.schoolMarkersById.get(id);
+    if (existente) {
+      return existente;
+    }
+
+    if (!this.map || !Number.isFinite(escola.latitude) || !Number.isFinite(escola.longitude)) {
+      return null;
+    }
+
+    const score = Number(escola.score);
+    const cor = this.getScoreColor(score, score, score);
+    const municipio = String(escola.municipio ?? '');
+
+    const marker = L.marker([escola.latitude, escola.longitude], {
+      icon: this.createPinIcon(cor),
+    });
+
+    const nome = String(escola.nome ?? 'Escola');
+    marker.bindPopup(
+      this.buildSchoolPopup(escola as PontoPopupModel, nome, municipio, score, cor),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        maxWidth: 320,
+      },
+    );
+
+    this.schoolMarkersById.set(id, marker);
+    if (this.schoolMarkersLayer) {
+      marker.addTo(this.schoolMarkersLayer);
+    } else {
+      marker.addTo(this.map);
+    }
+
+    return marker;
   }
 
   private getScoreColor(score: number, minScore: number, maxScore: number): string {

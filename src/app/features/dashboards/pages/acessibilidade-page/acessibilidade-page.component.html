@@ -48,10 +48,9 @@
         @for (m of metricas; track m.chave) {
           <label>
             <input
-              type="radio"
-              name="metrica"
-              [checked]="selectedMetrica === m.chave"
-              (change)="onMetricaChange(m.chave)"
+              type="checkbox"
+              [checked]="selectedMetricas.includes(m.chave)"
+              (change)="onMetricaChange(m.chave, $event)"
             />
             {{ m.label }}
           </label>
@@ -61,7 +60,30 @@
 
     <div class="filter-actions">
       <button (click)="aplicarFiltros()">Aplicar</button>
+      <button (click)="resetFiltros()" class="btn-reset">Reset</button>
     </div>
+  </div>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Pesquisar nome da escola..."
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="buscarEscola()"
+    />
+    <button (click)="buscarEscola()">Buscar</button>
+    <button (click)="fecharPopups()">Fechar pop-ups</button>
+    @if (searchResults.length > 0) {
+      <div class="search-results">
+        @for (escola of searchResults; track escola.co_entidade) {
+          <div class="search-result-item">
+            <span class="escola-nome">{{ escola.nome }}</span>
+            <span class="escola-municipio">{{ escola.municipio }}</span>
+            <button class="btn-mostrar" (click)="mostrarEscola(escola)">Mostrar</button>
+          </div>
+        }
+      </div>
+    }
   </div>
 
   <div>

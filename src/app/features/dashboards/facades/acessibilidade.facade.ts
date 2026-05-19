@@ -56,7 +56,7 @@ export class AcessibilidadeFacade {
   }): Observable<PainelAcessibilidadeModel> {
     const call = async () => {
       let ano = params?.ano ?? null;
-      const variaveis = params?.variaveis ?? ['in_acessibilidade_rampas'];
+      const variaveis = params?.variaveis ?? null;
       const municipios = params?.municipios ?? null;
       const rede_ensino = params?.rede_ensino ?? null;
       const tp_localizacao = params?.tp_localizacao ?? null;
@@ -104,7 +104,7 @@ export class AcessibilidadeFacade {
   }): Observable<MapaAcessibilidadeModel> {
     const call = async () => {
       let ano = params?.ano ?? null;
-      const variaveis = params?.variaveis ?? ['in_acessibilidade_rampas'];
+      const variaveis = params?.variaveis ?? null;
       const municipios = params?.municipios ?? null;
       const rede_ensino = params?.rede_ensino ?? null;
       const tp_localizacao = params?.tp_localizacao ?? null;

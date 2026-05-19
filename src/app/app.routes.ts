@@ -15,7 +15,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/sobre/sobre.routes').then((m) => m.sobreRoutes),
   },
   {
-    path: 'acessibilidade',
+    path: 'dashboards',
     loadChildren: () =>
       import('./features/dashboards/dashboards.routes').then((m) => m.dashboardsRoutes),
   },
