@@ -1,0 +1,41 @@
+.graficos-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+
+  > app-grafico-card {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    contain: layout;
+  }
+}
+.acessibilidade-page {
+  .filter-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+    background: #fff;
+    border-bottom: 1px solid #e6e6e6;
+    flex-wrap: wrap;
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+
+    .metricas-list {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      max-width: 40rem;
+    }
+
+    .filter-actions {
+      margin-left: auto;
+    }
+  }
+}

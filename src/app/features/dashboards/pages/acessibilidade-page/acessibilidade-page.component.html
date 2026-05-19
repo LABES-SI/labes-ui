@@ -1,1 +1,89 @@
-<p>acessibilidade works!</p>
+<div class="acessibilidade-page">
+  <div class="filter-bar">
+    <div class="filter-item">
+      <label>Ano:</label>
+      <select [value]="selectedAno ?? ''" (change)="onAnoChange($event)">
+        @for (a of anos; track a) {
+          <option [value]="a">{{ a }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Município:</label>
+      <select multiple (change)="onMunicipioChange($event)">
+        @for (municipio of municipios; track municipio.nome) {
+          <option [value]="municipio.nome" [selected]="selectedMunicipios.includes(municipio.nome)">
+            {{ municipio.nome }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Rede de Ensino:</label>
+      <select multiple (change)="onRedeEnsinoChange($event)">
+        @for (rede of redesEnsino; track rede) {
+          <option [value]="rede" [selected]="selectedRedeEnsino.includes(rede)">
+            {{ rede }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Tipo de Localização:</label>
+      <select multiple (change)="onTpLocalizacaoChange($event)">
+        @for (localizacao of tpLocalizacoes; track localizacao) {
+          <option [value]="localizacao" [selected]="selectedTpLocalizacao.includes(localizacao)">
+            {{ localizacao }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>Métricas:</label>
+      <div class="metricas-list">
+        @for (m of metricas; track m.chave) {
+          <label>
+            <input
+              type="radio"
+              name="metrica"
+              [checked]="selectedMetrica === m.chave"
+              (change)="onMetricaChange(m.chave)"
+            />
+            {{ m.label }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button (click)="aplicarFiltros()">Aplicar</button>
+    </div>
+  </div>
+
+  <div>
+    <div #mapContainer style="height: 70vh; width: 100%"></div>
+  </div>
+
+  @if (graficos.length > 0) {
+    <section class="graficos-section">
+      @for (grafico of graficos; track grafico.titulo) {
+        <app-grafico-card [titulo]="grafico.titulo">
+          <plotly-plot
+            [data]="grafico.plotly.data"
+            [layout]="grafico.plotly.layout"
+            [useResizeHandler]="true"
+            [style]="{
+              position: 'relative',
+              width: '100%',
+              height: '360px',
+            }"
+          ></plotly-plot>
+        </app-grafico-card>
+      }
+    </section>
+  }
+</div>

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-export const acessibilidadeRoutes: Routes = [
+export const dashboardsRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>

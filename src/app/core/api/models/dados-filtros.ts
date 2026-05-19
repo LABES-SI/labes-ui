@@ -7,4 +7,6 @@ export interface DadosFiltros {
   anos: Array<number>;
   metricas: Array<MetricaFiltro>;
   municipios: Array<MunicipioFiltro>;
+  rede_ensino: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'>;
+  tp_localizacao: Array<'Urbana' | 'Rural'>;
 }

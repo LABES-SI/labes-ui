@@ -26,8 +26,10 @@
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@types/leaflet": "^1.9.21",
+    "@types/plotly.js-dist-min": "^2.3.4",
     "angular-plotly.js": "^20.0.0",
     "leaflet": "^1.9.4",
+    "plotly.js-dist-min": "^3.5.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

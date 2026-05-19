@@ -3,6 +3,10 @@
     <h3>{{ titulo() }}</h3>
   </header>
 
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+
   <div class="placeholder" role="img" [attr.aria-label]="descricao()">
     {{ descricao() }}
   </div>
