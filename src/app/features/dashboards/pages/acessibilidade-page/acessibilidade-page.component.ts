@@ -7,6 +7,7 @@ import {
   ViewChild,
   inject,
   OnInit,
+  OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -49,7 +50,7 @@ type PontoPopupModel = MapaPontoModel & {
   styleUrl: './acessibilidade-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AcessibilidadePageComponent implements AfterViewInit, OnInit {
+export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>;
 
   private readonly facade = inject(AcessibilidadeFacade);
