@@ -43,17 +43,7 @@
     </div>
   </section>
 
-  <section class="placeholder-section">
-    <app-titulo-secao
-      titulo="Fontes de dados"
-      [descricao]="'Total de fontes mockadas: ' + totalFontesDados()"
-    />
-    <ul class="simple-list">
-      @for (fonte of fontesDados(); track fonte) {
-        <li>{{ fonte }}</li>
-      }
-    </ul>
-  </section>
+  <app-fontes-dados />
 
   <section class="placeholder-section">
     <app-titulo-secao titulo="Equipe" />
