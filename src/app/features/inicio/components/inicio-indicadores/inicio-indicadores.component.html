@@ -1,0 +1,75 @@
+<section class="indicators-section" aria-labelledby="inicio-indicadores-title">
+  <div class="sie-section-shell indicators-shell">
+    <div class="sie-section-heading sie-section-heading--center">
+      <span class="sie-eyebrow">Explore os indicadores</span>
+      <h2 id="inicio-indicadores-title" class="sie-section-title">
+        Selecione um indicador para visualizar
+      </h2>
+      <p class="sie-section-description">
+        Navegue pelos principais temas da educacao no Para e acesse dados atualizados, comparacoes e
+        analises detalhadas.
+      </p>
+    </div>
+
+    <div class="indicators-grid">
+      @for (indicador of indicadores; track indicador.title) {
+        @if (indicador.active && indicador.route) {
+          <a
+            class="indicator-card"
+            [routerLink]="indicador.route"
+            [style.--indicator-bg]="indicador.background"
+            [style.--indicator-color]="indicador.color"
+            [attr.aria-label]="'Abrir indicador de ' + indicador.title"
+          >
+            <ng-container
+              [ngTemplateOutlet]="indicatorContent"
+              [ngTemplateOutletContext]="{ indicador: indicador }"
+            />
+          </a>
+        } @else {
+          <article
+            class="indicator-card indicator-card--disabled"
+            [style.--indicator-bg]="indicador.background"
+            [style.--indicator-color]="indicador.color"
+            aria-disabled="true"
+          >
+            <ng-container
+              [ngTemplateOutlet]="indicatorContent"
+              [ngTemplateOutletContext]="{ indicador: indicador }"
+            />
+            <span class="status-pill">Em breve</span>
+          </article>
+        }
+      }
+    </div>
+
+    <aside class="sie-callout indicator-help" aria-label="Lista completa de indicadores">
+      <div class="sie-callout-copy">
+        <h3>Não encontrou o que procura?</h3>
+        <p>
+          Consulte a lista completa de indicadores disponiveis ou veja as publicacoes e estudos do
+          SIE.
+        </p>
+      </div>
+      <app-button
+        label="Ver indicador ativo"
+        routerLink="/dashboards/acessibilidade"
+        variant="secondary"
+        [trailingIcon]="arrowRightIcon"
+      />
+    </aside>
+  </div>
+</section>
+
+<ng-template #indicatorContent let-indicador="indicador">
+  <span class="icon-badge" aria-hidden="true">
+    <lucide-icon [img]="indicador.icon" />
+  </span>
+  <div class="indicator-copy">
+    <h3>{{ indicador.title }}</h3>
+    <p>{{ indicador.description }}</p>
+  </div>
+  <span class="indicator-arrow" aria-hidden="true">
+    <lucide-icon [img]="arrowRightIcon" />
+  </span>
+</ng-template>

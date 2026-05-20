@@ -1,0 +1,54 @@
+<section class="about-section" aria-labelledby="inicio-sobre-title">
+  <div class="sie-section-shell about-shell">
+    <div class="about-main">
+      <div class="about-copy">
+        <div class="sie-section-heading sie-section-heading--left">
+          <span class="sie-eyebrow">Conheça o projeto</span>
+          <h2 id="inicio-sobre-title" class="sie-section-title about-title">O que é o SIE?</h2>
+          <span class="heading-rule" aria-hidden="true"></span>
+        </div>
+
+        <p>
+          O SIE - Síntese de Indicadores Educacionais é o observatório oficial de dados da educação
+          do Pará. Reunimos informações de diferentes fontes para oferecer uma visão integrada da
+          rede pública e apoiar gestores, pesquisadores e a sociedade na tomada de decisão baseada
+          em evidências.
+        </p>
+
+        <div class="highlight-grid" aria-label="Eixos do projeto">
+          @for (item of highlights; track item.title) {
+            <article class="highlight-item">
+              <span
+                class="icon-badge"
+                [class]="'icon-badge icon-badge--' + item.tone"
+                aria-hidden="true"
+              >
+                <lucide-icon [img]="item.icon" />
+              </span>
+              <div>
+                <h3 [innerHTML]="item.title"></h3>
+                <p [innerHTML]="item.text"></p>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </div>
+
+    <aside class="sie-callout commitment-box" aria-label="Compromisso com a educação do Pará">
+      <div class="sie-callout-copy">
+        <h3>Compromisso com a educação do Pará</h3>
+        <p>
+          Nosso compromisso é gerar conhecimento, promover a equidade e contribuir para uma educação
+          pública cada vez melhor para todos.
+        </p>
+      </div>
+      <app-button
+        label="Saiba mais sobre o projeto"
+        routerLink="/sobre"
+        variant="secondary"
+        [trailingIcon]="arrowRightIcon"
+      />
+    </aside>
+  </div>
+</section>
