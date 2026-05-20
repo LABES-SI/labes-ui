@@ -26,6 +26,7 @@ import {
   MetricaFiltroModel,
   MunicipioFiltroModel,
 } from '../../models/acessibilidade.models';
+import { AppInputComponent } from '../../../../shared/ui/input/app-input.component';
 
 PlotlyService.setPlotly(PlotlyJS);
 
@@ -46,7 +47,7 @@ type PontoPopupModel = MapaPontoModel & {
 @Component({
   selector: 'app-acessibilidade-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlotlyComponent, GraficoCardComponent],
+  imports: [CommonModule, FormsModule, PlotlyComponent, GraficoCardComponent, AppInputComponent],
   templateUrl: './acessibilidade-page.component.html',
   styleUrl: './acessibilidade-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,6 +76,8 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
 
   protected searchTerm: string = '';
   protected searchResults: MapaPontoModel[] = [];
+  protected searchPage = 1;
+  protected readonly searchPageSize = 5;
 
   private allSchools: MapaPontoModel[] = [];
   private schoolMarkersById = new Map<number, L.Marker>();
@@ -120,12 +123,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         this.selectedMetricas = [];
         this.redesEnsino = (painel.dadosFiltros.rede_ensino ?? []).map((rede) => String(rede));
         this.tpLocalizacoes = ['Urbana', 'Rural'];
-        this.graficos = Object.entries(painel.graficos ?? {}).map(([chave, grafico]) => ({
-          chave,
-          titulo: grafico.titulo,
-          tipo: grafico.tipo,
-          plotly: grafico.plotly,
-        }));
+        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
 
         this.cd.markForCheck();
       });
@@ -183,10 +181,52 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .filter((value) => value.length > 0);
   }
 
+  protected toggleValue(values: string[], value: string): void {
+    const index = values.indexOf(value);
+
+    if (index >= 0) {
+      values.splice(index, 1);
+    } else {
+      values.push(value);
+    }
+
+    this.cd.markForCheck();
+  }
+
+  protected removeValue(values: string[], value: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const index = values.indexOf(value);
+    if (index >= 0) {
+      values.splice(index, 1);
+    }
+
+    this.cd.markForCheck();
+  }
+
+  protected visibleValues(values: string[], limit: number): string[] {
+    return values.slice(0, limit);
+  }
+
+  protected hiddenCount(values: string[], visibleLimit: number): number {
+    return Math.max(values.length - visibleLimit, 0);
+  }
+
+  protected visibleMetricLabels(limit: number): MetricaFiltroModel[] {
+    const metricasByKey = new Map(this.metricas.map((metrica) => [metrica.chave, metrica]));
+
+    return this.selectedMetricas.slice(0, limit).map((chave) => ({
+      chave,
+      label: metricasByKey.get(chave)?.label ?? chave,
+    }));
+  }
+
   protected buscarEscola(): void {
     const termo = this.searchTerm.toLowerCase().trim();
     if (termo.length === 0) {
       this.searchResults = [];
+      this.searchPage = 1;
       this.cd.markForCheck();
       return;
     }
@@ -196,7 +236,45 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         .toLowerCase()
         .includes(termo),
     );
+    this.searchPage = 1;
     this.cd.markForCheck();
+  }
+
+  protected get paginatedSearchResults(): MapaPontoModel[] {
+    const start = (this.searchPage - 1) * this.searchPageSize;
+    return this.searchResults.slice(start, start + this.searchPageSize);
+  }
+
+  protected get totalSearchPages(): number {
+    return Math.max(Math.ceil(this.searchResults.length / this.searchPageSize), 1);
+  }
+
+  protected get searchPageNumbers(): number[] {
+    return Array.from({ length: this.totalSearchPages }, (_, index) => index + 1);
+  }
+
+  protected setSearchPage(page: number): void {
+    this.searchPage = Math.min(Math.max(page, 1), this.totalSearchPages);
+    this.cd.markForCheck();
+  }
+
+  protected scoreBadgeClass(escola: MapaPontoModel): string {
+    const classificacao = String(escola.classificacao ?? '').toLowerCase();
+    const score = Number(escola.score);
+
+    if (classificacao.includes('boa') || score >= 8) {
+      return 'score-badge--alta';
+    }
+
+    if (classificacao.includes('média') || classificacao.includes('media') || score >= 5) {
+      return 'score-badge--media';
+    }
+
+    if (classificacao.includes('baixa') || score > 0) {
+      return 'score-badge--baixa';
+    }
+
+    return 'score-badge--muito-baixa';
   }
 
   protected mostrarEscola(escola: MapaPontoModel): void {
@@ -205,7 +283,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       return;
     }
 
-    this.searchResults = [];
     this.map.setView([escola.latitude, escola.longitude], 15);
     const marker = this.getOrCreateSchoolMarker(escola);
     if (marker) {
@@ -248,6 +325,51 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     };
   }
 
+  private mapGraficosPainel(
+    graficos: Record<string, { titulo: string; tipo: string; plotly: PlotlyFigure }>,
+  ): GraficoApresentacao[] {
+    return Object.entries(graficos).map(([chave, grafico]) => ({
+      chave,
+      titulo: grafico.titulo,
+      tipo: grafico.tipo,
+      plotly: this.normalizarGraficoPlotly(grafico.plotly),
+    }));
+  }
+
+  private normalizarGraficoPlotly(figure: PlotlyFigure): PlotlyFigure {
+    const layout = { ...(figure.layout ?? {}) };
+    const originalMargin = (layout['margin'] ?? {}) as Record<string, unknown>;
+    const hasIndicator = (figure.data ?? []).some((trace) => trace['type'] === 'indicator');
+    const originalTopMargin = Number(originalMargin['t'] ?? 24);
+
+    delete layout['title'];
+    delete layout['margin'];
+
+    return {
+      ...figure,
+      layout: {
+        ...layout,
+        autosize: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: {
+          family: "Inter, 'Segoe UI', Roboto, Arial, sans-serif",
+          color: '#26395f',
+          size: 12,
+          ...(layout['font'] ?? {}),
+        },
+        margin: {
+          ...(originalMargin ?? {}),
+          l: hasIndicator ? 20 : 58,
+          r: 18,
+          t: hasIndicator ? 12 : Math.min(originalTopMargin, 32),
+          b: hasIndicator ? 24 : 58,
+          pad: 0,
+        },
+      },
+    };
+  }
+
   private loadPainel(params?: {
     ano?: number | null;
     variaveis?: string[] | null;
@@ -257,12 +379,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .listarPainel(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
-        this.graficos = Object.entries(painel.graficos ?? {}).map(([chave, grafico]) => ({
-          chave,
-          titulo: grafico.titulo,
-          tipo: grafico.tipo,
-          plotly: grafico.plotly,
-        }));
+        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
 
         this.cd.markForCheck();
       });
