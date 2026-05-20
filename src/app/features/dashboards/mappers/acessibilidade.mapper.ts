@@ -13,6 +13,7 @@ import {
   MapaPontoModel,
   PainelAcessibilidadeModel,
   GraficoModel,
+  GraficoListaModel,
 } from '../models/acessibilidade.models';
 
 function normalizarTexto(texto: string | null | undefined): string {
@@ -231,9 +232,15 @@ export function mapAnaliseTemporalResponseToModel(
     {} as { [key: string]: GraficoModel },
   );
 
+  const listaGraficos: GraficoListaModel[] = Object.entries(graficos).map(([chave, grafico]) => ({
+    chave,
+    ...grafico,
+  }));
+
   return {
     descricao: api.descricao,
     dadosFiltros,
     graficos,
+    listaGraficos,
   };
 }

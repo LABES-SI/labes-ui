@@ -65,6 +65,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected municipios: MunicipioFiltroModel[] = [];
   protected metricas: MetricaFiltroModel[] = [];
   protected graficos: GraficoApresentacao[] = [];
+  protected graficosAnaliseTemporal: GraficoApresentacao[] = [];
   protected redesEnsino: string[] = [];
   protected tpLocalizacoes: string[] = [];
   protected selectedAno: number | null = null;
@@ -127,6 +128,8 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
           plotly: grafico.plotly,
         }));
 
+        this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
+
         this.cd.markForCheck();
       });
   }
@@ -139,6 +142,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected aplicarFiltros(): void {
     void this.loadPainel(this.buildParams());
     void this.loadMap(this.buildParams());
+    this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
   }
 
   protected resetFiltros(): void {
@@ -266,6 +270,30 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
 
         this.cd.markForCheck();
       });
+  }
+
+  private loadAnaliseTemporal(params?: { metrica?: string | null }): void {
+    this.facade
+      .listarAnaliseTemporal(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((analiseTemporal) => {
+        this.graficosAnaliseTemporal = analiseTemporal.listaGraficos.map((grafico) => ({
+          chave: grafico.chave,
+          titulo: grafico.titulo,
+          tipo: grafico.tipo,
+          plotly: grafico.plotly,
+        }));
+
+        this.cd.markForCheck();
+      });
+  }
+
+  private getMetricaAnaliseTemporal(): string | null {
+    if (this.selectedMetricas.length > 0) {
+      return this.selectedMetricas[0];
+    }
+
+    return this.metricas[0]?.chave ?? null;
   }
 
   private async loadMap(params?: {

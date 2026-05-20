@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { AcessibilidadeService } from '../../../core/api/services/acessibilidade.service';
 import type {
+  GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
   GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
   GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
 } from '../../../core/api';
@@ -129,10 +130,17 @@ export class AcessibilidadeFacade {
     return from(call()).pipe(catchError(() => of({ descricao: '', pontos: [] })));
   }
 
-  listarAnaliseTemporal(): Observable<AnaliseTemporalModel> {
-    return from(this.api.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()).pipe(
+  listarAnaliseTemporal(params?: { metrica?: string | null }): Observable<AnaliseTemporalModel> {
+    return from(
+      this.api.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet({
+        metrica: (params?.metrica ??
+          undefined) as GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params['metrica'],
+      }),
+    ).pipe(
       map(mapAnaliseTemporalResponseToModel),
-      catchError(() => of({ descricao: '', dadosFiltros: { metricas: [] }, graficos: {} })),
+      catchError(() =>
+        of({ descricao: '', dadosFiltros: { metricas: [] }, graficos: {}, listaGraficos: [] }),
+      ),
     );
   }
 
