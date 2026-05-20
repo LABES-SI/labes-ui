@@ -236,6 +236,5 @@ export const routes: Routes = [
 - Eventos saem por `output()`.
 - Estado derivado usa `computed()`.
 - Mocks estao na facade ou em mocks consumidos pela facade.
-- Nao foi criada pasta `data-access/`.
 - Nao existe duplicidade de pasta com o mesmo papel, como `layout` e `layouts`.
 - `npm run validate` passa localmente.

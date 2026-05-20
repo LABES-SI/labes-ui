@@ -130,7 +130,6 @@ Antes de abrir PR:
 
 - manter a mudanca pequena e focada;
 - confirmar que nao existe pasta duplicada;
-- confirmar que nao existe `data-access/`;
 - confirmar que pages/components nao acessam API diretamente;
 - rodar `npm run validate`;
 - preencher o template de PR.
