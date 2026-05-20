@@ -254,7 +254,16 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   protected get searchPageNumbers(): number[] {
-    return Array.from({ length: this.totalSearchPages }, (_, index) => index + 1);
+    const visiblePages = 3;
+    const totalPages = this.totalSearchPages;
+    const halfWindow = Math.floor(visiblePages / 2);
+    const start = Math.min(
+      Math.max(this.searchPage - halfWindow, 1),
+      Math.max(totalPages - visiblePages + 1, 1),
+    );
+    const end = Math.min(start + visiblePages - 1, totalPages);
+
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
   }
 
   protected setSearchPage(page: number): void {

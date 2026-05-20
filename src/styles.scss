@@ -329,14 +329,17 @@ textarea {
 
 .search-input button,
 .search-input button:hover {
+  display: inline-grid;
   width: 28px;
   min-width: 28px;
   min-height: 28px;
   height: 28px;
+  place-items: center;
   padding: 0;
   border: 0;
   background: transparent;
   color: #667895;
+  line-height: 1;
   box-shadow: none;
 }
 
@@ -349,6 +352,14 @@ textarea {
   min-height: 50px;
   border-radius: 8px;
   font-size: 0.95rem;
+  line-height: 1;
+}
+
+.search-actions button .pi,
+.search-pagination button .pi,
+.search-input button .pi {
+  display: block;
+  line-height: 1;
 }
 
 .search-results-header {
