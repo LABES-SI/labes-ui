@@ -1,0 +1,61 @@
+:host {
+  display: block;
+}
+
+.sobre-o-que-e {
+  background: #ffffff;
+}
+
+.sobre-o-que-e__shell {
+  padding: 80px 0 88px;
+}
+
+.sobre-o-que-e__content {
+  display: grid;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sobre-o-que-e__title {
+  margin: 0;
+  color: var(--sie-color-deep);
+  font-size: var(--sie-section-title-font-size);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.sobre-o-que-e__rule {
+  width: 82px;
+  height: 5px;
+  margin-top: 28px;
+  border-radius: 999px;
+  background: var(--sie-color-accent);
+}
+
+.sobre-o-que-e__text {
+  margin-top: 42px;
+  color: #13233f;
+  font-size: var(--sie-about-copy-font-size);
+  font-weight: 500;
+  line-height: 1.68;
+  text-align: left;
+}
+
+.sobre-o-que-e__text p {
+  margin: 0;
+}
+
+.sobre-o-que-e__text p + p {
+  margin-top: 18px;
+}
+
+@media (max-width: 720px) {
+  .sobre-o-que-e__shell {
+    padding: 64px 0;
+  }
+
+  .sobre-o-que-e__text {
+    margin-top: 34px;
+  }
+}

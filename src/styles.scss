@@ -14,11 +14,14 @@
   --sie-shadow-sm: 0 8px 20px rgba(15, 23, 42, 0.08);
   --sie-shadow-md: 0 18px 48px rgba(10, 42, 104, 0.14);
   --sie-content-width: 1360px;
+  --sie-hero-eyebrow-font-size: 1rem;
+  --sie-hero-title-font-size: clamp(3rem, 5.6vw, 5rem);
+  --sie-hero-description-font-size: clamp(1rem, 1.55vw, 1.22rem);
   --sie-section-eyebrow-font-size: 0.98rem;
-  --sie-section-title-font-size: clamp(2.2rem, 4vw, 3.55rem);
+  --sie-section-title-font-size: clamp(2rem, 3.1vw, 3rem);
   --sie-section-description-font-size: clamp(1rem, 1.4vw, 1.28rem);
   --sie-section-copy-color: #24324d;
-  --sie-about-title-font-size: clamp(2.5rem, 4.2vw, 4.6rem);
+  --sie-about-title-font-size: var(--sie-section-title-font-size);
   --sie-about-copy-font-size: clamp(0.98rem, 1.1vw, 1.1rem);
   --sie-about-highlight-title-font-size: 0.98rem;
   --sie-about-highlight-copy-font-size: 0.9rem;
@@ -67,6 +70,26 @@ textarea {
   border: 1px solid var(--sie-color-border);
   border-radius: 8px;
   background: var(--sie-color-surface);
+}
+
+.sie-hero-eyebrow {
+  font-size: var(--sie-hero-eyebrow-font-size);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.sie-hero-title {
+  font-size: var(--sie-hero-title-font-size);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.sie-hero-description {
+  font-size: var(--sie-hero-description-font-size);
+  font-weight: 500;
+  line-height: 1.55;
 }
 
 .sie-section-shell {
