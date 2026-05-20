@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { TituloSecaoComponent } from '../../../../shared/components/titulo-secao/titulo-secao.component';
+import { FontesDadosComponent } from '../../components/fontes-dados/fontes-dados.component';
 import { SobreFacade } from '../../facades/sobre.facade';
 
 @Component({
   selector: 'app-sobre-page',
   standalone: true,
-  imports: [TituloSecaoComponent],
+  imports: [TituloSecaoComponent, FontesDadosComponent],
   templateUrl: './sobre-page.component.html',
   styleUrl: './sobre-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
