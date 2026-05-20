@@ -381,6 +381,10 @@ button:hover {
   margin-top: 12px;
 }
 
+.graficos-section--temporal {
+  grid-template-columns: 1fr;
+}
+
 .graficos-section > app-grafico-card {
   display: block;
   min-width: 0;
@@ -410,6 +414,14 @@ button:hover {
 :host ::ng-deep .grafico-card .content {
   max-height: none;
   overflow: hidden;
+}
+
+.graficos-section > .grafico-card-host--compact {
+  min-height: 0;
+}
+
+:host ::ng-deep .grafico-card-host--compact .grafico-card {
+  min-height: 310px;
 }
 
 :host ::ng-deep .grafico-card plotly-plot,
