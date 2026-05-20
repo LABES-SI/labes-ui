@@ -25,6 +25,10 @@ export interface GraficoModel {
   [key: string]: unknown;
 }
 
+export interface GraficoListaModel extends GraficoModel {
+  chave: string;
+}
+
 export interface PainelAcessibilidadeModel {
   descricao: string;
   dadosFiltros: DadosFiltrosModel;
@@ -51,6 +55,7 @@ export interface AnaliseTemporalModel {
   descricao: string;
   dadosFiltros: { metricas: MetricaFiltroModel[] };
   graficos: { [key: string]: GraficoModel };
+  listaGraficos: GraficoListaModel[];
 }
 
 export interface MapaMunicipioModel {
