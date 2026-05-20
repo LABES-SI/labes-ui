@@ -1,7 +1,11 @@
 <div class="acessibilidade-page">
-  <div class="filter-bar">
+  <header class="dashboard-header">
+    <h1>Dashboard de Acessibilidade Escolar</h1>
+  </header>
+
+  <div class="filter-bar" aria-label="Filtros do dashboard">
     <div class="filter-item">
-      <label>Ano:</label>
+      <label>Ano</label>
       <select [value]="selectedAno ?? ''" (change)="onAnoChange($event)">
         @for (a of anos; track a) {
           <option [value]="a">{{ a }}</option>
@@ -10,7 +14,7 @@
     </div>
 
     <div class="filter-item">
-      <label>Município:</label>
+      <label>Município</label>
       <select multiple (change)="onMunicipioChange($event)">
         @for (municipio of municipios; track municipio.nome) {
           <option [value]="municipio.nome" [selected]="selectedMunicipios.includes(municipio.nome)">
@@ -21,7 +25,7 @@
     </div>
 
     <div class="filter-item">
-      <label>Rede de Ensino:</label>
+      <label>Rede de Ensino</label>
       <select multiple (change)="onRedeEnsinoChange($event)">
         @for (rede of redesEnsino; track rede) {
           <option [value]="rede" [selected]="selectedRedeEnsino.includes(rede)">
@@ -32,7 +36,7 @@
     </div>
 
     <div class="filter-item">
-      <label>Tipo de Localização:</label>
+      <label>Tipo de Localização</label>
       <select multiple (change)="onTpLocalizacaoChange($event)">
         @for (localizacao of tpLocalizacoes; track localizacao) {
           <option [value]="localizacao" [selected]="selectedTpLocalizacao.includes(localizacao)">
@@ -42,8 +46,8 @@
       </select>
     </div>
 
-    <div class="filter-item">
-      <label>Métricas:</label>
+    <div class="filter-item filter-item--wide">
+      <label>Métricas</label>
       <div class="metricas-list">
         @for (m of metricas; track m.chave) {
           <label>
@@ -64,30 +68,49 @@
     </div>
   </div>
 
-  <div class="search-bar">
-    <input
-      type="text"
-      placeholder="Pesquisar nome da escola..."
-      [(ngModel)]="searchTerm"
-      (keyup.enter)="buscarEscola()"
-    />
-    <button (click)="buscarEscola()">Buscar</button>
-    <button (click)="fecharPopups()">Fechar pop-ups</button>
-    @if (searchResults.length > 0) {
+  <div class="dashboard-main">
+    <aside class="search-panel" aria-label="Busca de escolas">
+      <div class="search-controls">
+        <input
+          type="text"
+          placeholder="Pesquisar nome da escola"
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="buscarEscola()"
+        />
+        <div class="search-actions">
+          <button (click)="buscarEscola()">Buscar</button>
+          <button (click)="fecharPopups()" class="button-secondary">Fechar pop-ups</button>
+        </div>
+      </div>
+
+      <div class="search-results-header">
+        <strong>Resultados da busca</strong>
+        <span>{{ searchResults.length }}</span>
+      </div>
+
       <div class="search-results">
-        @for (escola of searchResults; track escola.co_entidade) {
-          <div class="search-result-item">
-            <span class="escola-nome">{{ escola.nome }}</span>
-            <span class="escola-municipio">{{ escola.municipio }}</span>
-            <button class="btn-mostrar" (click)="mostrarEscola(escola)">Mostrar</button>
-          </div>
+        @if (searchResults.length > 0) {
+          @for (escola of searchResults; track escola.co_entidade) {
+            <button class="search-result-item" type="button" (click)="mostrarEscola(escola)">
+              <span class="escola-info">
+                <span class="escola-nome">{{ escola.nome }}</span>
+                <span class="escola-municipio">{{ escola.municipio }}</span>
+              </span>
+              <span class="score-badge">
+                <strong>{{ escola.score | number: '1.2-2' }}</strong>
+                <span>{{ escola.classificacao }}</span>
+              </span>
+            </button>
+          }
+        } @else {
+          <div class="empty-results">Pesquise pelo nome da escola.</div>
         }
       </div>
-    }
-  </div>
+    </aside>
 
-  <div>
-    <div #mapContainer style="height: 70vh; width: 100%"></div>
+    <section class="map-panel" aria-label="Mapa de acessibilidade">
+      <div #mapContainer class="map-container"></div>
+    </section>
   </div>
 
   @if (graficos.length > 0) {
@@ -101,7 +124,7 @@
             [style]="{
               position: 'relative',
               width: '100%',
-              height: '360px',
+              height: '320px',
             }"
           ></plotly-plot>
         </app-grafico-card>
