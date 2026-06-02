@@ -6,4 +6,11 @@
 
 .app-main {
   flex: 1;
+  padding-top: 104px;
+}
+
+@media (max-width: 760px) {
+  .app-main {
+    padding-top: 140px;
+  }
 }

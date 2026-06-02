@@ -1,0 +1,327 @@
+<div class="acessibilidade-page">
+  <header class="dashboard-header">
+    <h1>Dashboard de Acessibilidade Escolar</h1>
+  </header>
+
+  <section class="filter-panel" aria-label="Filtros do dashboard">
+    <header class="filter-panel__header">
+      <div class="filter-panel__title-group">
+        <div>
+          <h2>Filtros</h2>
+          <p>Refine a visualização do mapa e dos resultados</p>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" (click)="aplicarFiltros()">Aplicar filtros</button>
+        <button type="button" (click)="resetFiltros()" class="btn-reset">Limpar</button>
+      </div>
+    </header>
+
+    <div class="filter-bar">
+      <div class="filter-item filter-item--year">
+        <label>Ano</label>
+        <select [value]="selectedAno ?? ''" (change)="onAnoChange($event)">
+          @for (a of anos; track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-item filter-item--municipio">
+        <label>Município</label>
+        <details class="filter-select">
+          <summary>
+            <span class="filter-select__chips">
+              @for (municipio of visibleValues(selectedMunicipios, 2); track municipio) {
+                <span class="filter-chip">
+                  <span class="filter-chip__label">{{ municipio }}</span>
+                  <button
+                    type="button"
+                    (click)="removeValue(selectedMunicipios, municipio, $event)"
+                  >
+                    ×
+                  </button>
+                </span>
+              }
+              @if (hiddenCount(selectedMunicipios, 2) > 0) {
+                <span class="filter-chip filter-chip--count"
+                  >+{{ hiddenCount(selectedMunicipios, 2) }}</span
+                >
+              }
+              @if (selectedMunicipios.length === 0) {
+                <span class="filter-select__placeholder">Todos</span>
+              }
+            </span>
+            <i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </summary>
+          <div class="filter-select__menu">
+            @for (municipio of municipios; track municipio.nome) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedMunicipios.includes(municipio.nome)"
+                  (change)="toggleValue(selectedMunicipios, municipio.nome)"
+                />
+                {{ municipio.nome }}
+              </label>
+            }
+          </div>
+        </details>
+      </div>
+
+      <div class="filter-item">
+        <label>Rede de Ensino</label>
+        <details class="filter-select">
+          <summary>
+            <span class="filter-select__chips">
+              @for (rede of visibleValues(selectedRedeEnsino, 2); track rede) {
+                <span class="filter-chip">
+                  <span class="filter-chip__label">{{ rede }}</span>
+                  <button type="button" (click)="removeValue(selectedRedeEnsino, rede, $event)">
+                    ×
+                  </button>
+                </span>
+              }
+              @if (hiddenCount(selectedRedeEnsino, 2) > 0) {
+                <span class="filter-chip filter-chip--count"
+                  >+{{ hiddenCount(selectedRedeEnsino, 2) }}</span
+                >
+              }
+              @if (selectedRedeEnsino.length === 0) {
+                <span class="filter-select__placeholder">Todas</span>
+              }
+            </span>
+            <i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </summary>
+          <div class="filter-select__menu">
+            @for (rede of redesEnsino; track rede) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedRedeEnsino.includes(rede)"
+                  (change)="toggleValue(selectedRedeEnsino, rede)"
+                />
+                {{ rede }}
+              </label>
+            }
+          </div>
+        </details>
+      </div>
+
+      <div class="filter-item">
+        <label>Tipo de Localização</label>
+        <details class="filter-select">
+          <summary>
+            <span class="filter-select__chips">
+              @for (localizacao of visibleValues(selectedTpLocalizacao, 2); track localizacao) {
+                <span class="filter-chip">
+                  <span class="filter-chip__label">{{ localizacao }}</span>
+                  <button
+                    type="button"
+                    (click)="removeValue(selectedTpLocalizacao, localizacao, $event)"
+                  >
+                    ×
+                  </button>
+                </span>
+              }
+              @if (selectedTpLocalizacao.length === 0) {
+                <span class="filter-select__placeholder">Todas</span>
+              }
+            </span>
+            <i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </summary>
+          <div class="filter-select__menu">
+            @for (localizacao of tpLocalizacoes; track localizacao) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedTpLocalizacao.includes(localizacao)"
+                  (change)="toggleValue(selectedTpLocalizacao, localizacao)"
+                />
+                {{ localizacao }}
+              </label>
+            }
+          </div>
+        </details>
+      </div>
+
+      <div class="filter-item filter-item--metrics">
+        <label>Métricas</label>
+        <details class="filter-select">
+          <summary>
+            <span class="filter-select__chips">
+              @for (metrica of visibleMetricLabels(3); track metrica.chave) {
+                <span class="filter-chip">
+                  <span class="filter-chip__label">{{ metrica.label }}</span>
+                  <button
+                    type="button"
+                    (click)="removeValue(selectedMetricas, metrica.chave, $event)"
+                  >
+                    ×
+                  </button>
+                </span>
+              }
+              @if (hiddenCount(selectedMetricas, 3) > 0) {
+                <span class="filter-chip filter-chip--count"
+                  >+{{ hiddenCount(selectedMetricas, 3) }}</span
+                >
+              }
+              @if (selectedMetricas.length === 0) {
+                <span class="filter-select__placeholder">Todas</span>
+              }
+            </span>
+            <i class="pi pi-chevron-down" aria-hidden="true"></i>
+          </summary>
+          <div class="filter-select__menu filter-select__menu--wide">
+            @for (m of metricas; track m.chave) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedMetricas.includes(m.chave)"
+                  (change)="toggleValue(selectedMetricas, m.chave)"
+                />
+                {{ m.label }}
+              </label>
+            }
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="dashboard-main">
+    <aside class="search-panel" aria-label="Busca de escolas">
+      <div class="search-controls">
+        <label class="search-input">
+          <i class="pi pi-search" aria-hidden="true"></i>
+          <app-input
+            type="text"
+            placeholder="Pesquisar nome da escola"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="buscarEscola()"
+          />
+          @if (searchTerm) {
+            <button
+              type="button"
+              aria-label="Limpar busca"
+              (click)="searchTerm = ''; buscarEscola()"
+            >
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          }
+        </label>
+        <div class="search-actions">
+          <button type="button" (click)="buscarEscola()">
+            <i class="pi pi-search" aria-hidden="true"></i>
+            Buscar
+          </button>
+          <button type="button" (click)="fecharPopups()" class="button-secondary">
+            <i class="pi pi-window-minimize" aria-hidden="true"></i>
+            Fechar pop-ups
+          </button>
+        </div>
+      </div>
+
+      <div class="search-results-header">
+        <strong>Resultados da busca</strong>
+        <span>{{ searchResults.length }}</span>
+      </div>
+
+      <div class="search-results">
+        @if (searchResults.length > 0) {
+          @for (escola of paginatedSearchResults; track escola.co_entidade) {
+            <button class="search-result-item" type="button" (click)="mostrarEscola(escola)">
+              <span class="escola-info">
+                <span class="escola-nome">{{ escola.nome }}</span>
+                <span class="escola-municipio">{{ escola.municipio }}</span>
+              </span>
+              <span class="score-badge" [ngClass]="scoreBadgeClass(escola)">
+                <strong>{{ escola.score | number: '1.2-2' }}</strong>
+                <span>{{ escola.classificacao }}</span>
+              </span>
+            </button>
+          }
+        } @else {
+          <div class="empty-results">Pesquise pelo nome da escola.</div>
+        }
+      </div>
+
+      @if (searchResults.length > searchPageSize) {
+        <nav class="search-pagination" aria-label="Paginação dos resultados da busca">
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage - 1)"
+            [disabled]="searchPage === 1"
+          >
+            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          </button>
+          @for (page of searchPageNumbers; track page) {
+            <button
+              type="button"
+              [class.is-active]="page === searchPage"
+              (click)="setSearchPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage + 1)"
+            [disabled]="searchPage === totalSearchPages"
+          >
+            <i class="pi pi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </nav>
+      }
+    </aside>
+
+    <section class="map-panel" aria-label="Mapa de acessibilidade">
+      <div #mapContainer class="map-container"></div>
+      <div class="map-legend" aria-label="Legenda de acessibilidade">
+        <span><i class="legend-dot legend-dot--alta"></i>Alta</span>
+        <span><i class="legend-dot legend-dot--media"></i>Média</span>
+        <span><i class="legend-dot legend-dot--baixa"></i>Baixa</span>
+        <span><i class="legend-dot legend-dot--muito-baixa"></i>Muito baixa</span>
+      </div>
+    </section>
+  </div>
+
+  @if (graficosAnaliseTemporal.length > 0) {
+    <section class="graficos-section graficos-section--temporal">
+      @for (grafico of graficosAnaliseTemporal; track grafico.chave) {
+        <app-grafico-card [titulo]="grafico.titulo">
+          <plotly-plot
+            [data]="grafico.plotly.data"
+            [layout]="grafico.plotly.layout"
+            [useResizeHandler]="true"
+            [style]="{
+              position: 'relative',
+              width: '100%',
+              height: '320px',
+            }"
+          ></plotly-plot>
+        </app-grafico-card>
+      }
+    </section>
+  }
+
+  @if (graficos.length > 0) {
+    <section class="graficos-section">
+      @for (grafico of graficos; track grafico.titulo; let i = $index) {
+        <app-grafico-card [titulo]="grafico.titulo" [class.grafico-card-host--compact]="i < 2">
+          <plotly-plot
+            [data]="grafico.plotly.data"
+            [layout]="grafico.plotly.layout"
+            [useResizeHandler]="true"
+            [style]="{
+              position: 'relative',
+              width: '100%',
+              height: i < 2 ? '240px' : '340px',
+            }"
+          ></plotly-plot>
+        </app-grafico-card>
+      }
+    </section>
+  }
+</div>

@@ -1,0 +1,161 @@
+:host {
+  display: block;
+}
+
+.about-section {
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.about-shell {
+  padding: 112px 0 92px;
+}
+
+.about-title {
+  margin: 34px 0 0;
+  font-size: var(--sie-about-title-font-size);
+  line-height: 0.98;
+}
+
+.heading-rule {
+  width: 82px;
+  height: 5px;
+  margin-top: 34px;
+  border-radius: 999px;
+  background: var(--sie-color-accent);
+}
+
+.about-copy > p {
+  margin: 50px 0 0;
+  color: #13233f;
+  font-size: var(--sie-about-copy-font-size);
+  font-weight: 500;
+  line-height: 1.68;
+}
+
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px 58px;
+  margin-top: 70px;
+}
+
+.highlight-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.highlight-item h3 {
+  margin: 0;
+  color: var(--sie-color-deep);
+  font-size: var(--sie-about-highlight-title-font-size);
+  font-weight: 900;
+}
+
+.highlight-item p {
+  margin: 14px 0 0;
+  color: #22314c;
+  font-size: var(--sie-about-highlight-copy-font-size);
+  line-height: 1.62;
+}
+
+.icon-badge {
+  display: grid;
+  width: 70px;
+  height: 70px;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.icon-badge lucide-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+}
+
+.icon-badge lucide-icon ::ng-deep svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+  stroke-width: 2.25;
+}
+
+.icon-badge--green {
+  color: #079553;
+  background: rgba(26, 163, 111, 0.14);
+}
+
+.icon-badge--blue {
+  color: #087fc1;
+  background: rgba(7, 91, 232, 0.12);
+}
+
+.icon-badge--purple {
+  color: #7b35b5;
+  background: rgba(123, 53, 181, 0.12);
+}
+
+.icon-badge--amber {
+  color: #d48600;
+  background: rgba(244, 161, 25, 0.14);
+}
+
+.commitment-box {
+  margin-top: 72px;
+}
+
+@media (max-width: 1180px) {
+  .commitment-box {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .commitment-box app-button {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .sie-callout-copy {
+    min-height: 0;
+    padding-right: 0;
+    border-right: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .about-shell {
+    padding: 64px 0;
+  }
+
+  .highlight-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 46px;
+  }
+
+  .highlight-item {
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .icon-badge {
+    width: 58px;
+    height: 58px;
+  }
+
+  .commitment-box {
+    grid-template-columns: 1fr;
+    margin-top: 44px;
+    padding: 24px;
+  }
+
+  .commitment-box app-button {
+    grid-column: auto;
+    justify-self: stretch;
+  }
+
+  :host ::ng-deep .commitment-box .app-button.app-button--secondary {
+    min-width: 0;
+  }
+}

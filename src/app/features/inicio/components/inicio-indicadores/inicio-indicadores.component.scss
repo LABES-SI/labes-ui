@@ -1,0 +1,179 @@
+:host {
+  display: block;
+}
+
+.indicators-section {
+  background: #ffffff;
+}
+
+.indicators-shell {
+  padding: 86px 0 104px;
+}
+
+.indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 44px;
+}
+
+.indicator-card {
+  position: relative;
+  display: grid;
+  min-height: 238px;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 24px;
+  align-content: start;
+  padding: 30px 30px 26px;
+  overflow: hidden;
+  border: 1px solid #dce5f2;
+  border-bottom: 2px solid currentColor;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--indicator-color);
+  box-shadow: 0 18px 44px rgba(10, 42, 104, 0.08);
+  transition: 180ms ease;
+}
+
+a.indicator-card:hover,
+a.indicator-card:focus-visible {
+  box-shadow: 0 24px 56px rgba(10, 42, 104, 0.14);
+  transform: translateY(-3px);
+  outline: 0;
+}
+
+.indicator-card--disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.18);
+}
+
+.indicator-card--disabled::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.48);
+  content: '';
+}
+
+.icon-badge {
+  display: grid;
+  width: 78px;
+  height: 78px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--indicator-bg);
+}
+
+.icon-badge lucide-icon,
+.indicator-arrow lucide-icon {
+  display: block;
+}
+
+.icon-badge lucide-icon ::ng-deep svg {
+  width: 38px;
+  height: 38px;
+  stroke-width: 2;
+}
+
+.indicator-copy {
+  min-width: 0;
+  padding-right: 14px;
+}
+
+.indicator-copy h3 {
+  margin: 2px 0 0;
+  color: var(--sie-color-deep);
+  font-size: clamp(1.25rem, 1.8vw, 1.48rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+
+.indicator-copy p {
+  margin: 18px 0 0;
+  color: #15233c;
+  font-size: 0.98rem;
+  line-height: 1.58;
+}
+
+.indicator-arrow {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  z-index: 1;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+}
+
+.indicator-arrow lucide-icon ::ng-deep svg {
+  width: 26px;
+  height: 26px;
+  stroke-width: 2;
+}
+
+.status-pill {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  border: 1px solid #d7e0ed;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #687892;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.indicator-help {
+  margin-top: 40px;
+}
+
+@media (max-width: 1100px) {
+  .indicators-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .indicators-shell {
+    padding: 64px 0;
+  }
+
+  .indicators-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .indicator-card {
+    min-height: 220px;
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .icon-badge {
+    width: 62px;
+    height: 62px;
+  }
+
+  .icon-badge lucide-icon ::ng-deep svg {
+    width: 31px;
+    height: 31px;
+  }
+
+  .indicator-copy {
+    padding-right: 0;
+  }
+
+  .indicator-help {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  :host ::ng-deep .indicator-help .app-button.app-button--secondary {
+    min-width: 0;
+  }
+}

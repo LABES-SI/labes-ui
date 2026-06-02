@@ -10,11 +10,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class HeaderComponent {
   protected readonly links = [
-    { label: 'Início', route: '/inicio', enabled: true },
-    { label: 'Indicadores', route: null, enabled: false },
-    { label: 'Escolas', route: null, enabled: false },
-    { label: 'Comparações', route: null, enabled: false },
-    { label: 'Publicações', route: null, enabled: false },
-    { label: 'Sobre', route: '/sobre', enabled: true },
+    { label: 'Início', route: '/inicio', exact: true },
+    { label: 'Dashboard', route: '/dashboards/acessibilidade', exact: false },
+    { label: 'Sobre', route: '/sobre', exact: true },
   ] as const;
 }
