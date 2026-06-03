@@ -453,6 +453,13 @@ textarea {
   font-size: 1rem;
 }
 
+.score-range {
+  color: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
 .score-badge--media {
   border-color: #fde68a;
   background: #fffbeb;
@@ -546,6 +553,12 @@ textarea {
   display: flex;
   align-items: center;
   gap: 9px;
+}
+
+.legend-range {
+  color: #7b8aa4;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .legend-dot {

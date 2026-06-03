@@ -432,6 +432,249 @@ button:hover {
   max-width: 100%;
 }
 
+.search-classificacao-filter {
+  display: grid;
+  gap: 8px;
+  padding: 14px 0 0;
+}
+
+.search-classificacao-label {
+  color: #17213d;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.search-classificacao-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.classificacao-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid #d0d9e8;
+  border-radius: 999px;
+  background: #f4f8fe;
+  color: #26395f;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.classificacao-chip small {
+  color: #7b8aa4;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.classificacao-chip:hover {
+  border-color: #a0b4cc;
+  background: #e8f0fb;
+}
+
+.classificacao-chip.is-selected {
+  border-color: currentColor;
+  font-weight: 800;
+}
+
+.classificacao-chip--boa.is-selected {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
+}
+
+.classificacao-chip--media.is-selected {
+  background: #fef9c3;
+  border-color: #ca8a04;
+  color: #713f12;
+}
+
+.classificacao-chip--baixa.is-selected {
+  background: #fff7ed;
+  border-color: #ea580c;
+  color: #7c2d12;
+}
+
+.classificacao-chip--inexistente.is-selected {
+  background: #fef2f2;
+  border-color: #dc2626;
+  color: #7f1d1d;
+}
+
+.classificacao-chip small {
+  color: inherit;
+  opacity: 0.65;
+}
+
+.escola-detalhes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 2px;
+  color: var(--sie-color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.escola-detalhes span {
+  white-space: nowrap;
+}
+
+.escola-detalhes span + span::before {
+  content: '·';
+  margin-right: 10px;
+  color: #b0bbcc;
+}
+
+.ranking-section {
+  margin-top: 12px;
+  padding: 22px 22px 20px;
+  border: 1px solid #d7e1ee;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(10, 42, 104, 0.07);
+}
+
+.ranking-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ranking-header h2 {
+  margin: 0 0 4px;
+  color: #17213d;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.ranking-header p {
+  margin: 0;
+  color: #526586;
+  font-size: 0.88rem;
+}
+
+.ranking-total {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  padding: 6px 14px;
+  border: 1px solid #d9e3ef;
+  border-radius: 999px;
+  background: #eef4fd;
+  color: #26395f;
+  font-size: 0.86rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ranking-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e4ecf5;
+  border-radius: 8px;
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ranking-table thead th {
+  padding: 10px 14px;
+  border-bottom: 2px solid #e4ecf5;
+  background: #f7fafd;
+  color: #475c7a;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ranking-table tbody tr {
+  border-bottom: 1px solid #edf1f7;
+  transition: background 0.1s;
+}
+
+.ranking-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.ranking-row {
+  cursor: pointer;
+}
+
+.ranking-row:hover {
+  background: #f5f9ff;
+}
+
+.ranking-table td {
+  padding: 10px 14px;
+  color: #26395f;
+  vertical-align: middle;
+}
+
+.ranking-pos {
+  width: 40px;
+  color: #7b8aa4;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ranking-nome {
+  max-width: 260px;
+  overflow: hidden;
+  color: #122044;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-score {
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ranking-badge {
+  display: inline-grid;
+  min-width: 0;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.ranking-pagination {
+  margin-top: 16px;
+}
+
+.graficos-descricao {
+  margin: 0 0 12px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--sie-color-primary);
+  border-radius: 0 6px 6px 0;
+  background: #f0f6ff;
+  color: #26395f;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.graficos-descricao--span {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 1180px) {
   .filter-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));

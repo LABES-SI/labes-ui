@@ -22,6 +22,7 @@ import { AcessibilidadeFacade } from '../../facades/acessibilidade.facade';
 import { GraficoCardComponent } from '../../../../shared/components/grafico-card/grafico-card.component';
 import { PlotlyFigure } from '../../../../core/api/models/plotly-figure';
 import {
+  ClassificacaoAcessibilidadeModel,
   MapaPontoModel,
   MetricaFiltroModel,
   MunicipioFiltroModel,
@@ -37,11 +38,11 @@ type GraficoApresentacao = {
   plotly: PlotlyFigure;
 };
 
-type PontoPopupModel = MapaPontoModel & {
-  no_bairro?: unknown;
-  no_tp_dependencia?: unknown;
-  no_tp_localizacao?: unknown;
-  classificacao_acessibilidade?: unknown;
+const SCORE_INTERVALO: Record<ClassificacaoAcessibilidadeModel, string> = {
+  Boa: '8–11',
+  Média: '5–7',
+  Baixa: '1–4',
+  Inexistente: '0',
 };
 
 @Component({
@@ -75,12 +76,27 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected selectedRedeEnsino: string[] = [];
   protected selectedTpLocalizacao: string[] = [];
 
+  protected painelDescricao: string = '';
+  protected analiseTemporalDescricao: string = '';
+
   protected searchTerm: string = '';
   protected searchResults: MapaPontoModel[] = [];
   protected searchPage = 1;
   protected readonly searchPageSize = 5;
 
+  protected selectedClassificacoes: string[] = [];
+  protected readonly classificacoesDisponiveis: ClassificacaoAcessibilidadeModel[] = [
+    'Boa',
+    'Média',
+    'Baixa',
+    'Inexistente',
+  ];
+
+  protected rankingPage = 1;
+  protected readonly rankingPageSize = 10;
+
   private allSchools: MapaPontoModel[] = [];
+  private _rankingEscolas: MapaPontoModel[] = [];
   private schoolMarkersById = new Map<number, L.Marker>();
 
   ngAfterViewInit(): void {
@@ -102,7 +118,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .listarPainel()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
-        console.debug('painel.dadosFiltros (listarPainel):', painel?.dadosFiltros);
         this.anos = Array.from(
           new Set(
             (painel.dadosFiltros.anos ?? [])
@@ -125,6 +140,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         this.redesEnsino = (painel.dadosFiltros.rede_ensino ?? []).map((rede) => String(rede));
         this.tpLocalizacoes = ['Urbana', 'Rural'];
         this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
+        this.painelDescricao = painel.descricao ?? '';
 
         this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
 
@@ -148,6 +164,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     this.selectedMunicipios = [];
     this.selectedRedeEnsino = [];
     this.selectedTpLocalizacao = [];
+    this.selectedClassificacoes = [];
     this.definirAnoPadrao();
     this.cd.markForCheck();
     this.aplicarFiltros();
@@ -226,20 +243,39 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     }));
   }
 
+  protected toggleClassificacaoEBuscar(classificacao: string): void {
+    this.toggleValue(this.selectedClassificacoes, classificacao);
+    this.buscarEscola();
+  }
+
   protected buscarEscola(): void {
     const termo = this.searchTerm.toLowerCase().trim();
-    if (termo.length === 0) {
+    const temFiltroClassificacao = this.selectedClassificacoes.length > 0;
+
+    if (termo.length === 0 && !temFiltroClassificacao) {
       this.searchResults = [];
       this.searchPage = 1;
       this.cd.markForCheck();
       return;
     }
 
-    this.searchResults = this.allSchools.filter((escola) =>
-      String(escola.nome ?? '')
-        .toLowerCase()
-        .includes(termo),
-    );
+    let resultado = this.allSchools;
+
+    if (termo.length > 0) {
+      resultado = resultado.filter((escola) =>
+        String(escola.nome ?? '')
+          .toLowerCase()
+          .includes(termo),
+      );
+    }
+
+    if (temFiltroClassificacao) {
+      resultado = resultado.filter((escola) =>
+        this.selectedClassificacoes.includes(String(escola.classificacao ?? '')),
+      );
+    }
+
+    this.searchResults = resultado;
     this.searchPage = 1;
     this.cd.markForCheck();
   }
@@ -269,6 +305,41 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected setSearchPage(page: number): void {
     this.searchPage = Math.min(Math.max(page, 1), this.totalSearchPages);
     this.cd.markForCheck();
+  }
+
+  protected get rankingEscolas(): MapaPontoModel[] {
+    return this._rankingEscolas;
+  }
+
+  protected get rankingPaginado(): MapaPontoModel[] {
+    const start = (this.rankingPage - 1) * this.rankingPageSize;
+    return this._rankingEscolas.slice(start, start + this.rankingPageSize);
+  }
+
+  protected get rankingTotalPages(): number {
+    return Math.max(Math.ceil(this._rankingEscolas.length / this.rankingPageSize), 1);
+  }
+
+  protected get rankingPageNumbers(): number[] {
+    const visiblePages = 5;
+    const totalPages = this.rankingTotalPages;
+    const halfWindow = Math.floor(visiblePages / 2);
+    const start = Math.min(
+      Math.max(this.rankingPage - halfWindow, 1),
+      Math.max(totalPages - visiblePages + 1, 1),
+    );
+    const end = Math.min(start + visiblePages - 1, totalPages);
+
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  }
+
+  protected setRankingPage(page: number): void {
+    this.rankingPage = Math.min(Math.max(page, 1), this.rankingTotalPages);
+    this.cd.markForCheck();
+  }
+
+  protected scoreIntervaloLabel(classificacao: ClassificacaoAcessibilidadeModel | string): string {
+    return SCORE_INTERVALO[classificacao as ClassificacaoAcessibilidadeModel] ?? '—';
   }
 
   protected scoreBadgeClass(escola: MapaPontoModel): string {
@@ -393,7 +464,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
         this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
-
+        this.painelDescricao = painel.descricao ?? '';
         this.cd.markForCheck();
       });
   }
@@ -409,7 +480,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
           tipo: grafico.tipo,
           plotly: grafico.plotly,
         }));
-
+        this.analiseTemporalDescricao = analiseTemporal.descricao ?? '';
         this.cd.markForCheck();
       });
   }
@@ -474,6 +545,8 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       (ponto) => Number.isFinite(ponto.latitude) && Number.isFinite(ponto.longitude),
     );
     this.allSchools = pontosValidos;
+    this._rankingEscolas = [...pontosValidos].sort((a, b) => Number(b.score) - Number(a.score));
+    this.rankingPage = 1;
 
     if (shouldShowSchools) {
       const scorePorMunicipio = new Map<string, { min: number; max: number }>();
@@ -523,6 +596,8 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     if (bounds.isValid()) {
       this.map?.fitBounds(bounds, { padding: [16, 16] });
     }
+
+    this.cd.markForCheck();
   }
 
   private getOrCreateSchoolMarker(escola: MapaPontoModel): L.Marker | null {
@@ -545,14 +620,11 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     });
 
     const nome = String(escola.nome ?? 'Escola');
-    marker.bindPopup(
-      this.buildSchoolPopup(escola as PontoPopupModel, nome, municipio, score, cor),
-      {
-        autoClose: false,
-        closeOnClick: false,
-        maxWidth: 320,
-      },
-    );
+    marker.bindPopup(this.buildSchoolPopup(escola, nome, municipio, score, cor), {
+      autoClose: false,
+      closeOnClick: false,
+      maxWidth: 320,
+    });
 
     this.schoolMarkersById.set(id, marker);
     if (this.schoolMarkersLayer) {
@@ -595,42 +667,27 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   private buildSchoolPopup(
-    ponto: PontoPopupModel,
+    ponto: MapaPontoModel,
     nome: string,
     municipio: string,
     score: number,
     cor: string,
   ): string {
+    const classificacao = String(
+      ponto.classificacao ?? ponto['classificacao_acessibilidade'] ?? 'Inexistente',
+    );
+    const intervalo = this.scoreIntervaloLabel(classificacao);
+
     const details: Array<[string, unknown]> = [
       ['Escola', nome],
       ['Município', municipio || 'Não informado'],
-      ['Score', Number.isFinite(score) ? score.toFixed(2) : '0.00'],
-      ['Classificação', ponto.classificacao ?? ponto.classificacao_acessibilidade ?? 'Inexistente'],
       ['Bairro', ponto.no_bairro ?? 'Não informado'],
-      ['Dependência', ponto.no_tp_dependencia ?? 'Não informado'],
+      ['Score', `${Number.isFinite(score) ? score.toFixed(2) : '0.00'} (faixa: ${intervalo})`],
+      ['Classificação', classificacao],
+      ['Rede', ponto.no_tp_dependencia ?? 'Não informado'],
       ['Localização', ponto.no_tp_localizacao ?? 'Não informado'],
       ['Código', ponto.co_entidade ?? 'Não informado'],
     ];
-
-    const extraEntries = Object.entries(ponto as Record<string, unknown>).filter(([key, value]) => {
-      if (value == null) return false;
-      return ![
-        'nome',
-        'municipio',
-        'latitude',
-        'longitude',
-        'score',
-        'classificacao',
-        'co_entidade',
-        'no_entidade',
-        'no_municipio',
-        'no_bairro',
-        'no_tp_dependencia',
-        'no_tp_localizacao',
-        'score_acessibilidade',
-        'classificacao_acessibilidade',
-      ].includes(key);
-    });
 
     const escapeHtml = (value: unknown): string =>
       String(value)
@@ -640,14 +697,11 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
-    const rows = [
-      ...details,
-      ...extraEntries.map(([key, value]) => [key, value] as [string, unknown]),
-    ]
+    const rows = details
       .filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== '')
       .map(
         ([label, value]) =>
-          `<tr><th style="text-align:left;padding:2px 8px 2px 0;vertical-align:top;">${escapeHtml(label)}</th><td style="padding:2px 0;">${escapeHtml(value)}</td></tr>`,
+          `<tr><th style="text-align:left;padding:2px 8px 2px 0;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</th><td style="padding:2px 0;">${escapeHtml(value)}</td></tr>`,
       )
       .join('');
 

@@ -211,6 +211,33 @@
             </button>
           }
         </label>
+
+        <div
+          class="search-classificacao-filter"
+          role="group"
+          aria-label="Filtrar por classificação"
+        >
+          <span class="search-classificacao-label">Classificação</span>
+          <div class="search-classificacao-options">
+            @for (c of classificacoesDisponiveis; track c) {
+              <button
+                type="button"
+                class="classificacao-chip"
+                [class.is-selected]="selectedClassificacoes.includes(c)"
+                [class.classificacao-chip--boa]="c === 'Boa'"
+                [class.classificacao-chip--media]="c === 'Média'"
+                [class.classificacao-chip--baixa]="c === 'Baixa'"
+                [class.classificacao-chip--inexistente]="c === 'Inexistente'"
+                (click)="toggleClassificacaoEBuscar(c)"
+                [attr.aria-pressed]="selectedClassificacoes.includes(c)"
+              >
+                {{ c }}
+                <small>{{ scoreIntervaloLabel(c) }}</small>
+              </button>
+            }
+          </div>
+        </div>
+
         <div class="search-actions">
           <button type="button" (click)="buscarEscola()">
             <i class="pi pi-search" aria-hidden="true"></i>
@@ -235,15 +262,28 @@
               <span class="escola-info">
                 <span class="escola-nome">{{ escola.nome }}</span>
                 <span class="escola-municipio">{{ escola.municipio }}</span>
+                @if (escola.no_tp_dependencia || escola.no_tp_localizacao) {
+                  <span class="escola-detalhes">
+                    @if (escola.no_tp_dependencia) {
+                      <span>{{ escola.no_tp_dependencia }}</span>
+                    }
+                    @if (escola.no_tp_localizacao) {
+                      <span>{{ escola.no_tp_localizacao }}</span>
+                    }
+                  </span>
+                }
               </span>
               <span class="score-badge" [ngClass]="scoreBadgeClass(escola)">
                 <strong>{{ escola.score | number: '1.2-2' }}</strong>
                 <span>{{ escola.classificacao }}</span>
+                <small class="score-range">{{ scoreIntervaloLabel(escola.classificacao) }}</small>
               </span>
             </button>
           }
         } @else {
-          <div class="empty-results">Pesquise pelo nome da escola.</div>
+          <div class="empty-results">
+            Pesquise pelo nome da escola ou selecione uma classificação.
+          </div>
         }
       </div>
 
@@ -279,16 +319,114 @@
     <section class="map-panel" aria-label="Mapa de acessibilidade">
       <div #mapContainer class="map-container"></div>
       <div class="map-legend" aria-label="Legenda de acessibilidade">
-        <span><i class="legend-dot legend-dot--alta"></i>Alta</span>
-        <span><i class="legend-dot legend-dot--media"></i>Média</span>
-        <span><i class="legend-dot legend-dot--baixa"></i>Baixa</span>
-        <span><i class="legend-dot legend-dot--muito-baixa"></i>Muito baixa</span>
+        <span
+          ><i class="legend-dot legend-dot--alta"></i>Boa
+          <small class="legend-range">8–11</small></span
+        >
+        <span
+          ><i class="legend-dot legend-dot--media"></i>Média
+          <small class="legend-range">5–7</small></span
+        >
+        <span
+          ><i class="legend-dot legend-dot--baixa"></i>Baixa
+          <small class="legend-range">1–4</small></span
+        >
+        <span
+          ><i class="legend-dot legend-dot--muito-baixa"></i>Inexistente
+          <small class="legend-range">0</small></span
+        >
       </div>
     </section>
   </div>
 
+  @if (rankingEscolas.length > 0) {
+    <section class="ranking-section" aria-label="Rankeamento de escolas por score">
+      <div class="ranking-header">
+        <div>
+          <h2>Rankeamento de Escolas</h2>
+          <p>Ordenadas por score de acessibilidade (maior para menor)</p>
+        </div>
+        <span class="ranking-total"
+          >{{ rankingEscolas.length }} escola{{ rankingEscolas.length !== 1 ? 's' : '' }}</span
+        >
+      </div>
+      <div class="ranking-table-wrapper">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Escola</th>
+              <th scope="col">Município</th>
+              <th scope="col">Rede</th>
+              <th scope="col">Localização</th>
+              <th scope="col">Score</th>
+              <th scope="col">Classificação</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (escola of rankingPaginado; track escola.co_entidade; let i = $index) {
+              <tr
+                class="ranking-row"
+                (click)="mostrarEscola(escola)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="mostrarEscola(escola)"
+                (keydown.space)="mostrarEscola(escola)"
+              >
+                <td class="ranking-pos">{{ (rankingPage - 1) * rankingPageSize + i + 1 }}</td>
+                <td class="ranking-nome">{{ escola.nome }}</td>
+                <td>{{ escola.municipio ?? '—' }}</td>
+                <td>{{ escola.no_tp_dependencia ?? '—' }}</td>
+                <td>{{ escola.no_tp_localizacao ?? '—' }}</td>
+                <td class="ranking-score">{{ escola.score | number: '1.0-1' }}</td>
+                <td>
+                  <span class="score-badge ranking-badge" [ngClass]="scoreBadgeClass(escola)">
+                    {{ escola.classificacao }}
+                    <small class="score-range">{{
+                      scoreIntervaloLabel(escola.classificacao)
+                    }}</small>
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (rankingTotalPages > 1) {
+        <nav class="ranking-pagination search-pagination" aria-label="Paginação do rankeamento">
+          <button
+            type="button"
+            (click)="setRankingPage(rankingPage - 1)"
+            [disabled]="rankingPage === 1"
+          >
+            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          </button>
+          @for (page of rankingPageNumbers; track page) {
+            <button
+              type="button"
+              [class.is-active]="page === rankingPage"
+              (click)="setRankingPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            type="button"
+            (click)="setRankingPage(rankingPage + 1)"
+            [disabled]="rankingPage === rankingTotalPages"
+          >
+            <i class="pi pi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </nav>
+      }
+    </section>
+  }
+
   @if (graficosAnaliseTemporal.length > 0) {
     <section class="graficos-section graficos-section--temporal">
+      @if (analiseTemporalDescricao) {
+        <p class="graficos-descricao">{{ analiseTemporalDescricao }}</p>
+      }
       @for (grafico of graficosAnaliseTemporal; track grafico.chave) {
         <app-grafico-card [titulo]="grafico.titulo">
           <plotly-plot
@@ -308,6 +446,9 @@
 
   @if (graficos.length > 0) {
     <section class="graficos-section">
+      @if (painelDescricao) {
+        <p class="graficos-descricao graficos-descricao--span">{{ painelDescricao }}</p>
+      }
       @for (grafico of graficos; track grafico.titulo; let i = $index) {
         <app-grafico-card [titulo]="grafico.titulo" [class.grafico-card-host--compact]="i < 2">
           <plotly-plot
