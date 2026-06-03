@@ -20,6 +20,11 @@ export const routes: Routes = [
       import('./features/dashboards/dashboards.routes').then((m) => m.dashboardsRoutes),
   },
   {
+    path: 'colaboradores',
+    loadChildren: () =>
+      import('./features/colaboradores/colaboradores.routes').then((m) => m.colaboradoresRoutes),
+  },
+  {
     path: '**',
     redirectTo: 'inicio',
   },

@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  margin-top: -104px;
+}
+
+.colaboradores-page {
+  padding: 0 0 56px;
+}
+
+@media (max-width: 760px) {
+  :host {
+    margin-top: -140px;
+  }
+}

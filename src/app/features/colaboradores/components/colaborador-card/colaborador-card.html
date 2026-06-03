@@ -1,0 +1,24 @@
+<article class="collaborator-card" [class.collaborator-card-highlight]="destaque()">
+  <div class="avatar" aria-hidden="true">
+    {{ colaborador().nome.charAt(0) }}
+  </div>
+
+  <div class="collaborator-content">
+    <div class="collaborator-header">
+      <h3>{{ colaborador().nome }}</h3>
+      <span>{{ colaborador().grupo }}</span>
+    </div>
+
+    <dl>
+      <div>
+        <dt>Função</dt>
+        <dd>{{ colaborador().funcao }}</dd>
+      </div>
+
+      <div>
+        <dt>Instituição</dt>
+        <dd>{{ colaborador().instituicao }}</dd>
+      </div>
+    </dl>
+  </div>
+</article>
