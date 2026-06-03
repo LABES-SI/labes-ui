@@ -13,7 +13,7 @@ import {
   UsersRound,
 } from 'lucide-angular';
 
-interface DashboardCardItem {
+interface IndicadoresCardItem {
   readonly title: string;
   readonly description: string;
   readonly color: string;
@@ -24,17 +24,17 @@ interface DashboardCardItem {
 }
 
 @Component({
-  selector: 'app-dashboard-cards',
+  selector: 'app-indicadores-cards',
   standalone: true,
   imports: [LucideAngularModule, NgTemplateOutlet, RouterLink],
-  templateUrl: './dashboard-cards.component.html',
-  styleUrl: './dashboard-cards.component.scss',
+  templateUrl: './indicadores-cards.component.html',
+  styleUrl: './indicadores-cards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardCardsComponent {
+export class IndicadoresCardsComponent {
   readonly arrowRightIcon = ArrowRight;
 
-  readonly dashboards: readonly DashboardCardItem[] = [
+  readonly indicadores: readonly IndicadoresCardItem[] = [
     {
       title: 'Acessibilidade',
       description:
@@ -42,7 +42,7 @@ export class DashboardCardsComponent {
       color: '#075be8',
       background: 'rgba(7, 91, 232, 0.12)',
       icon: Accessibility,
-      route: '/dashboards/acessibilidade',
+      route: '/indicadores/acessibilidade',
       active: true,
     },
     {

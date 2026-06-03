@@ -2,25 +2,25 @@
   display: block;
 }
 
-.dashboards-section {
+.indicadores-section {
   background: #ffffff;
 }
 
-.dashboards-shell {
+.indicadores-shell {
   padding: 86px 0 104px;
 }
 
-.dashboards-heading {
+.indicadores-heading {
   gap: 0;
 }
 
-.dashboards-heading__title {
+.indicadores-heading__title {
   position: relative;
   margin-top: 0;
   padding-bottom: 24px;
 }
 
-.dashboards-heading__title::after {
+.indicadores-heading__title::after {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -31,14 +31,14 @@
   content: '';
 }
 
-.dashboards-grid {
+.indicadores-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 32px;
   margin-top: 44px;
 }
 
-.dashboard-card {
+.indicadores-card {
   position: relative;
   display: grid;
   min-height: 238px;
@@ -51,24 +51,24 @@
   border-bottom: 2px solid currentColor;
   border-radius: 8px;
   background: #ffffff;
-  color: var(--dashboard-color);
+  color: var(--indicador-color);
   box-shadow: 0 18px 44px rgba(10, 42, 104, 0.08);
   transition: 180ms ease;
 }
 
-a.dashboard-card:hover,
-a.dashboard-card:focus-visible {
+a.indicadores-card:hover,
+a.indicadores-card:focus-visible {
   box-shadow: 0 24px 56px rgba(10, 42, 104, 0.14);
   transform: translateY(-3px);
   outline: 0;
 }
 
-.dashboard-card--disabled {
+.indicadores-card--disabled {
   cursor: not-allowed;
   filter: grayscale(0.18);
 }
 
-.dashboard-card--disabled::after {
+.indicadores-card--disabled::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -82,11 +82,11 @@ a.dashboard-card:focus-visible {
   height: 78px;
   place-items: center;
   border-radius: 50%;
-  background: var(--dashboard-bg);
+  background: var(--indicador-bg);
 }
 
 .icon-badge lucide-icon,
-.dashboard-arrow lucide-icon {
+.indicador-arrow lucide-icon {
   display: block;
 }
 
@@ -96,12 +96,12 @@ a.dashboard-card:focus-visible {
   stroke-width: 2;
 }
 
-.dashboard-copy {
+.indicador-copy {
   min-width: 0;
   padding-right: 14px;
 }
 
-.dashboard-copy h3 {
+.indicador-copy h3 {
   margin: 2px 0 0;
   color: var(--sie-color-deep);
   font-size: clamp(1.25rem, 1.8vw, 1.48rem);
@@ -110,14 +110,14 @@ a.dashboard-card:focus-visible {
   line-height: 1.18;
 }
 
-.dashboard-copy p {
+.indicador-copy p {
   margin: 18px 0 0;
   color: #15233c;
   font-size: 0.98rem;
   line-height: 1.58;
 }
 
-.dashboard-arrow {
+.indicador-arrow {
   position: absolute;
   right: 28px;
   bottom: 24px;
@@ -128,7 +128,7 @@ a.dashboard-card:focus-visible {
   place-items: center;
 }
 
-.dashboard-arrow lucide-icon ::ng-deep svg {
+.indicador-arrow lucide-icon ::ng-deep svg {
   width: 26px;
   height: 26px;
   stroke-width: 2;
@@ -149,22 +149,22 @@ a.dashboard-card:focus-visible {
 }
 
 @media (max-width: 1100px) {
-  .dashboards-grid {
+  .indicadores-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
-  .dashboards-shell {
+  .indicadores-shell {
     padding: 64px 0;
   }
 
-  .dashboards-grid {
+  .indicadores-grid {
     grid-template-columns: 1fr;
     gap: 22px;
   }
 
-  .dashboard-card {
+  .indicadores-card {
     min-height: 220px;
     grid-template-columns: 68px minmax(0, 1fr);
     gap: 18px;
@@ -181,7 +181,7 @@ a.dashboard-card:focus-visible {
     height: 31px;
   }
 
-  .dashboard-copy {
+  .indicador-copy {
     padding-right: 0;
   }
 }

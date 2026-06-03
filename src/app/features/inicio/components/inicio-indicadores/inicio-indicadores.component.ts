@@ -44,7 +44,7 @@ export class InicioIndicadoresComponent {
       color: '#075be8',
       background: 'rgba(7, 91, 232, 0.12)',
       icon: Accessibility,
-      route: '/dashboards/acessibilidade',
+      route: '/indicadores/acessibilidade',
       active: true,
     },
     {

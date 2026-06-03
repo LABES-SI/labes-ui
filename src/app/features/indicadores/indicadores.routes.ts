@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 
-export const dashboardsRoutes: Routes = [
+export const indicadoresRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/dashboard-home-page/dashboard-home-page.component').then(
-        (m) => m.DashboardHomePageComponent,
+      import('./pages/indicadores-home-page/indicadores-home-page.component').then(
+        (m) => m.IndicadoresHomePageComponent,
       ),
   },
   {

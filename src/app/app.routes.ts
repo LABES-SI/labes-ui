@@ -15,9 +15,9 @@ export const routes: Routes = [
     loadChildren: () => import('./features/sobre/sobre.routes').then((m) => m.sobreRoutes),
   },
   {
-    path: 'dashboards',
+    path: 'indicadores',
     loadChildren: () =>
-      import('./features/dashboards/dashboards.routes').then((m) => m.dashboardsRoutes),
+      import('./features/indicadores/indicadores.routes').then((m) => m.indicadoresRoutes),
   },
   {
     path: '**',
