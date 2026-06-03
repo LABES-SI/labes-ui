@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.content-section {
+  width: min(var(--sie-content-width), calc(100% - 32px));
+  margin: 32px auto 0;
+  padding: 34px 0;
+}
+
+.advisor-section {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.advisor-heading {
+  display: grid;
+  gap: 0.35rem;
+
+  p {
+    margin: 0;
+    color: var(--sie-color-primary);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--sie-color-deep);
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-weight: 900;
+    line-height: 1.2;
+  }
+}
+
+.collaborators-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .content-section {
+    padding: 24px 0;
+  }
+}
