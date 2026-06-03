@@ -1,0 +1,54 @@
+<section class="dashboards-section" aria-labelledby="dashboards-indicadores-title">
+  <div class="sie-section-shell dashboards-shell">
+    <div class="sie-section-heading sie-section-heading--left dashboards-heading">
+      <h2 id="dashboards-indicadores-title" class="sie-section-title dashboards-heading__title">
+        Selecione um indicador para visualizar
+      </h2>
+    </div>
+
+    <div class="dashboards-grid">
+      @for (dashboard of dashboards; track dashboard.title) {
+        @if (dashboard.active && dashboard.route) {
+          <a
+            class="dashboard-card"
+            [routerLink]="dashboard.route"
+            [style.--dashboard-bg]="dashboard.background"
+            [style.--dashboard-color]="dashboard.color"
+            [attr.aria-label]="'Abrir indicador de ' + dashboard.title"
+          >
+            <ng-container
+              [ngTemplateOutlet]="dashboardContent"
+              [ngTemplateOutletContext]="{ dashboard: dashboard }"
+            />
+          </a>
+        } @else {
+          <article
+            class="dashboard-card dashboard-card--disabled"
+            [style.--dashboard-bg]="dashboard.background"
+            [style.--dashboard-color]="dashboard.color"
+            aria-disabled="true"
+          >
+            <ng-container
+              [ngTemplateOutlet]="dashboardContent"
+              [ngTemplateOutletContext]="{ dashboard: dashboard }"
+            />
+            <span class="status-pill">Em breve</span>
+          </article>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<ng-template #dashboardContent let-dashboard="dashboard">
+  <span class="icon-badge" aria-hidden="true">
+    <lucide-icon [img]="dashboard.icon" />
+  </span>
+  <div class="dashboard-copy">
+    <h3>{{ dashboard.title }}</h3>
+    <p>{{ dashboard.description }}</p>
+  </div>
+  <span class="dashboard-arrow" aria-hidden="true">
+    <lucide-icon [img]="arrowRightIcon" />
+  </span>
+</ng-template>
