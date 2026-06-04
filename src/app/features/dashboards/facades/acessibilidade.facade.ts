@@ -56,16 +56,11 @@ export class AcessibilidadeFacade {
     tp_localizacao?: string[] | null;
   }): Observable<PainelAcessibilidadeModel> {
     const call = async () => {
-      let ano = params?.ano ?? null;
+      const ano = params?.ano ?? null;
       const variaveis = params?.variaveis ?? null;
       const municipios = params?.municipios ?? null;
       const rede_ensino = params?.rede_ensino ?? null;
       const tp_localizacao = params?.tp_localizacao ?? null;
-
-      if (ano == null) {
-        const recent = await this.getMostRecentYear();
-        ano = recent ?? null;
-      }
 
       const apiResp = await this.api.getPainelAcessibilidadeAcessibilidadePainelGet({
         ano: ano ?? null,
@@ -104,16 +99,11 @@ export class AcessibilidadeFacade {
     tp_localizacao?: string[] | null;
   }): Observable<MapaAcessibilidadeModel> {
     const call = async () => {
-      let ano = params?.ano ?? null;
+      const ano = params?.ano ?? null;
       const variaveis = params?.variaveis ?? null;
       const municipios = params?.municipios ?? null;
       const rede_ensino = params?.rede_ensino ?? null;
       const tp_localizacao = params?.tp_localizacao ?? null;
-
-      if (ano == null) {
-        const recent = await this.getMostRecentYear();
-        ano = recent ?? null;
-      }
 
       const apiResp = await this.api.getMapaAcessibilidadeAcessibilidadeMapaGet({
         ano: ano ?? null,

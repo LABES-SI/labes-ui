@@ -12,14 +12,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as L from 'leaflet';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyComponent, PlotlyService } from 'angular-plotly.js';
 
 import { AcessibilidadeFacade } from '../../facades/acessibilidade.facade';
-import { GraficoCardComponent } from '../../../../shared/components/grafico-card/grafico-card.component';
 import { PlotlyFigure } from '../../../../core/api/models/plotly-figure';
 import {
   ClassificacaoAcessibilidadeModel,
@@ -48,7 +48,7 @@ const SCORE_INTERVALO: Record<ClassificacaoAcessibilidadeModel, string> = {
 @Component({
   selector: 'app-acessibilidade-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlotlyComponent, GraficoCardComponent, AppInputComponent],
+  imports: [CommonModule, FormsModule, PlotlyComponent, AppInputComponent],
   templateUrl: './acessibilidade-page.component.html',
   styleUrl: './acessibilidade-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +76,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected selectedRedeEnsino: string[] = [];
   protected selectedTpLocalizacao: string[] = [];
 
+  protected isLoading = true;
   protected painelDescricao: string = '';
   protected analiseTemporalDescricao: string = '';
 
@@ -83,6 +84,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected searchResults: MapaPontoModel[] = [];
   protected searchPage = 1;
   protected readonly searchPageSize = 5;
+  private readonly searchSubject = new Subject<string>();
 
   protected selectedClassificacoes: string[] = [];
   protected readonly classificacoesDisponiveis: ClassificacaoAcessibilidadeModel[] = [
@@ -100,6 +102,11 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   private schoolMarkersById = new Map<number, L.Marker>();
 
   ngAfterViewInit(): void {
+    this.initMap();
+  }
+
+  private initMap(): void {
+    if (this.map) return;
     this.map = L.map(this.mapContainer.nativeElement, {
       center: L.latLng(-3.5, -52.5),
       zoom: 6,
@@ -114,6 +121,10 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   ngOnInit(): void {
+    this.searchSubject
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.buscarEscola());
+
     this.facade
       .listarPainel()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -141,6 +152,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         this.tpLocalizacoes = ['Urbana', 'Rural'];
         this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
         this.painelDescricao = painel.descricao ?? '';
+        this.isLoading = false;
 
         this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
 
@@ -246,6 +258,11 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected toggleClassificacaoEBuscar(classificacao: string): void {
     this.toggleValue(this.selectedClassificacoes, classificacao);
     this.buscarEscola();
+  }
+
+  protected onSearchChange(term: string): void {
+    this.searchTerm = term;
+    this.searchSubject.next(term);
   }
 
   protected buscarEscola(): void {
