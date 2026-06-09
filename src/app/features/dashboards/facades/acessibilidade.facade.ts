@@ -37,17 +37,6 @@ export class AcessibilidadeFacade {
   private readonly api = inject(AcessibilidadeService);
   private readonly http = inject(HttpClient);
 
-  private async getMostRecentYear(): Promise<number | undefined> {
-    try {
-      const resp = await this.api.getPainelAcessibilidadeAcessibilidadePainelGet();
-      const anos: number[] = (resp.data?.dados_filtros as { anos?: number[] })?.anos ?? [];
-      if (anos.length === 0) return undefined;
-      return Math.max(...anos);
-    } catch {
-      return undefined;
-    }
-  }
-
   listarPainel(params?: {
     ano?: number | null;
     variaveis?: string[] | null;
@@ -140,11 +129,12 @@ export class AcessibilidadeFacade {
     municipios?: string[] | null;
   }): Observable<MapaMunicipioGeoJsonCollectionModel> {
     const call = async () => {
-      const [painel, mapa, geojson] = await Promise.all([
-        firstValueFrom(this.listarPainel(params)),
+      const [mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
-          this.http.get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_2025.json'),
+          this.http.get<GeoJsonFeatureCollectionModel>(
+            'assets/geojson/PA_Municipios_Pibid_2025.json',
+          ),
         ),
       ]);
 
@@ -152,7 +142,7 @@ export class AcessibilidadeFacade {
       return mapGeoJsonMunicipiosComAcessibilidade(
         geojson,
         resumos,
-        painel.dadosFiltros.municipios,
+        params?.municipios?.map((nome) => ({ nome })) ?? null,
       );
     };
 
@@ -171,11 +161,12 @@ export class AcessibilidadeFacade {
     tp_localizacao?: string[] | null;
   }): Observable<MapaMunicipalComPontosModel> {
     const call = async () => {
-      const [painel, mapa, geojson] = await Promise.all([
-        firstValueFrom(this.listarPainel(params)),
+      const [mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
-          this.http.get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_2025.json'),
+          this.http.get<GeoJsonFeatureCollectionModel>(
+            'assets/geojson/PA_Municipios_Pibid_2025.json',
+          ),
         ),
       ]);
 
@@ -184,7 +175,7 @@ export class AcessibilidadeFacade {
         collection: mapGeoJsonMunicipiosComAcessibilidade(
           geojson,
           resumos,
-          painel.dadosFiltros.municipios,
+          params?.municipios?.map((nome) => ({ nome })) ?? null,
         ),
         pontos: mapa.pontos,
       };

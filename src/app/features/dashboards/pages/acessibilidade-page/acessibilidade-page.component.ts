@@ -117,7 +117,9 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(this.map!);
 
-    this.loadMap();
+    if (this.anos.length > 0) {
+      void this.loadMap(this.buildParams());
+    }
   }
 
   ngOnInit(): void {
@@ -125,8 +127,10 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.buscarEscola());
 
+    this.definirAnoPadrao();
+    const params = this.buildParams();
     this.facade
-      .listarPainel()
+      .listarPainel(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
         this.anos = Array.from(
@@ -141,8 +145,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
           nome: String(municipio.nome),
         }));
 
-        this.definirAnoPadrao();
-
         this.metricas = (painel.dadosFiltros.metricas ?? []).map((metrica) => ({
           chave: String(metrica.chave),
           label: String(metrica.label),
@@ -153,6 +155,10 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
         this.painelDescricao = painel.descricao ?? '';
         this.isLoading = false;
+
+        if (this.map) {
+          void this.loadMap(params);
+        }
 
         this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
 
@@ -402,12 +408,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   private definirAnoPadrao(): void {
-    if (this.anos.length === 0) {
-      this.selectedAno = null;
-      return;
-    }
-
-    this.selectedAno = this.anos[0];
+    this.selectedAno = 2024;
   }
 
   private buildParams(): {
