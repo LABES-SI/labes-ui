@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -9,10 +9,20 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  protected readonly menuAberto = signal(false);
+
   protected readonly links = [
     { label: 'Início', route: '/inicio', exact: true },
     { label: 'Dashboard', route: '/dashboards/acessibilidade', exact: false },
     { label: 'Colaboradores', route: '/colaboradores', exact: true },
     { label: 'Sobre', route: '/sobre', exact: true },
   ] as const;
+
+  protected alternarMenu(): void {
+    this.menuAberto.update((aberto) => !aberto);
+  }
+
+  protected fecharMenu(): void {
+    this.menuAberto.set(false);
+  }
 }
