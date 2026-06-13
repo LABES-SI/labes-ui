@@ -11,6 +11,7 @@ import {
   MapPinned,
   School,
   UsersRound,
+  Wifi,
 } from 'lucide-angular';
 
 interface IndicadoresCardItem {
@@ -43,6 +44,16 @@ export class IndicadoresCardsComponent {
       background: 'rgba(7, 91, 232, 0.12)',
       icon: Accessibility,
       route: '/indicadores/acessibilidade',
+      active: true,
+    },
+    {
+      title: 'Conectividade',
+      description:
+        'Consulte dados sobre acesso à internet, cobertura, e a infraestrutura de rede nas escolas públicas e privadas.',
+      color: '#e85c07',
+      background: 'rgba(232, 92, 7, 0.12)',
+      icon: Wifi,
+      route: '/indicadores/conectividade',
       active: true,
     },
     {

@@ -1,0 +1,119 @@
+<div class="conectividade-page">
+  <header class="indicadores-header">
+    <h1>Indicadores de Conectividade Escolar</h1>
+  </header>
+
+  <app-conectividade-filters
+    [anos]="anos"
+    [municipios]="municipios"
+    [metricas]="metricas"
+    [redesEnsino]="redesEnsino"
+    [tpLocalizacoes]="tpLocalizacoes"
+    [situacaoConectividade]="situacaoConectividade"
+    [(selectedAno)]="selectedAno"
+    [(selectedMunicipios)]="selectedMunicipios"
+    [(selectedMetricas)]="selectedMetricas"
+    [(selectedRedeEnsino)]="selectedRedeEnsino"
+    [(selectedTpLocalizacao)]="selectedTpLocalizacao"
+    [(selectedSituacaoConectividade)]="selectedSituacaoConectividade"
+    (filterChange)="onFilterChange()"
+    (apply)="aplicarFiltros()"
+    (reset)="resetFiltros()"
+  ></app-conectividade-filters>
+
+  <div class="indicadores-main">
+    <aside class="search-panel" aria-label="Busca de escolas">
+      <div class="search-controls">
+        <label class="search-input">
+          <i class="pi pi-search" aria-hidden="true"></i>
+          <app-input
+            type="text"
+            placeholder="Pesquisar nome da escola"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="buscarEscola()"
+          />
+          @if (searchTerm) {
+            <button
+              type="button"
+              aria-label="Limpar busca"
+              (click)="searchTerm = ''; buscarEscola()"
+            >
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          }
+        </label>
+        <div class="search-actions">
+          <button type="button" (click)="buscarEscola()">
+            <i class="pi pi-search" aria-hidden="true"></i>
+            Buscar
+          </button>
+          <button type="button" (click)="fecharPopups()" class="button-secondary">
+            <i class="pi pi-window-minimize" aria-hidden="true"></i>
+            Fechar pop-ups
+          </button>
+        </div>
+      </div>
+
+      <div class="search-results-header">
+        <strong>Resultados da busca</strong>
+        <span>{{ searchResults.length }}</span>
+      </div>
+
+      <div class="search-results">
+        @if (searchResults.length > 0) {
+          @for (escola of paginatedSearchResults; track escola.co_entidade) {
+            <button class="search-result-item" type="button" (click)="onRowClick(escola)">
+              <span class="escola-info">
+                <span class="escola-nome">{{ escola.nome }}</span>
+                <span class="escola-municipio">{{ escola.municipio }}</span>
+              </span>
+              <span class="score-badge" [ngClass]="scoreBadgeClass(escola)">
+                <strong>{{ escola.score | number: '1.2-2' }}</strong>
+                <span>{{ escola.classificacao }}</span>
+              </span>
+            </button>
+          }
+        } @else {
+          <div class="empty-results">Pesquise pelo nome da escola.</div>
+        }
+      </div>
+
+      @if (searchResults.length > searchPageSize) {
+        <nav class="search-pagination" aria-label="Paginação dos resultados da busca">
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage - 1)"
+            [disabled]="searchPage === 1"
+          >
+            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          </button>
+          @for (page of searchPageNumbers; track page) {
+            <button
+              type="button"
+              [class.is-active]="page === searchPage"
+              (click)="setSearchPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage + 1)"
+            [disabled]="searchPage === totalSearchPages"
+          >
+            <i class="pi pi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </nav>
+      }
+    </aside>
+
+    <section class="map-panel" aria-label="Mapa de conectividade">
+      <div #mapContainer class="map-container"></div>
+    </section>
+  </div>
+
+  <app-conectividade-charts
+    [graficosAnaliseTemporal]="graficosAnaliseTemporal"
+    [graficos]="graficos"
+  ></app-conectividade-charts>
+</div>

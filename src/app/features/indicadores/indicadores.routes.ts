@@ -15,4 +15,9 @@ export const indicadoresRoutes: Routes = [
         (m) => m.AcessibilidadePageComponent,
       ),
   },
+  {
+    path: 'conectividade',
+    loadChildren: () =>
+      import('../conectividade/conectividade.routes').then((m) => m.conectividadeRoutes),
+  },
 ];
