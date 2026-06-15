@@ -90,16 +90,18 @@ export function mapMapaMunicipioResumoFromPontos(
 export function mapGeoJsonMunicipiosComAcessibilidade(
   geojson: GeoJsonFeatureCollectionModel,
   resumos: MapaMunicipioResumoModel[],
-  municipiosDisponiveis: Array<{ nome: string }>,
+  municipiosDisponiveis?: Array<{ nome: string }> | null,
 ): MapaMunicipioGeoJsonCollectionModel {
   const resumosPorMunicipio = new Map(
     resumos.map((item) => [normalizarTexto(item.municipio), item]),
   );
-  const municipiosPermitidos = new Set(
-    municipiosDisponiveis.map((item) => normalizarTexto(item.nome)),
+  const municipiosNormalizados = (municipiosDisponiveis ?? []).map((item) =>
+    normalizarTexto(item.nome),
   );
+  const filtrarMunicipios = municipiosNormalizados.length > 0;
+  const municipiosPermitidos = new Set(municipiosNormalizados);
   const scores: number[] = resumos
-    .filter((r) => municipiosPermitidos.has(normalizarTexto(r.municipio)))
+    .filter((r) => !filtrarMunicipios || municipiosPermitidos.has(normalizarTexto(r.municipio)))
     .map((r) => r.media_score)
     .filter((v) => Number.isFinite(v));
 
@@ -130,9 +132,15 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
   return {
     type: 'FeatureCollection',
     features: geojson.features
-      .filter((feature) =>
-        municipiosPermitidos.has(normalizarTexto(String(feature.properties?.['NM_MUN'] ?? ''))),
-      )
+      .filter((feature) => {
+        if (!filtrarMunicipios) {
+          return true;
+        }
+
+        return municipiosPermitidos.has(
+          normalizarTexto(String(feature.properties?.['NM_MUN'] ?? '')),
+        );
+      })
       .map((feature) => {
         const nomeMunicipio = String(feature.properties?.['NM_MUN'] ?? '');
         const resumo = resumosPorMunicipio.get(normalizarTexto(nomeMunicipio));
