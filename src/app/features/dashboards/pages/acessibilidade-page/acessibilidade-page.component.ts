@@ -111,11 +111,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     'Inexistente',
   ];
 
-  protected rankingPage = 1;
-  protected readonly rankingPageSize = 10;
-
   private allSchools: MapaPontoModel[] = [];
-  private _rankingEscolas: MapaPontoModel[] = [];
   private schoolMarkersById = new Map<number, L.Marker>();
 
   ngAfterViewInit(): void {
@@ -370,37 +366,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     this.cd.markForCheck();
   }
 
-  protected get rankingEscolas(): MapaPontoModel[] {
-    return this._rankingEscolas;
-  }
-
-  protected get rankingPaginado(): MapaPontoModel[] {
-    const start = (this.rankingPage - 1) * this.rankingPageSize;
-    return this._rankingEscolas.slice(start, start + this.rankingPageSize);
-  }
-
-  protected get rankingTotalPages(): number {
-    return Math.max(Math.ceil(this._rankingEscolas.length / this.rankingPageSize), 1);
-  }
-
-  protected get rankingPageNumbers(): number[] {
-    const visiblePages = 5;
-    const totalPages = this.rankingTotalPages;
-    const halfWindow = Math.floor(visiblePages / 2);
-    const start = Math.min(
-      Math.max(this.rankingPage - halfWindow, 1),
-      Math.max(totalPages - visiblePages + 1, 1),
-    );
-    const end = Math.min(start + visiblePages - 1, totalPages);
-
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-  }
-
-  protected setRankingPage(page: number): void {
-    this.rankingPage = Math.min(Math.max(page, 1), this.rankingTotalPages);
-    this.cd.markForCheck();
-  }
-
   protected scoreIntervaloLabel(classificacao: ClassificacaoAcessibilidadeModel | string): string {
     return SCORE_INTERVALO[classificacao as ClassificacaoAcessibilidadeModel] ?? '—';
   }
@@ -623,8 +588,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       (ponto) => Number.isFinite(ponto.latitude) && Number.isFinite(ponto.longitude),
     );
     this.allSchools = pontosValidos;
-    this._rankingEscolas = [...pontosValidos].sort((a, b) => Number(b.score) - Number(a.score));
-    this.rankingPage = 1;
 
     if (shouldShowSchools) {
       const scorePorMunicipio = new Map<string, { min: number; max: number }>();
