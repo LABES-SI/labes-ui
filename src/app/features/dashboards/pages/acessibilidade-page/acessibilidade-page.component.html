@@ -365,6 +365,49 @@
       </section>
     </div>
 
+    @if (graficoPainelEscolas(); as escola) {
+      <section class="graficos-section--temporal-acordeao">
+        <details class="temporal-acordeao" open>
+          <summary class="temporal-acordeao__titulo">
+            <i class="pi pi-chevron-right temporal-acordeao__chevron" aria-hidden="true"></i>
+            {{ escola.titulo }}
+          </summary>
+          <div class="temporal-acordeao__conteudo">
+            <plotly-plot
+              [data]="escola.plotly.data"
+              [layout]="escola.plotly.layout"
+              [useResizeHandler]="true"
+              [style]="{ position: 'relative', width: '100%', height: '400px' }"
+            ></plotly-plot>
+            @if (painelEscolasPaginacao(); as paginacao) {
+              @if (paginacao.total_paginas > 1) {
+                <nav class="search-pagination" aria-label="Paginação do gráfico de escolas">
+                  <button
+                    type="button"
+                    (click)="setPainelEscolasPage(-1)"
+                    [disabled]="painelEscolasPage() === 0"
+                  >
+                    <i class="pi pi-chevron-left" aria-hidden="true"></i>
+                  </button>
+                  <span class="pagination-info">
+                    Página {{ painelEscolasPage() + 1 }} de {{ paginacao.total_paginas }} &mdash;
+                    {{ paginacao.total_escolas }} escolas
+                  </span>
+                  <button
+                    type="button"
+                    (click)="setPainelEscolasPage(1)"
+                    [disabled]="painelEscolasPage() >= paginacao.total_paginas - 1"
+                  >
+                    <i class="pi pi-chevron-right" aria-hidden="true"></i>
+                  </button>
+                </nav>
+              }
+            }
+          </div>
+        </details>
+      </section>
+    }
+
     @if (graficosAnaliseTemporal.length > 0) {
       <section class="graficos-section--temporal-acordeao">
         @for (grafico of graficosAnaliseTemporal; track grafico.chave) {
