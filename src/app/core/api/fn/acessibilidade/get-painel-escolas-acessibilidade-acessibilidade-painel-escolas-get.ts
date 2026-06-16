@@ -7,17 +7,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { PainelResponse } from '../../models/painel-response';
+import { PainelEscolasResponse } from '../../models/painel-escolas-response';
 
-export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
+export interface GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params {
 
 /**
- * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+ * Ano do censo escolar (ex: 2023). Se omitido, usa o censo mais recente de cada escola.
  */
   ano?: (number | null);
 
 /**
- * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
+ * Lista de municípios (até 4). Use o parâmetro repetido.
  */
   municipios?: (Array<string> | null);
 
@@ -35,16 +35,28 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
  * Localização da escola: Urbana ou Rural.
  */
   tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
+
+/**
+ * Página (base 0).
+ */
+  page?: number;
+
+/**
+ * Escolas por página (1–50).
+ */
+  page_size?: number;
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(http: HttpClient, rootUrl: string, params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelResponse>> {
-  const rb = new RequestBuilder(rootUrl, getPainelAcessibilidadeAcessibilidadePainelGet.PATH, 'get');
+export function getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(http: HttpClient, rootUrl: string, params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelEscolasResponse>> {
+  const rb = new RequestBuilder(rootUrl, getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
     rb.query('variaveis', params.variaveis, {});
     rb.query('rede_ensino', params.rede_ensino, {});
     rb.query('tp_localizacao', params.tp_localizacao, {});
+    rb.query('page', params.page, {});
+    rb.query('page_size', params.page_size, {});
   }
 
   return http.request(
@@ -52,9 +64,9 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(http: HttpClient,
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<PainelResponse>;
+      return r as StrictHttpResponse<PainelEscolasResponse>;
     })
   );
 }
 
-getPainelAcessibilidadeAcessibilidadePainelGet.PATH = '/acessibilidade/painel';
+getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH = '/acessibilidade/painel/escolas';

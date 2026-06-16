@@ -10,34 +10,27 @@ import { RequestBuilder } from '../../request-builder';
 import { AnaliseTemporalResponse } from '../../models/analise-temporal-response';
 
 export interface GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params {
-  /**
-   * Métrica de acessibilidade a plotar. Valores aceitos: in_acessibilidade_rampas, in_acessibilidade_corrimao, in_acessibilidade_elevador, in_acessibilidade_pisos_tateis, in_acessibilidade_vao_livre, in_banheiro_pne.
-   */
-  metrica?: string;
+
+/**
+ * Métrica de acessibilidade a plotar nos dois gráficos.
+ */
+  metrica?: 'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'qt_salas_utilizadas_acessiveis' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'tp_aee' | 'in_sala_atendimento_especial' | 'in_reserva_pcd' | 'qt_prof_psicologo' | 'qt_prof_assist_social';
 }
 
-export function getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<AnaliseTemporalResponse>> {
-  const rb = new RequestBuilder(
-    rootUrl,
-    getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet.PATH,
-    'get',
-  );
+export function getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(http: HttpClient, rootUrl: string, params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params, context?: HttpContext): Observable<StrictHttpResponse<AnaliseTemporalResponse>> {
+  const rb = new RequestBuilder(rootUrl, getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet.PATH, 'get');
   if (params) {
     rb.query('metrica', params.metrica, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<AnaliseTemporalResponse>;
-    }),
+    })
   );
 }
 
-getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet.PATH =
-  '/acessibilidade/analise-temporal';
+getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet.PATH = '/acessibilidade/analise-temporal';

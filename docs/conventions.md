@@ -14,7 +14,6 @@ Este documento define o padrao de organizacao do frontend do SIE - Sintese de In
 - Pastas tecnicas em ingles.
 - Features, arquivos, classes e dominio em portugues.
 - Usar `facades/` para ponte com dados.
-- Nao criar `data-access/`.
 
 ## Estrutura Atual
 
