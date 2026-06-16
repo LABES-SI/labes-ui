@@ -10,56 +10,34 @@ import { RequestBuilder } from '../../request-builder';
 import { MapaResponse } from '../../models/mapa-response';
 
 export interface GetMapaAcessibilidadeAcessibilidadeMapaGet$Params {
-  /**
-   * Ano do censo escolar. Se omitido, retorna todos os anos.
-   */
-  ano?: number | null;
 
-  /**
-   * Filtra por nome de município (parâmetro repetido).
-   */
-  municipios?: Array<string> | null;
+/**
+ * Ano do censo escolar. Se omitido, retorna todos os anos.
+ */
+  ano?: (number | null);
 
-  /**
-   * Filtro AND: a escola precisa ter TODAS as variáveis marcadas = 1. Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
-   */
-  variaveis?: Array<
-    | 'in_banheiro_pne'
-    | 'in_sala_atendimento_especial'
-    | 'in_acessibilidade_rampas'
-    | 'in_acessibilidade_corrimao'
-    | 'in_acessibilidade_elevador'
-    | 'in_acessibilidade_pisos_tateis'
-    | 'in_acessibilidade_vao_livre'
-    | 'in_acessibilidade_inexistente'
-    | 'in_acessibilidade_sinal_tatil'
-    | 'in_acessibilidade_sinal_sonoro'
-    | 'in_acessibilidade_sinal_visual'
-    | 'in_acessibilidade_sinalizacao'
-    | 'in_prof_psicologo'
-    | 'in_prof_trad_libras'
-    | 'in_prof_revisor_braille'
-    | 'in_prof_assist_social'
-    | 'in_prof_fonaudiologo'
-  > | null;
+/**
+ * Filtra por nome de município (parâmetro repetido).
+ */
+  municipios?: (Array<string> | null);
 
-  /**
-   * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
-   */
-  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null;
+/**
+ * Filtro AND: a escola precisa ter TODAS as variáveis marcadas = 1. Conjunto silver (inclui in_banheiro_pne, in_acessibilidade_sinalizacao e os in_prof_*). Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
+ */
+  variaveis?: (Array<'in_banheiro_pne' | 'in_sala_atendimento_especial' | 'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'in_acessibilidade_sinalizacao' | 'in_prof_psicologo' | 'in_prof_trad_libras' | 'in_prof_revisor_braille' | 'in_prof_assist_social' | 'in_prof_fonaudiologo'> | null);
 
-  /**
-   * Localização da escola: Urbana ou Rural.
-   */
-  tp_localizacao?: Array<'Urbana' | 'Rural'> | null;
+/**
+ * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
+ */
+  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
+
+/**
+ * Localização da escola: Urbana ou Rural.
+ */
+  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
 }
 
-export function getMapaAcessibilidadeAcessibilidadeMapaGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<MapaResponse>> {
+export function getMapaAcessibilidadeAcessibilidadeMapaGet(http: HttpClient, rootUrl: string, params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Observable<StrictHttpResponse<MapaResponse>> {
   const rb = new RequestBuilder(rootUrl, getMapaAcessibilidadeAcessibilidadeMapaGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
@@ -69,11 +47,13 @@ export function getMapaAcessibilidadeAcessibilidadeMapaGet(
     rb.query('tp_localizacao', params.tp_localizacao, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<MapaResponse>;
-    }),
+    })
   );
 }
 
