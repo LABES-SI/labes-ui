@@ -1,28 +1,31 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-
-export interface GlossarioTermo {
-  nome: string;
-  categoria: string | { nome?: string; label?: string };
-  definicao: string;
-  exemplo?: string;
-  linkInep?: string;
-}
+import { CommonModule } from '@angular/common';
+import { TermoGlossario } from '../../models/glossario.models';
 
 @Component({
   selector: 'app-glossario-termo-card',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './glossario-termo-card.html',
   styleUrl: './glossario-termo-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlossarioTermoCard {
-  readonly termo = input.required<GlossarioTermo>();
+  // Recebe o termo utilizando a tipagem oficial do Card 18 via Signal Input
+  readonly termo = input.required<TermoGlossario>();
 
+  /**
+   * Retorna o texto formatado e amigável da categoria
+   */
   getCategoriaLabel(): string {
     const cat = this.termo().categoria;
-    if (typeof cat === 'string') {
-      return cat;
-    }
-    return cat?.label || cat?.nome || '';
+
+    const labels: Record<typeof cat, string> = {
+      desempenho: 'Desempenho',
+      fluxo: 'Fluxo Escolar',
+      infraestrutura: 'Infraestrutura',
+    };
+
+    return labels[cat] || cat;
   }
 }

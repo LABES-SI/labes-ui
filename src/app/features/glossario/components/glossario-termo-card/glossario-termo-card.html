@@ -1,7 +1,7 @@
 <article class="termo-card">
   <div class="termo-header">
-    <h3>{{ termo().nome }}</h3>
-    <span class="badge">{{ getCategoriaLabel() }}</span>
+    <h3>{{ termo().termo }}</h3>
+    <span class="badge" [ngClass]="termo().categoria">{{ getCategoriaLabel() }}</span>
   </div>
 
   <div class="termo-content">
@@ -12,16 +12,16 @@
     }
   </div>
 
-  @if (termo().linkInep) {
+  @if (termo().referenciaInep.url) {
     <div class="termo-footer">
       <a
-        [href]="termo().linkInep"
+        [href]="termo().referenciaInep.url"
         target="_blank"
         rel="noopener noreferrer"
         class="link-inep"
         aria-label="Abrir Metodologia INEP em nova aba"
       >
-        Metodologia INEP
+        {{ termo().referenciaInep.texto || 'Metodologia INEP' }}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
