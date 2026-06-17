@@ -5,7 +5,11 @@ export type { HealthCheckGet$Params as HealthCheckGet$Params } from './fn/health
 export { healthCheckGet as healthCheckGet } from './fn/health/health-check-get';
 export type { GetPainelAcessibilidadeAcessibilidadePainelGet$Params as GetPainelAcessibilidadeAcessibilidadePainelGet$Params } from './fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
 export { getPainelAcessibilidadeAcessibilidadePainelGet as getPainelAcessibilidadeAcessibilidadePainelGet } from './fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
+export type { GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params } from './fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
+export { getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet as getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet } from './fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
 export type { GetMapaAcessibilidadeAcessibilidadeMapaGet$Params as GetMapaAcessibilidadeAcessibilidadeMapaGet$Params } from './fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 export { getMapaAcessibilidadeAcessibilidadeMapaGet as getMapaAcessibilidadeAcessibilidadeMapaGet } from './fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 export type { GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params as GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
 export { getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet as getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
+export type { GetFiltrosFiltrosGet$Params as GetFiltrosFiltrosGet$Params } from './fn/filtros/get-filtros-filtros-get';
+export { getFiltrosFiltrosGet as getFiltrosFiltrosGet } from './fn/filtros/get-filtros-filtros-get';

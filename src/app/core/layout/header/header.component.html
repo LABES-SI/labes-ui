@@ -11,12 +11,32 @@
       <span>Síntese de Indicadores Educacionais</span>
     </a>
 
-    <nav class="nav" aria-label="Navegação principal">
+    <button
+      class="menu-toggle"
+      [class.open]="menuAberto()"
+      type="button"
+      aria-label="Abrir ou fechar menu"
+      [attr.aria-expanded]="menuAberto()"
+      aria-controls="main-navigation"
+      (click)="alternarMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav
+      id="main-navigation"
+      class="nav"
+      [class.nav-open]="menuAberto()"
+      aria-label="Navegação principal"
+    >
       @for (link of links; track link.label) {
         <a
           [routerLink]="link.route"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: link.exact }"
+          (click)="fecharMenu()"
         >
           {{ link.label }}
         </a>

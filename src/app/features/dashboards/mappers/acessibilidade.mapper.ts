@@ -1,9 +1,12 @@
 import { AnaliseTemporalResponse } from '../../../core/api/models/analise-temporal-response';
+import { FiltrosResponse } from '../../../core/api/models/filtros-response';
 import { MapaResponse } from '../../../core/api/models/mapa-response';
+import { PainelEscolasResponse } from '../../../core/api/models/painel-escolas-response';
 import { PainelResponse } from '../../../core/api/models/painel-response';
 import {
   AnaliseTemporalModel,
   ClassificacaoAcessibilidadeModel,
+  DadosFiltrosModel,
   GeoJsonFeatureCollectionModel,
   MapaAcessibilidadeModel,
   MapaMunicipioGeoJsonCollectionModel,
@@ -12,6 +15,7 @@ import {
   MapaMunicipioResumoModel,
   MapaPontoModel,
   PainelAcessibilidadeModel,
+  PainelEscolasModel,
   GraficoModel,
   GraficoListaModel,
 } from '../models/acessibilidade.models';
@@ -90,16 +94,18 @@ export function mapMapaMunicipioResumoFromPontos(
 export function mapGeoJsonMunicipiosComAcessibilidade(
   geojson: GeoJsonFeatureCollectionModel,
   resumos: MapaMunicipioResumoModel[],
-  municipiosDisponiveis: Array<{ nome: string }>,
+  municipiosDisponiveis?: Array<{ nome: string }> | null,
 ): MapaMunicipioGeoJsonCollectionModel {
   const resumosPorMunicipio = new Map(
     resumos.map((item) => [normalizarTexto(item.municipio), item]),
   );
-  const municipiosPermitidos = new Set(
-    municipiosDisponiveis.map((item) => normalizarTexto(item.nome)),
+  const municipiosNormalizados = (municipiosDisponiveis ?? []).map((item) =>
+    normalizarTexto(item.nome),
   );
+  const filtrarMunicipios = municipiosNormalizados.length > 0;
+  const municipiosPermitidos = new Set(municipiosNormalizados);
   const scores: number[] = resumos
-    .filter((r) => municipiosPermitidos.has(normalizarTexto(r.municipio)))
+    .filter((r) => !filtrarMunicipios || municipiosPermitidos.has(normalizarTexto(r.municipio)))
     .map((r) => r.media_score)
     .filter((v) => Number.isFinite(v));
 
@@ -130,9 +136,15 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
   return {
     type: 'FeatureCollection',
     features: geojson.features
-      .filter((feature) =>
-        municipiosPermitidos.has(normalizarTexto(String(feature.properties?.['NM_MUN'] ?? ''))),
-      )
+      .filter((feature) => {
+        if (!filtrarMunicipios) {
+          return true;
+        }
+
+        return municipiosPermitidos.has(
+          normalizarTexto(String(feature.properties?.['NM_MUN'] ?? '')),
+        );
+      })
       .map((feature) => {
         const nomeMunicipio = String(feature.properties?.['NM_MUN'] ?? '');
         const resumo = resumosPorMunicipio.get(normalizarTexto(nomeMunicipio));
@@ -161,16 +173,18 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
   };
 }
 
+export function mapFiltrosResponseToModel(api: FiltrosResponse): DadosFiltrosModel {
+  return {
+    anos: api.data.anos ?? [],
+    metricas: api.data.metricas ?? [],
+    municipios: api.data.municipios ?? [],
+    rede_ensino: api.data.rede_ensino ?? [],
+    tp_localizacao: api.data.tp_localizacao ?? [],
+  };
+}
+
 export function mapPainelResponseToModel(api: PainelResponse): PainelAcessibilidadeModel {
   const data = api.data;
-
-  const dadosFiltros = {
-    anos: data.dados_filtros.anos ?? [],
-    metricas: data.dados_filtros.metricas ?? [],
-    municipios: data.dados_filtros.municipios ?? [],
-    rede_ensino: data.dados_filtros.rede_ensino ?? [],
-    tp_localizacao: data.dados_filtros.tp_localizacao ?? [],
-  };
 
   const graficos: { [key: string]: GraficoModel } = Object.keys(data.graficos || {}).reduce(
     (acc, key) => {
@@ -187,8 +201,24 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelAcessibilid
 
   return {
     descricao: api.descricao,
-    dadosFiltros,
     graficos,
+  };
+}
+
+export function mapPainelEscolasResponseToModel(api: PainelEscolasResponse): PainelEscolasModel {
+  const { grafico, paginacao } = api.data;
+  return {
+    grafico: {
+      plotly: grafico.plotly,
+      tipo: grafico.tipo,
+      titulo: grafico.titulo,
+    },
+    paginacao: {
+      page: paginacao.page,
+      page_size: paginacao.page_size,
+      total_escolas: paginacao.total_escolas,
+      total_paginas: paginacao.total_paginas,
+    },
   };
 }
 
@@ -215,10 +245,6 @@ export function mapAnaliseTemporalResponseToModel(
 ): AnaliseTemporalModel {
   const data = api.data;
 
-  const dadosFiltros = {
-    metricas: data.dados_filtros.metricas ?? [],
-  };
-
   const graficos: { [key: string]: GraficoModel } = Object.keys(data.graficos || {}).reduce(
     (acc, key) => {
       const g = data.graficos[key];
@@ -239,7 +265,6 @@ export function mapAnaliseTemporalResponseToModel(
 
   return {
     descricao: api.descricao,
-    dadosFiltros,
     graficos,
     listaGraficos,
   };

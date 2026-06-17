@@ -4,25 +4,31 @@ import { firstValueFrom, Observable, from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { AcessibilidadeService } from '../../../core/api/services/acessibilidade.service';
+import { FiltrosService } from '../../../core/api/services/filtros.service';
 import type {
   GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
   GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
+  GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
   GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
 } from '../../../core/api';
 import {
+  DadosFiltrosModel,
   GeoJsonFeatureCollectionModel,
   MapaMunicipioGeoJsonCollectionModel,
   MapaMunicipioResumoModel,
   PainelAcessibilidadeModel,
+  PainelEscolasModel,
   MapaAcessibilidadeModel,
   AnaliseTemporalModel,
   MapaMunicipioModel,
   MapaPontoModel,
 } from '../models/acessibilidade.models';
 import {
+  mapFiltrosResponseToModel,
   mapGeoJsonMunicipiosComAcessibilidade,
   mapMapaMunicipioResumoFromPontos,
   mapPainelResponseToModel,
+  mapPainelEscolasResponseToModel,
   mapMapaResponseToModel,
   mapAnaliseTemporalResponseToModel,
 } from '../mappers/acessibilidade.mapper';
@@ -35,17 +41,16 @@ type MapaMunicipalComPontosModel = {
 @Injectable({ providedIn: 'root' })
 export class AcessibilidadeFacade {
   private readonly api = inject(AcessibilidadeService);
+  private readonly filtrosApi = inject(FiltrosService);
   private readonly http = inject(HttpClient);
 
-  private async getMostRecentYear(): Promise<number | undefined> {
-    try {
-      const resp = await this.api.getPainelAcessibilidadeAcessibilidadePainelGet();
-      const anos: number[] = (resp.data?.dados_filtros as { anos?: number[] })?.anos ?? [];
-      if (anos.length === 0) return undefined;
-      return Math.max(...anos);
-    } catch {
-      return undefined;
-    }
+  listarFiltros(): Observable<DadosFiltrosModel> {
+    return from(this.filtrosApi.getFiltrosFiltrosGet({ painel: 'acessibilidade' })).pipe(
+      map(mapFiltrosResponseToModel),
+      catchError(() =>
+        of({ anos: [], metricas: [], municipios: [], rede_ensino: [], tp_localizacao: [] }),
+      ),
+    );
   }
 
   listarPainel(params?: {
@@ -74,18 +79,39 @@ export class AcessibilidadeFacade {
       return mapPainelResponseToModel(apiResp);
     };
 
+    return from(call()).pipe(catchError(() => of({ descricao: '', graficos: {} })));
+  }
+
+  listarPainelEscolas(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+    page?: number;
+    page_size?: number;
+  }): Observable<PainelEscolasModel> {
+    const call = async () => {
+      const apiResp = await this.api.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet({
+        ano: params?.ano ?? null,
+        variaveis:
+          params?.variaveis as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['variaveis'],
+        municipios: params?.municipios as string[],
+        rede_ensino:
+          params?.rede_ensino as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['rede_ensino'],
+        tp_localizacao:
+          params?.tp_localizacao as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['tp_localizacao'],
+        page: params?.page ?? 0,
+        page_size: params?.page_size ?? 5,
+      });
+      return mapPainelEscolasResponseToModel(apiResp);
+    };
+
     return from(call()).pipe(
       catchError(() =>
         of({
-          descricao: '',
-          dadosFiltros: {
-            anos: [],
-            metricas: [],
-            municipios: [],
-            rede_ensino: [],
-            tp_localizacao: [],
-          },
-          graficos: {},
+          grafico: { plotly: { data: [], layout: {} }, tipo: '', titulo: '' },
+          paginacao: { page: 0, page_size: 5, total_escolas: 0, total_paginas: 0 },
         }),
       ),
     );
@@ -128,9 +154,7 @@ export class AcessibilidadeFacade {
       }),
     ).pipe(
       map(mapAnaliseTemporalResponseToModel),
-      catchError(() =>
-        of({ descricao: '', dadosFiltros: { metricas: [] }, graficos: {}, listaGraficos: [] }),
-      ),
+      catchError(() => of({ descricao: '', graficos: {}, listaGraficos: [] })),
     );
   }
 
@@ -140,11 +164,12 @@ export class AcessibilidadeFacade {
     municipios?: string[] | null;
   }): Observable<MapaMunicipioGeoJsonCollectionModel> {
     const call = async () => {
-      const [painel, mapa, geojson] = await Promise.all([
-        firstValueFrom(this.listarPainel(params)),
+      const [mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
-          this.http.get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_2025.json'),
+          this.http.get<GeoJsonFeatureCollectionModel>(
+            'assets/geojson/PA_Municipios_Pibid_2025.json',
+          ),
         ),
       ]);
 
@@ -152,7 +177,7 @@ export class AcessibilidadeFacade {
       return mapGeoJsonMunicipiosComAcessibilidade(
         geojson,
         resumos,
-        painel.dadosFiltros.municipios,
+        params?.municipios?.map((nome) => ({ nome })) ?? null,
       );
     };
 
@@ -171,11 +196,12 @@ export class AcessibilidadeFacade {
     tp_localizacao?: string[] | null;
   }): Observable<MapaMunicipalComPontosModel> {
     const call = async () => {
-      const [painel, mapa, geojson] = await Promise.all([
-        firstValueFrom(this.listarPainel(params)),
+      const [mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
-          this.http.get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_2025.json'),
+          this.http.get<GeoJsonFeatureCollectionModel>(
+            'assets/geojson/PA_Municipios_Pibid_2025.json',
+          ),
         ),
       ]);
 
@@ -184,7 +210,7 @@ export class AcessibilidadeFacade {
         collection: mapGeoJsonMunicipiosComAcessibilidade(
           geojson,
           resumos,
-          painel.dadosFiltros.municipios,
+          params?.municipios?.map((nome) => ({ nome })) ?? null,
         ),
         pontos: mapa.pontos,
       };

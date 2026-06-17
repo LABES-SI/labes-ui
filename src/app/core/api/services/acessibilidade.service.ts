@@ -16,7 +16,10 @@ import { getMapaAcessibilidadeAcessibilidadeMapaGet } from '../fn/acessibilidade
 import { GetMapaAcessibilidadeAcessibilidadeMapaGet$Params } from '../fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 import { getPainelAcessibilidadeAcessibilidadePainelGet } from '../fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
 import { GetPainelAcessibilidadeAcessibilidadePainelGet$Params } from '../fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
+import { getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet } from '../fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
+import { GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params } from '../fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
 import { MapaResponse } from '../models/mapa-response';
+import { PainelEscolasResponse } from '../models/painel-escolas-response';
 import { PainelResponse } from '../models/painel-response';
 
 @Injectable({ providedIn: 'root' })
@@ -40,16 +43,8 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelAcessibilidadeAcessibilidadePainelGet$Response(
-    params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<PainelResponse>> {
-    const obs = getPainelAcessibilidadeAcessibilidadePainelGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getPainelAcessibilidadeAcessibilidadePainelGet$Response(params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelResponse>> {
+    const obs = getPainelAcessibilidadeAcessibilidadePainelGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -65,12 +60,46 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelAcessibilidadeAcessibilidadePainelGet(
-    params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<PainelResponse> {
+  getPainelAcessibilidadeAcessibilidadePainelGet(params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Promise<PainelResponse> {
     const resp = this.getPainelAcessibilidadeAcessibilidadePainelGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<PainelResponse>): PainelResponse => r.body);
+  }
+
+  /** Path part for operation `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet()` */
+  static readonly GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGetPath = '/acessibilidade/painel/escolas';
+
+  /**
+   * Gráfico paginado de métricas de acessibilidade por escola.
+   *
+   * Retorna uma página do gráfico de métricas por escola (barras empilhadas,
+   * ordenado por score DESC) + metadados de paginação. Pensado para o frontend
+   * navegar as demais escolas sem reprocessar o painel inteiro.
+   *
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelEscolasResponse>> {
+    const obs = getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(this.http, this.rootUrl, params, context);
+    return firstValueFrom(obs);
+  }
+
+  /**
+   * Gráfico paginado de métricas de acessibilidade por escola.
+   *
+   * Retorna uma página do gráfico de métricas por escola (barras empilhadas,
+   * ordenado por score DESC) + metadados de paginação. Pensado para o frontend
+   * navegar as demais escolas sem reprocessar o painel inteiro.
+   *
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Promise<PainelEscolasResponse> {
+    const resp = this.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body);
   }
 
   /** Path part for operation `getMapaAcessibilidadeAcessibilidadeMapaGet()` */
@@ -89,16 +118,8 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getMapaAcessibilidadeAcessibilidadeMapaGet$Response(
-    params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<MapaResponse>> {
-    const obs = getMapaAcessibilidadeAcessibilidadeMapaGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getMapaAcessibilidadeAcessibilidadeMapaGet$Response(params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Promise<StrictHttpResponse<MapaResponse>> {
+    const obs = getMapaAcessibilidadeAcessibilidadeMapaGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -115,65 +136,50 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getMapaAcessibilidadeAcessibilidadeMapaGet(
-    params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<MapaResponse> {
+  getMapaAcessibilidadeAcessibilidadeMapaGet(params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Promise<MapaResponse> {
     const resp = this.getMapaAcessibilidadeAcessibilidadeMapaGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<MapaResponse>): MapaResponse => r.body);
   }
 
   /** Path part for operation `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()` */
-  static readonly GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGetPath =
-    '/acessibilidade/analise-temporal';
+  static readonly GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGetPath = '/acessibilidade/analise-temporal';
 
   /**
-   * Evolução temporal da acessibilidade por tipo de localização.
+   * Evolução temporal da acessibilidade (por localização e por dependência).
    *
-   * Retorna o gráfico de evolução temporal por tipo de localização
-   * (uma linha por urbana/rural ao longo dos anos censo) + opções de
-   * filtro de métrica para popular dropdowns do frontend.
+   * Retorna os gráficos de evolução temporal: por tipo de localização
+   * (uma linha por urbana/rural) e por tipo de dependência administrativa
+   * (uma linha por Federal/Estadual/Municipal/Privada), ambos ao longo
+   * dos anos censo + opções de filtro de métrica para popular dropdowns
+   * do frontend.
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
-    params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<AnaliseTemporalResponse>> {
-    const obs = getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<StrictHttpResponse<AnaliseTemporalResponse>> {
+    const obs = getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
   /**
-   * Evolução temporal da acessibilidade por tipo de localização.
+   * Evolução temporal da acessibilidade (por localização e por dependência).
    *
-   * Retorna o gráfico de evolução temporal por tipo de localização
-   * (uma linha por urbana/rural ao longo dos anos censo) + opções de
-   * filtro de métrica para popular dropdowns do frontend.
+   * Retorna os gráficos de evolução temporal: por tipo de localização
+   * (uma linha por urbana/rural) e por tipo de dependência administrativa
+   * (uma linha por Federal/Estadual/Municipal/Privada), ambos ao longo
+   * dos anos censo + opções de filtro de métrica para popular dropdowns
+   * do frontend.
    *
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
-    params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<AnaliseTemporalResponse> {
-    const resp = this.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
-      params,
-      context,
-    );
-    return resp.then(
-      (r: StrictHttpResponse<AnaliseTemporalResponse>): AnaliseTemporalResponse => r.body,
-    );
+  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<AnaliseTemporalResponse> {
+    const resp = this.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<AnaliseTemporalResponse>): AnaliseTemporalResponse => r.body);
   }
+
 }

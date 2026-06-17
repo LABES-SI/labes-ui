@@ -9,11 +9,12 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom, Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as L from 'leaflet';
 import * as PlotlyJS from 'plotly.js-dist-min';
@@ -27,6 +28,7 @@ import {
   MetricaFiltroModel,
   MunicipioFiltroModel,
 } from '../../models/acessibilidade.models';
+import type { Paginacao } from '../../../../core/api/models/paginacao';
 import { AppInputComponent } from '../../../../shared/ui/input/app-input.component';
 
 PlotlyService.setPlotly(PlotlyJS);
@@ -80,6 +82,21 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   protected painelDescricao: string = '';
   protected analiseTemporalDescricao: string = '';
 
+  protected readonly graficoPainelEscolas = signal<GraficoApresentacao | null>(null);
+  protected readonly painelEscolasPaginacao = signal<Paginacao | null>(null);
+  protected readonly painelEscolasPage = signal(0);
+  protected readonly painelEscolasPageSize = 5;
+
+  private readonly painelEscolasLoad$ = new Subject<{
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+    page?: number;
+    page_size?: number;
+  }>();
+
   protected searchTerm: string = '';
   protected searchResults: MapaPontoModel[] = [];
   protected searchPage = 1;
@@ -94,11 +111,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     'Inexistente',
   ];
 
-  protected rankingPage = 1;
-  protected readonly rankingPageSize = 10;
-
   private allSchools: MapaPontoModel[] = [];
-  private _rankingEscolas: MapaPontoModel[] = [];
   private schoolMarkersById = new Map<number, L.Marker>();
 
   ngAfterViewInit(): void {
@@ -117,7 +130,9 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(this.map!);
 
-    this.loadMap();
+    if (this.anos.length > 0) {
+      void this.loadMap(this.buildParams());
+    }
   }
 
   ngOnInit(): void {
@@ -125,37 +140,61 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.buscarEscola());
 
+    this.painelEscolasLoad$
+      .pipe(
+        switchMap((params) => this.facade.listarPainelEscolas(params)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        this.graficoPainelEscolas.set({
+          chave: 'painel_escolas',
+          titulo: result.grafico.titulo,
+          tipo: result.grafico.tipo,
+          plotly: this.normalizarGraficoPlotly(result.grafico.plotly),
+        });
+        this.painelEscolasPaginacao.set(result.paginacao);
+      });
+
+    this.definirAnoPadrao();
+    const params = this.buildParams();
+
     this.facade
-      .listarPainel()
+      .listarFiltros()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((painel) => {
+      .subscribe((filtros) => {
         this.anos = Array.from(
           new Set(
-            (painel.dadosFiltros.anos ?? [])
-              .map((ano) => Number(ano))
-              .filter((ano) => Number.isFinite(ano)),
+            (filtros.anos ?? []).map((ano) => Number(ano)).filter((ano) => Number.isFinite(ano)),
           ),
         ).sort((a, b) => b - a);
-        this.municipios = (painel.dadosFiltros.municipios ?? []).map((municipio) => ({
+        this.municipios = (filtros.municipios ?? []).map((municipio) => ({
           codigo: Number(municipio.codigo),
           nome: String(municipio.nome),
         }));
-
-        this.definirAnoPadrao();
-
-        this.metricas = (painel.dadosFiltros.metricas ?? []).map((metrica) => ({
+        this.metricas = (filtros.metricas ?? []).map((metrica) => ({
           chave: String(metrica.chave),
           label: String(metrica.label),
         }));
         this.selectedMetricas = [];
-        this.redesEnsino = (painel.dadosFiltros.rede_ensino ?? []).map((rede) => String(rede));
-        this.tpLocalizacoes = ['Urbana', 'Rural'];
-        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
-        this.painelDescricao = painel.descricao ?? '';
+        this.redesEnsino = (filtros.rede_ensino ?? []).map((rede) => String(rede));
+        this.tpLocalizacoes = (filtros.tp_localizacao ?? []).map((loc) => String(loc));
         this.isLoading = false;
 
-        this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
+        if (this.map) {
+          void this.loadMap(params);
+        }
 
+        this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
+        this.loadPainelEscolas(params);
+        this.cd.markForCheck();
+      });
+
+    this.facade
+      .listarPainel(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((painel) => {
+        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
+        this.painelDescricao = painel.descricao ?? '';
         this.cd.markForCheck();
       });
   }
@@ -166,9 +205,12 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   protected aplicarFiltros(): void {
-    void this.loadPainel(this.buildParams());
-    void this.loadMap(this.buildParams());
+    const params = this.buildParams();
+    void this.loadPainel(params);
+    void this.loadMap(params);
     this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
+    this.painelEscolasPage.set(0);
+    this.loadPainelEscolas(params);
   }
 
   protected resetFiltros(): void {
@@ -324,37 +366,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
     this.cd.markForCheck();
   }
 
-  protected get rankingEscolas(): MapaPontoModel[] {
-    return this._rankingEscolas;
-  }
-
-  protected get rankingPaginado(): MapaPontoModel[] {
-    const start = (this.rankingPage - 1) * this.rankingPageSize;
-    return this._rankingEscolas.slice(start, start + this.rankingPageSize);
-  }
-
-  protected get rankingTotalPages(): number {
-    return Math.max(Math.ceil(this._rankingEscolas.length / this.rankingPageSize), 1);
-  }
-
-  protected get rankingPageNumbers(): number[] {
-    const visiblePages = 5;
-    const totalPages = this.rankingTotalPages;
-    const halfWindow = Math.floor(visiblePages / 2);
-    const start = Math.min(
-      Math.max(this.rankingPage - halfWindow, 1),
-      Math.max(totalPages - visiblePages + 1, 1),
-    );
-    const end = Math.min(start + visiblePages - 1, totalPages);
-
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-  }
-
-  protected setRankingPage(page: number): void {
-    this.rankingPage = Math.min(Math.max(page, 1), this.rankingTotalPages);
-    this.cd.markForCheck();
-  }
-
   protected scoreIntervaloLabel(classificacao: ClassificacaoAcessibilidadeModel | string): string {
     return SCORE_INTERVALO[classificacao as ClassificacaoAcessibilidadeModel] ?? '—';
   }
@@ -402,12 +413,7 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
   }
 
   private definirAnoPadrao(): void {
-    if (this.anos.length === 0) {
-      this.selectedAno = null;
-      return;
-    }
-
-    this.selectedAno = this.anos[0];
+    this.selectedAno = 2024;
   }
 
   private buildParams(): {
@@ -486,6 +492,26 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       });
   }
 
+  protected setPainelEscolasPage(delta: number): void {
+    const total = this.painelEscolasPaginacao()?.total_paginas ?? 1;
+    const current = this.painelEscolasPage();
+    const next = Math.max(0, Math.min(current + delta, total - 1));
+    if (next === current) return;
+    this.painelEscolasPage.set(next);
+    this.loadPainelEscolas({ ...this.buildParams(), page: next });
+  }
+
+  private loadPainelEscolas(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+    page?: number;
+  }): void {
+    this.painelEscolasLoad$.next({ ...params, page_size: this.painelEscolasPageSize });
+  }
+
   private loadAnaliseTemporal(params?: { metrica?: string | null }): void {
     this.facade
       .listarAnaliseTemporal(params)
@@ -562,8 +588,6 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
       (ponto) => Number.isFinite(ponto.latitude) && Number.isFinite(ponto.longitude),
     );
     this.allSchools = pontosValidos;
-    this._rankingEscolas = [...pontosValidos].sort((a, b) => Number(b.score) - Number(a.score));
-    this.rankingPage = 1;
 
     if (shouldShowSchools) {
       const scorePorMunicipio = new Map<string, { min: number; max: number }>();
