@@ -32,6 +32,24 @@
   gap: 1rem;
   margin-bottom: 16px;
 
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .db-key {
+      font-family: var(--sie-font-mono, monospace);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+      background-color: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: max-content;
+      letter-spacing: 0.02em;
+    }
+  }
+
   h3 {
     margin: 0;
     color: var(--sie-color-deep, #15233c);
@@ -50,7 +68,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
-  // Modificadores de cores baseados nas suas classes dinâmicas
+  // Modificadores de cores baseados nas categorias do SIEM
   &.desempenho {
     background-color: #dbeafe;
     color: #2563eb;

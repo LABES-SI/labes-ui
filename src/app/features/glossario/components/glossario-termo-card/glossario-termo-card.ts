@@ -15,17 +15,15 @@ export class GlossarioTermoCard {
   readonly termo = input.required<TermoGlossario>();
 
   /**
-   * Retorna o texto formatado e amigável da categoria
+   * Retorna o texto formatado e amigável da categoria para exibição na badge.
    */
   getCategoriaLabel(): string {
-    const cat = this.termo().categoria;
-
-    const labels: Record<typeof cat, string> = {
+    const labels: Record<TermoGlossario['categoria'], string> = {
       desempenho: 'Desempenho',
       fluxo: 'Fluxo Escolar',
       infraestrutura: 'Infraestrutura',
     };
 
-    return labels[cat] || cat;
+    return labels[this.termo().categoria];
   }
 }
