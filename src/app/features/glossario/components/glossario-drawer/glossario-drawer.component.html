@@ -1,11 +1,23 @@
 <!-- FAB (Floating Action Button) -->
-<button 
-  class="fab-button" 
-  (click)="toggleDrawer()" 
+<button
+  class="fab-button"
+  (click)="toggleDrawer()"
   [class.hidden]="isOpen()"
   aria-label="Abrir Glossário"
-  title="Consultar Glossário">
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  title="Consultar Glossário"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
   </svg>
 </button>
@@ -15,22 +27,39 @@
   <div class="drawer-backdrop" (click)="closeDrawer()" aria-hidden="true"></div>
 
   <!-- Painel do Drawer -->
-  <aside 
-    class="drawer-panel" 
-    role="dialog" 
-    aria-modal="true" 
-    aria-labelledby="drawer-title">
-    
+  <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
     <!-- Cabeçalho -->
     <header class="drawer-header">
       <div class="title-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
         </svg>
-        <h2 id="drawer-title">Glossário SIEM</h2>
+        <h2 id="drawer-title">Glossário SIE</h2>
       </div>
       <button class="close-button" (click)="closeDrawer()" aria-label="Fechar Glossário">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -40,21 +69,45 @@
     <!-- Área de Busca e Filtros (Fixa no topo do drawer) -->
     <div class="drawer-filters">
       <div class="search-box">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          class="search-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input 
+        <input
           #searchInput
-          type="text" 
-          [ngModel]="searchTerm()" 
+          type="text"
+          [ngModel]="searchTerm()"
           (ngModelChange)="updateSearchTerm($event)"
-          placeholder="Buscar indicador..." 
-          aria-label="Buscar termo no glossário" />
-        
+          placeholder="Buscar indicador..."
+          aria-label="Buscar termo no glossário"
+        />
+
         @if (searchTerm()) {
           <button class="clear-search" (click)="updateSearchTerm('')" aria-label="Limpar busca">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -64,12 +117,13 @@
 
       <div class="category-pills" role="tablist" aria-label="Filtrar por categoria">
         @for (category of categories; track category.id) {
-          <button 
-            class="pill" 
+          <button
+            class="pill"
             role="tab"
             [attr.aria-selected]="selectedCategory() === category.id"
             [class.active]="selectedCategory() === category.id"
-            (click)="selectCategory(category.id)">
+            (click)="selectCategory(category.id)"
+          >
             {{ category.label }}
           </button>
         }
@@ -83,12 +137,26 @@
           <app-glossario-termo-card [termo]="termo" />
         } @empty {
           <div class="empty-state">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <h3>Nenhum termo encontrado</h3>
-            <p>Não encontramos resultados para a sua busca ou filtro atual. Tente alterar as palavras ou remover os filtros de categoria.</p>
+            <p>
+              Não encontramos resultados para a sua busca ou filtro atual. Tente alterar as palavras
+              ou remover os filtros de categoria.
+            </p>
             <button class="btn-clear-all" (click)="updateSearchTerm(''); selectCategory('todos')">
               Limpar Filtros
             </button>

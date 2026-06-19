@@ -39,7 +39,7 @@ function adicionarIdsUnicos(termos: TermoGlossarioEntrada[]): TermoGlossario[] {
 }
 
 /**
- * Base de dados oficial e unificada do Glossário do SIEM.
+ * Base de dados oficial e unificada do Glossário do SIE.
  * Contém a mescla completa exigida pelos Cards 18 e 19:
  * - Indicadores pedagógicos de alto nível do painel (ex: IDEB, Evasão)
  * - Variáveis técnicas e estruturais extraídas do Censo Escolar e planilhas
@@ -91,10 +91,10 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Adequação da Formação Docente',
     chaveOriginal: 'TP_FORMACAO_DOCENTE',
     definicao:
-      'Percentagem de professores em atividade na escola que possuem formação de nível superior de licenciatura adequada para a disciplina que estão efetivamente a lecionar em sala de aula.',
+      'Porcentagem de professores em atividade na escola que possuem formação de nível superior de licenciatura adequada para a disciplina que lecionam em sala de aula.',
     categoria: 'desempenho',
     exemplo:
-      'A escola possui 95% dos docentes com formação superior específica em sua respetiva disciplina de atuação.',
+      'A escola possui 95% dos docentes com formação superior específica em sua respectiva disciplina de atuação.',
     referenciaInep: {
       url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/indicadores-educacionais',
       texto: 'Indicadores de Adequação Docente',
@@ -117,7 +117,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Taxa de Aprovação',
     chaveOriginal: 'TAXA_APROVACAO',
     definicao:
-      'Percentagem de alunos matriculados que, ao final do ano letivo, alcançaram com sucesso todos os objetivos de nota e mantiveram frequência escolar mínima regulamentar de 75%.',
+      'Porcentagem de alunos matriculados que, ao final do ano letivo, alcançaram com sucesso todos os objetivos de nota e mantiveram frequência escolar mínima regulamentar de 75%.',
     categoria: 'fluxo',
     exemplo:
       'Ações de acompanhamento individual dos estudantes que elevaram a taxa de aprovação anual para 94%.',
@@ -143,7 +143,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Distorção Idade-Série',
     chaveOriginal: 'TAXA_DISTORCAO_IDADE_SERIE',
     definicao:
-      'Percentagem de alunos matriculados numa determinada turma que possuem idade de nascimento com atraso escolar igual ou superior a 2 anos em relação à idade oficial recomendada para aquela série.',
+      'Porcentagem de alunos matriculados em uma determinada turma que possuem atraso escolar igual ou superior a 2 anos em relação à idade oficial recomendada para aquela série.',
     categoria: 'fluxo',
     exemplo:
       'Alunos com 12 anos de idade que ainda frequentam o 4.º ano do Ensino Fundamental (onde a idade esperada seria de 9 anos).',
@@ -169,7 +169,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Acessibilidade Predial Escolar',
     chaveOriginal: 'IN_ACESSIBILIDADE_COMPLETA',
     definicao:
-      'Indicador do Censo Escolar que atesta a disponibilidade simultânea de múltiplos recursos estruturais que facilitem a livre locomoção física (como rampas, corrimãos, pisos táteis e casas de banho adaptadas).',
+      'Indicador do Censo Escolar que atesta a disponibilidade simultânea de múltiplos recursos estruturais que facilitem a livre locomoção física, como rampas, corrimãos, pisos táteis e banheiros adaptados.',
     categoria: 'infraestrutura',
     exemplo:
       'Uma escola que adaptou as portas para permitir a passagem de cadeiras de rodas e instalou piso tátil na entrada.',
@@ -195,7 +195,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Taxa de Atendimento Escolar',
     chaveOriginal: 'TAXA_ATENDIMENTO_ESCOLAR',
     definicao:
-      'Percentagem da população de uma determinada faixa etária (ex: 4 a 17 anos) que está efetivamente matriculada e a frequentar uma instituição de ensino no município ou estado.',
+      'Porcentagem da população de uma determinada faixa etária, como 4 a 17 anos, que está efetivamente matriculada e frequentando uma instituição de ensino no município ou estado.',
     categoria: 'fluxo',
     exemplo:
       'Se um município tem 1.000 jovens de 15 a 17 anos e 950 estão matriculados na escola, a taxa de atendimento para este grupo é de 95%.',
@@ -330,7 +330,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
   },
   {
     termo: 'Tipo de Atendimento Especial (AEE)',
-    chaveOriginal: 'ΤΡ ΑΕΕ',
+    chaveOriginal: 'TP AEE',
     definicao:
       'Informa o tipo de suporte ou Atendimento Educacional Especializado (AEE) que a instituição oferece de forma estruturada nas salas de recursos multifuncionais.',
     categoria: 'infraestrutura',
@@ -525,7 +525,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
     termo: 'Participação no PIBID',
     chaveOriginal: 'pibid',
     definicao:
-      'Marcador binário que indica a participação activa da escola no Programa Institucional de Bolsa de Iniciação à Docência (PIBID).',
+      'Marcador binário que indica a participação ativa da escola no Programa Institucional de Bolsa de Iniciação à Docência (PIBID).',
     categoria: 'desempenho',
     exemplo:
       'As escolas municipais parceiras recebem bolsistas de licenciaturas públicas da região para imersão acadêmica.',
@@ -604,7 +604,7 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
   },
   {
     termo: 'Ano de Referência (PIBID)',
-    chaveOriginal: 'ΑΝΟ',
+    chaveOriginal: 'ANO',
     definicao:
       'Representa o ano calendário ao qual o registro de bolsas ativas do PIBID se refere.',
     categoria: 'fluxo',

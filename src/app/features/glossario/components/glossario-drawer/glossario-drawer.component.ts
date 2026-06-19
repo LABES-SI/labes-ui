@@ -8,7 +8,7 @@ import {
   viewChild,
   effect,
   Renderer2,
-  inject
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -47,7 +47,7 @@ export class GlossarioDrawerComponent {
   readonly categories: CategoriaPill[] = [
     { id: 'todos', label: 'Todos' },
     { id: 'desempenho', label: 'Desempenho' },
-    { id: 'fluxo', label: 'Fluxo Escolar' },
+    { id: 'fluxo', label: 'Fluxo' },
     { id: 'infraestrutura', label: 'Infraestrutura' },
   ];
 
@@ -74,8 +74,9 @@ export class GlossarioDrawerComponent {
     const allTerms = this.termos();
 
     return allTerms.filter((termo) => {
-      const matchSearch = termo.termo.toLowerCase().includes(search) || 
-                          termo.definicao.toLowerCase().includes(search);
+      const matchSearch =
+        termo.termo.toLowerCase().includes(search) ||
+        termo.definicao.toLowerCase().includes(search);
       const matchCategory = category === 'todos' || termo.categoria === category;
       return matchSearch && matchCategory;
     });

@@ -20,7 +20,7 @@ export class GlossarioTermoCard {
   getCategoriaLabel(): string {
     const labels: Record<TermoGlossario['categoria'], string> = {
       desempenho: 'Desempenho',
-      fluxo: 'Fluxo Escolar',
+      fluxo: 'Fluxo',
       infraestrutura: 'Infraestrutura',
     };
 
