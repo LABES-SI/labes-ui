@@ -1,0 +1,16 @@
+<section class="content-section">
+  <section class="advisor-section" aria-labelledby="orientador-heading">
+    <div class="advisor-heading">
+      <p>Coordenação do projeto</p>
+      <h2 id="orientador-heading">Orientador</h2>
+    </div>
+
+    <app-colaborador-card [colaborador]="orientador()" [destaque]="true" />
+  </section>
+
+  <div class="collaborators-groups">
+    @for (area of areasColaboradores(); track area.area) {
+      <app-colaboradores-area [area]="area" />
+    }
+  </div>
+</section>

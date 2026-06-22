@@ -20,6 +20,11 @@ export const routes: Routes = [
       import('./features/indicadores/indicadores.routes').then((m) => m.indicadoresRoutes),
   },
   {
+    path: 'colaboradores',
+    loadChildren: () =>
+      import('./features/colaboradores/colaboradores.routes').then((m) => m.colaboradoresRoutes),
+  },
+  {
     path: '**',
     redirectTo: 'inicio',
   },

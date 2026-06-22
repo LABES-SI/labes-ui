@@ -43,6 +43,9 @@ export interface MapaPontoModel {
   longitude: number;
   score: number;
   classificacao: ClassificacaoAcessibilidadeModel;
+  no_bairro?: string | null;
+  no_tp_dependencia?: string | null;
+  no_tp_localizacao?: string | null;
   [key: string]: unknown;
 }
 

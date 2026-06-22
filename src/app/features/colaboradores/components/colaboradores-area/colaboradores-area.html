@@ -1,0 +1,16 @@
+<section class="collaborators-area" [attr.aria-labelledby]="'area-' + area().area">
+  <div class="area-heading">
+    <div>
+      <h2 [id]="'area-' + area().area">{{ area().area }}</h2>
+      <p>{{ area().descricao }}</p>
+    </div>
+
+    <span>{{ area().colaboradores.length }} colaboradores</span>
+  </div>
+
+  <div class="collaborators-grid">
+    @for (colaborador of area().colaboradores; track colaborador.nome) {
+      <app-colaborador-card [colaborador]="colaborador" />
+    }
+  </div>
+</section>
