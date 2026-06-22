@@ -4,19 +4,20 @@ import { firstValueFrom, Observable, from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { AcessibilidadeService } from '../../../core/api/services/acessibilidade.service';
+import { FiltrosService } from '../../../core/api/services/filtros.service';
 import type {
   GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
   GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-  GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
 } from '../../../core/api';
 import {
+  DadosFiltrosModel,
+  EscolaGeoEntryModel,
   GeoJsonFeatureCollectionModel,
+  MapaAcessibilidadeModel,
   MapaMunicipioGeoJsonCollectionModel,
   MapaMunicipioResumoModel,
   PainelAcessibilidadeModel,
-  MapaAcessibilidadeModel,
   AnaliseTemporalModel,
-  MapaMunicipioModel,
   MapaPontoModel,
 } from '../models/acessibilidade.models';
 import {
@@ -25,6 +26,7 @@ import {
   mapPainelResponseToModel,
   mapMapaResponseToModel,
   mapAnaliseTemporalResponseToModel,
+  mapFiltrosResponseToModel,
 } from '../mappers/acessibilidade.mapper';
 
 type MapaMunicipalComPontosModel = {
@@ -35,7 +37,28 @@ type MapaMunicipalComPontosModel = {
 @Injectable({ providedIn: 'root' })
 export class AcessibilidadeFacade {
   private readonly api = inject(AcessibilidadeService);
+  private readonly filtrosApi = inject(FiltrosService);
   private readonly http = inject(HttpClient);
+
+  private escolasGeoMap$: Promise<Map<number, EscolaGeoEntryModel>> | null = null;
+
+  private getEscolasGeoMap(): Promise<Map<number, EscolaGeoEntryModel>> {
+    if (!this.escolasGeoMap$) {
+      this.escolasGeoMap$ = firstValueFrom(
+        this.http.get<EscolaGeoEntryModel[]>('assets/geojson/escolas_geo.json'),
+      ).then((entries) => new Map(entries.map((e) => [e.co_entidade, e])));
+    }
+    return this.escolasGeoMap$;
+  }
+
+  listarFiltros(): Observable<DadosFiltrosModel> {
+    return from(this.filtrosApi.getFiltrosFiltrosGet({ painel: 'acessibilidade' })).pipe(
+      map(mapFiltrosResponseToModel),
+      catchError(() =>
+        of({ anos: [], metricas: [], municipios: [], rede_ensino: [], tp_localizacao: [] }),
+      ),
+    );
+  }
 
   listarPainel(params?: {
     ano?: number | null;
@@ -45,65 +68,36 @@ export class AcessibilidadeFacade {
     tp_localizacao?: string[] | null;
   }): Observable<PainelAcessibilidadeModel> {
     const call = async () => {
-      const ano = params?.ano ?? null;
-      const variaveis = params?.variaveis ?? null;
-      const municipios = params?.municipios ?? null;
-      const rede_ensino = params?.rede_ensino ?? null;
-      const tp_localizacao = params?.tp_localizacao ?? null;
-
       const apiResp = await this.api.getPainelAcessibilidadeAcessibilidadePainelGet({
-        ano: ano ?? null,
-        variaveis: variaveis as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['variaveis'],
-        municipios: municipios as string[],
+        ano: params?.ano ?? null,
+        variaveis:
+          params?.variaveis as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['variaveis'],
+        municipios: params?.municipios as string[],
         rede_ensino:
-          rede_ensino as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['rede_ensino'],
+          params?.rede_ensino as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['rede_ensino'],
         tp_localizacao:
-          tp_localizacao as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['tp_localizacao'],
+          params?.tp_localizacao as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['tp_localizacao'],
       });
       return mapPainelResponseToModel(apiResp);
     };
 
-    return from(call()).pipe(
-      catchError(() =>
-        of({
-          descricao: '',
-          dadosFiltros: {
-            anos: [],
-            metricas: [],
-            municipios: [],
-            rede_ensino: [],
-            tp_localizacao: [],
-          },
-          graficos: {},
-        }),
-      ),
-    );
+    return from(call()).pipe(catchError(() => of({ descricao: '', graficos: {} })));
   }
 
   listarMapa(params?: {
     ano?: number | null;
     variaveis?: string[] | null;
-    municipios?: string[] | null;
-    rede_ensino?: string[] | null;
-    tp_localizacao?: string[] | null;
   }): Observable<MapaAcessibilidadeModel> {
     const call = async () => {
-      const ano = params?.ano ?? null;
-      const variaveis = params?.variaveis ?? null;
-      const municipios = params?.municipios ?? null;
-      const rede_ensino = params?.rede_ensino ?? null;
-      const tp_localizacao = params?.tp_localizacao ?? null;
-
-      const apiResp = await this.api.getMapaAcessibilidadeAcessibilidadeMapaGet({
-        ano: ano ?? null,
-        variaveis: variaveis as GetMapaAcessibilidadeAcessibilidadeMapaGet$Params['variaveis'],
-        municipios: municipios as string[],
-        rede_ensino:
-          rede_ensino as GetMapaAcessibilidadeAcessibilidadeMapaGet$Params['rede_ensino'],
-        tp_localizacao:
-          tp_localizacao as GetMapaAcessibilidadeAcessibilidadeMapaGet$Params['tp_localizacao'],
-      });
-      return mapMapaResponseToModel(apiResp);
+      const [apiResp, geoMap] = await Promise.all([
+        this.api.getMapaAcessibilidadeAcessibilidadeMapaGet({
+          ano: params?.ano ?? null,
+          variaveis:
+            params?.variaveis as GetPainelAcessibilidadeAcessibilidadePainelGet$Params['variaveis'],
+        }),
+        this.getEscolasGeoMap(),
+      ]);
+      return mapMapaResponseToModel(apiResp, geoMap);
     };
 
     return from(call()).pipe(catchError(() => of({ descricao: '', pontos: [] })));
@@ -117,9 +111,7 @@ export class AcessibilidadeFacade {
       }),
     ).pipe(
       map(mapAnaliseTemporalResponseToModel),
-      catchError(() =>
-        of({ descricao: '', dadosFiltros: { metricas: [] }, graficos: {}, listaGraficos: [] }),
-      ),
+      catchError(() => of({ descricao: '', graficos: {}, listaGraficos: [] })),
     );
   }
 
@@ -157,8 +149,6 @@ export class AcessibilidadeFacade {
     ano?: number | null;
     variaveis?: string[] | null;
     municipios?: string[] | null;
-    rede_ensino?: string[] | null;
-    tp_localizacao?: string[] | null;
   }): Observable<MapaMunicipalComPontosModel> {
     const call = async () => {
       const [mapa, geojson] = await Promise.all([
@@ -191,23 +181,6 @@ export class AcessibilidadeFacade {
           pontos: [],
         }),
       ),
-    );
-  }
-
-  listarMapaAgrupadoPorMunicipio(params?: {
-    ano?: number | null;
-    variaveis?: string[] | null;
-  }): Observable<MapaMunicipioModel[]> {
-    return this.listarMapa(params).pipe(
-      map((m) => {
-        return mapMapaMunicipioResumoFromPontos(m.pontos).map((item) => ({
-          municipio: item.municipio,
-          media_score: item.media_score,
-          quantidade_escolas: item.quantidade_escolas,
-          classificacao: item.classificacao,
-          cor: item.cor,
-        }));
-      }),
     );
   }
 }

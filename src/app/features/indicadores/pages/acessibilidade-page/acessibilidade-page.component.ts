@@ -129,31 +129,27 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
 
     this.definirAnoPadrao();
     const params = this.buildParams();
+
     this.facade
-      .listarPainel(params)
+      .listarFiltros()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((painel) => {
+      .subscribe((filtros) => {
         this.anos = Array.from(
           new Set(
-            (painel.dadosFiltros.anos ?? [])
-              .map((ano) => Number(ano))
-              .filter((ano) => Number.isFinite(ano)),
+            (filtros.anos ?? []).map((ano) => Number(ano)).filter((ano) => Number.isFinite(ano)),
           ),
         ).sort((a, b) => b - a);
-        this.municipios = (painel.dadosFiltros.municipios ?? []).map((municipio) => ({
+        this.municipios = (filtros.municipios ?? []).map((municipio) => ({
           codigo: Number(municipio.codigo),
           nome: String(municipio.nome),
         }));
-
-        this.metricas = (painel.dadosFiltros.metricas ?? []).map((metrica) => ({
+        this.metricas = (filtros.metricas ?? []).map((metrica) => ({
           chave: String(metrica.chave),
           label: String(metrica.label),
         }));
         this.selectedMetricas = [];
-        this.redesEnsino = (painel.dadosFiltros.rede_ensino ?? []).map((rede) => String(rede));
-        this.tpLocalizacoes = ['Urbana', 'Rural'];
-        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
-        this.painelDescricao = painel.descricao ?? '';
+        this.redesEnsino = (filtros.rede_ensino ?? []).map((rede) => String(rede));
+        this.tpLocalizacoes = (filtros.tp_localizacao ?? []).map((loc) => String(loc));
         this.isLoading = false;
 
         if (this.map) {
@@ -161,7 +157,15 @@ export class AcessibilidadePageComponent implements AfterViewInit, OnInit, OnDes
         }
 
         this.loadAnaliseTemporal({ metrica: this.getMetricaAnaliseTemporal() });
+        this.cd.markForCheck();
+      });
 
+    this.facade
+      .listarPainel(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((painel) => {
+        this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
+        this.painelDescricao = painel.descricao ?? '';
         this.cd.markForCheck();
       });
   }

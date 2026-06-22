@@ -1,10 +1,15 @@
-import { AnaliseTemporalResponse } from '../../../core/api/models/analise-temporal-response';
-import { MapaResponse } from '../../../core/api/models/mapa-response';
+import { AppSchemasAcessibilidadeAnaliseTemporalResponse } from '../../../core/api/models/app-schemas-acessibilidade-analise-temporal-response';
+import { AppSchemasAcessibilidadeMapaResponse } from '../../../core/api/models/app-schemas-acessibilidade-mapa-response';
+import { FiltrosResponse } from '../../../core/api/models/filtros-response';
 import { PainelResponse } from '../../../core/api/models/painel-response';
 import {
   AnaliseTemporalModel,
   ClassificacaoAcessibilidadeModel,
+  DadosFiltrosModel,
+  EscolaGeoEntryModel,
   GeoJsonFeatureCollectionModel,
+  GraficoListaModel,
+  GraficoModel,
   MapaAcessibilidadeModel,
   MapaMunicipioGeoJsonCollectionModel,
   MapaMunicipioGeoJsonModel,
@@ -12,8 +17,6 @@ import {
   MapaMunicipioResumoModel,
   MapaPontoModel,
   PainelAcessibilidadeModel,
-  GraficoModel,
-  GraficoListaModel,
 } from '../models/acessibilidade.models';
 
 function normalizarTexto(texto: string | null | undefined): string {
@@ -169,16 +172,18 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
   };
 }
 
+export function mapFiltrosResponseToModel(api: FiltrosResponse): DadosFiltrosModel {
+  return {
+    anos: api.data.anos ?? [],
+    metricas: api.data.metricas ?? [],
+    municipios: api.data.municipios ?? [],
+    rede_ensino: api.data.rede_ensino ?? [],
+    tp_localizacao: api.data.tp_localizacao ?? [],
+  };
+}
+
 export function mapPainelResponseToModel(api: PainelResponse): PainelAcessibilidadeModel {
   const data = api.data;
-
-  const dadosFiltros = {
-    anos: data.dados_filtros.anos ?? [],
-    metricas: data.dados_filtros.metricas ?? [],
-    municipios: data.dados_filtros.municipios ?? [],
-    rede_ensino: data.dados_filtros.rede_ensino ?? [],
-    tp_localizacao: data.dados_filtros.tp_localizacao ?? [],
-  };
 
   const graficos: { [key: string]: GraficoModel } = Object.keys(data.graficos || {}).reduce(
     (acc, key) => {
@@ -195,22 +200,31 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelAcessibilid
 
   return {
     descricao: api.descricao,
-    dadosFiltros,
     graficos,
   };
 }
 
-export function mapMapaResponseToModel(api: MapaResponse): MapaAcessibilidadeModel {
-  const pontos: MapaPontoModel[] = (api.data.pontos || []).map((p) => ({
-    ...p,
-    co_entidade: p.co_entidade,
-    nome: p.no_entidade,
-    municipio: p.no_municipio,
-    latitude: p.latitude,
-    longitude: p.longitude,
-    score: p.score_acessibilidade,
-    classificacao: p.classificacao_acessibilidade,
-  }));
+export function mapMapaResponseToModel(
+  api: AppSchemasAcessibilidadeMapaResponse,
+  geoMap: Map<number, EscolaGeoEntryModel>,
+): MapaAcessibilidadeModel {
+  const pontos: MapaPontoModel[] = [];
+
+  for (const p of api.data.pontos || []) {
+    const geo = geoMap.get(p.co_entidade);
+    if (!geo) continue;
+
+    pontos.push({
+      co_entidade: p.co_entidade,
+      nome: geo.no_entidade,
+      municipio: geo.no_municipio,
+      latitude: geo.latitude,
+      longitude: geo.longitude,
+      no_bairro: geo.no_bairro ?? null,
+      score: p.score_acessibilidade,
+      classificacao: p.classificacao_acessibilidade,
+    });
+  }
 
   return {
     descricao: api.descricao,
@@ -219,13 +233,9 @@ export function mapMapaResponseToModel(api: MapaResponse): MapaAcessibilidadeMod
 }
 
 export function mapAnaliseTemporalResponseToModel(
-  api: AnaliseTemporalResponse,
+  api: AppSchemasAcessibilidadeAnaliseTemporalResponse,
 ): AnaliseTemporalModel {
   const data = api.data;
-
-  const dadosFiltros = {
-    metricas: data.dados_filtros.metricas ?? [],
-  };
 
   const graficos: { [key: string]: GraficoModel } = Object.keys(data.graficos || {}).reduce(
     (acc, key) => {
@@ -247,7 +257,6 @@ export function mapAnaliseTemporalResponseToModel(
 
   return {
     descricao: api.descricao,
-    dadosFiltros,
     graficos,
     listaGraficos,
   };

@@ -14,8 +14,8 @@ export interface DadosFiltrosModel {
   anos: number[];
   metricas: MetricaFiltroModel[];
   municipios: MunicipioFiltroModel[];
-  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'>;
-  tp_localizacao?: Array<'Urbana' | 'Rural'>;
+  rede_ensino?: string[];
+  tp_localizacao?: string[];
 }
 
 export interface GraficoModel {
@@ -31,8 +31,16 @@ export interface GraficoListaModel extends GraficoModel {
 
 export interface PainelAcessibilidadeModel {
   descricao: string;
-  dadosFiltros: DadosFiltrosModel;
   graficos: { [key: string]: GraficoModel };
+}
+
+export interface EscolaGeoEntryModel {
+  co_entidade: number;
+  no_entidade: string;
+  no_bairro?: string | null;
+  latitude: number;
+  longitude: number;
+  no_municipio: string | null;
 }
 
 export interface MapaPontoModel {
@@ -56,7 +64,6 @@ export interface MapaAcessibilidadeModel {
 
 export interface AnaliseTemporalModel {
   descricao: string;
-  dadosFiltros: { metricas: MetricaFiltroModel[] };
   graficos: { [key: string]: GraficoModel };
   listaGraficos: GraficoListaModel[];
 }
