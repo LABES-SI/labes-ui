@@ -35,7 +35,7 @@ export class ConectividadeFiltersComponent {
 
   @Output() filterChange = new EventEmitter<void>();
   @Output() apply = new EventEmitter<void>();
-  @Output() reset = new EventEmitter<void>();
+  @Output() resetar = new EventEmitter<void>();
 
   onAnoChange(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;

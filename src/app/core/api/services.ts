@@ -3,3 +3,5 @@
 
 export { HealthService } from './services/health.service';
 export { AcessibilidadeService } from './services/acessibilidade.service';
+export { ConectividadeService } from './services/conectividade.service';
+export { FiltrosService } from './services/filtros.service';

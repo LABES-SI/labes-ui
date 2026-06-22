@@ -9,9 +9,9 @@ import { RequestBuilder } from '../../request-builder';
 
 import { PainelResponse } from '../../models/painel-response';
 
-export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
+export interface GetPainelConectividadeConectividadePainelGet$Params {
   /**
-   * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+   * Ano do censo escolar (ex: 2024). Se omitido, agrega todos os censos.
    */
   ano?: number | null;
 
@@ -24,21 +24,23 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
    * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
    */
   variaveis?: Array<
-    | 'in_acessibilidade_rampas'
-    | 'in_acessibilidade_corrimao'
-    | 'in_acessibilidade_elevador'
-    | 'in_acessibilidade_pisos_tateis'
-    | 'in_acessibilidade_vao_livre'
-    | 'qt_salas_utilizadas_acessiveis'
-    | 'in_acessibilidade_inexistente'
-    | 'in_acessibilidade_sinal_tatil'
-    | 'in_acessibilidade_sinal_sonoro'
-    | 'in_acessibilidade_sinal_visual'
-    | 'tp_aee'
-    | 'in_sala_atendimento_especial'
-    | 'in_reserva_pcd'
-    | 'qt_prof_psicologo'
-    | 'qt_prof_assist_social'
+    | 'in_internet'
+    | 'in_internet_alunos'
+    | 'in_internet_administrativo'
+    | 'in_internet_aprendizagem'
+    | 'in_internet_comunidade'
+    | 'in_banda_larga'
+    | 'in_acesso_internet_computador'
+    | 'in_aces_internet_disp_pessoais'
+    | 'tp_rede_local'
+    | 'in_computador'
+    | 'in_desktop_aluno'
+    | 'qt_desktop_aluno'
+    | 'in_comp_portatil_aluno'
+    | 'qt_comp_portatil_aluno'
+    | 'in_tablet_aluno'
+    | 'qt_tablet_aluno'
+    | 'in_redes_sociais'
   > | null;
 
   /**
@@ -57,17 +59,13 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
   pibid?: boolean | null;
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(
+export function getPainelConectividadeConectividadePainelGet(
   http: HttpClient,
   rootUrl: string,
-  params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
+  params?: GetPainelConectividadeConectividadePainelGet$Params,
   context?: HttpContext,
 ): Observable<StrictHttpResponse<PainelResponse>> {
-  const rb = new RequestBuilder(
-    rootUrl,
-    getPainelAcessibilidadeAcessibilidadePainelGet.PATH,
-    'get',
-  );
+  const rb = new RequestBuilder(rootUrl, getPainelConectividadeConectividadePainelGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
@@ -85,4 +83,4 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(
   );
 }
 
-getPainelAcessibilidadeAcessibilidadePainelGet.PATH = '/acessibilidade/painel';
+getPainelConectividadeConectividadePainelGet.PATH = '/conectividade/painel';

@@ -17,19 +17,28 @@ import { AppInputComponent } from '../../../../shared/ui/input/app-input.compone
 import * as L from 'leaflet';
 import { ConectividadeFacade } from '../../facades/conectividade.facade';
 import { ConectividadeFiltersComponent } from '../../components/filters/conectividade-filters.component';
-import { ConectividadeChartsComponent, GraficoApresentacao } from '../../components/charts/conectividade-charts.component';
-import { MetricaFiltroModel, MunicipioFiltroModel, MapaPontoModel, MapaMunicipioGeoJsonCollectionModel } from '../../models/conectividade.models';
+import {
+  ConectividadeChartsComponent,
+  GraficoApresentacao,
+} from '../../components/charts/conectividade-charts.component';
+import {
+  MetricaFiltroModel,
+  MunicipioFiltroModel,
+  MapaPontoModel,
+  MapaMunicipioGeoJsonCollectionModel,
+  GraficoModel,
+} from '../../models/conectividade.models';
 import { PlotlyFigure } from '../../../../core/api/models/plotly-figure';
 
 @Component({
   selector: 'app-conectividade-page',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
     AppInputComponent,
     ConectividadeFiltersComponent,
-    ConectividadeChartsComponent
+    ConectividadeChartsComponent,
   ],
   templateUrl: './conectividade-page.component.html',
   styleUrl: './conectividade-page.component.scss',
@@ -114,14 +123,13 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
       });
   }
 
-  onFilterChange(): void {
-  }
+  onFilterChange(): void {}
 
   aplicarFiltros(): void {
     const params = this.buildParams();
     this.loadResumo(params);
     this.loadMapAndTable(params);
-    this.loadAnaliseTemporal(params);
+    this.loadAnaliseTemporal();
   }
 
   resetFiltros(): void {
@@ -203,7 +211,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
       this.cd.markForCheck();
       return;
     }
-    
+
     this.map.setView([escola.latitude, escola.longitude], 15);
     const marker = this.getOrCreateSchoolMarker(escola);
     if (marker) {
@@ -220,7 +228,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     this.cd.markForCheck();
   }
 
-  private buildParams(): any {
+  private buildParams(): Record<string, string | number | boolean | string[] | null> {
     return {
       ano: this.selectedAno,
       variaveis: this.selectedMetricas.length ? this.selectedMetricas : null,
@@ -233,7 +241,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     };
   }
 
-  private loadResumo(params: any): void {
+  private loadResumo(params: Record<string, string | number | boolean | string[] | null>): void {
     this.facade
       .listarPainel(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -243,41 +251,49 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
       });
   }
 
-  private loadMapAndTable(params: any): void {
-    this.facade.listarMapaMunicipalGeoJsonComPontos(params).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
-      this.mapaCollection = data.collection;
-      this.escolasPontos = data.pontos || [];
-      
-      if (!this.map) return;
+  private loadMapAndTable(
+    params: Record<string, string | number | boolean | string[] | null>,
+  ): void {
+    this.facade
+      .listarMapaMunicipalGeoJsonComPontos(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data) => {
+        this.mapaCollection = data.collection;
+        this.escolasPontos = data.pontos || [];
 
-      if (this.municipalitiesLayer) {
-        this.municipalitiesLayer.removeFrom(this.map);
-      }
-      if (this.schoolMarkersLayer) {
-        this.schoolMarkersLayer.removeFrom(this.map);
-      }
+        if (!this.map) return;
 
-      this.schoolMarkersById.clear();
-      
-      this.municipalitiesLayer = L.geoJSON(this.mapaCollection as Parameters<typeof L.geoJSON>[0], {
-        style: (feature) => ({
-          color: '#4a6fa5',
-          weight: 1,
-          fillColor: (feature?.properties as { cor?: string })?.cor ?? '#cccccc',
-          fillOpacity: 0.55,
-        }),
-      }).addTo(this.map);
-
-      this.schoolMarkersLayer = L.featureGroup().addTo(this.map);
-
-      for (const escola of this.escolasPontos) {
-        if (Number.isFinite(escola.latitude) && Number.isFinite(escola.longitude)) {
-          this.getOrCreateSchoolMarker(escola);
+        if (this.municipalitiesLayer) {
+          this.municipalitiesLayer.removeFrom(this.map);
         }
-      }
+        if (this.schoolMarkersLayer) {
+          this.schoolMarkersLayer.removeFrom(this.map);
+        }
 
-      this.cd.markForCheck();
-    });
+        this.schoolMarkersById.clear();
+
+        this.municipalitiesLayer = L.geoJSON(
+          this.mapaCollection as Parameters<typeof L.geoJSON>[0],
+          {
+            style: (feature) => ({
+              color: '#4a6fa5',
+              weight: 1,
+              fillColor: (feature?.properties as { cor?: string })?.cor ?? '#cccccc',
+              fillOpacity: 0.55,
+            }),
+          },
+        ).addTo(this.map);
+
+        this.schoolMarkersLayer = L.featureGroup().addTo(this.map);
+
+        for (const escola of this.escolasPontos) {
+          if (Number.isFinite(escola.latitude) && Number.isFinite(escola.longitude)) {
+            this.getOrCreateSchoolMarker(escola);
+          }
+        }
+
+        this.cd.markForCheck();
+      });
   }
 
   private getOrCreateSchoolMarker(escola: MapaPontoModel): L.Marker | undefined {
@@ -303,7 +319,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     return marker;
   }
 
-  private loadAnaliseTemporal(params: any): void {
+  private loadAnaliseTemporal(): void {
     const analiseParams = {
       metrica: this.selectedMetricas.length ? this.selectedMetricas[0] : null,
     };
@@ -321,7 +337,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
       });
   }
 
-  private mapGraficosPainel(graficos: Record<string, any>): GraficoApresentacao[] {
+  private mapGraficosPainel(graficos: Record<string, GraficoModel>): GraficoApresentacao[] {
     return Object.entries(graficos).map(([chave, grafico]) => ({
       chave,
       titulo: grafico.titulo,

@@ -10,9 +10,10 @@ import {
   MapaConectividadeModel,
   AnaliseTemporalModel,
   MapaPontoModel,
-  MapaMunicipioResumoModel,
   ClassificacaoConectividadeModel,
 } from '../models/conectividade.models';
+
+type ApiParams = Record<string, string | number | boolean | string[] | null | undefined>;
 
 type MapaMunicipalComPontosModel = {
   collection: MapaMunicipioGeoJsonCollectionModel;
@@ -24,7 +25,7 @@ export class ConectividadeFacade {
   private readonly api = inject(ConectividadeService);
   private readonly http = inject(HttpClient);
 
-  listarPainel(params?: any): Observable<PainelConectividadeModel> {
+  listarPainel(params?: ApiParams): Observable<PainelConectividadeModel> {
     return this.api.getPainel(params).pipe(
       catchError(() =>
         of({
@@ -43,11 +44,11 @@ export class ConectividadeFacade {
     );
   }
 
-  listarMapa(params?: any): Observable<MapaConectividadeModel> {
+  listarMapa(params?: ApiParams): Observable<MapaConectividadeModel> {
     return this.api.getMapa(params).pipe(catchError(() => of({ descricao: '', pontos: [] })));
   }
 
-  listarAnaliseTemporal(params?: any): Observable<AnaliseTemporalModel> {
+  listarAnaliseTemporal(params?: ApiParams): Observable<AnaliseTemporalModel> {
     return this.api
       .getAnaliseTemporal(params)
       .pipe(
@@ -57,9 +58,9 @@ export class ConectividadeFacade {
       );
   }
 
-  listarMapaMunicipalGeoJsonComPontos(params?: any): Observable<MapaMunicipalComPontosModel> {
+  listarMapaMunicipalGeoJsonComPontos(params?: ApiParams): Observable<MapaMunicipalComPontosModel> {
     const call = async () => {
-      const [painel, mapa, geojson] = await Promise.all([
+      const [, mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarPainel(params)),
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
@@ -73,17 +74,8 @@ export class ConectividadeFacade {
         ),
       ]);
 
-      // Helper function para criar mapa municipal resumos a partir de pontos
-      const resumos: MapaMunicipioResumoModel[] = this.mapMapaMunicipioResumoFromPontos(
-        mapa.pontos,
-      );
-
       return {
-        collection: this.mapGeoJsonMunicipiosComConectividade(
-          geojson,
-          resumos,
-          painel.dadosFiltros.municipios,
-        ),
+        collection: this.mapGeoJsonMunicipiosComConectividade(geojson),
         pontos: mapa.pontos,
       };
     };
@@ -101,15 +93,8 @@ export class ConectividadeFacade {
     );
   }
 
-  private mapMapaMunicipioResumoFromPontos(pontos: MapaPontoModel[]): MapaMunicipioResumoModel[] {
-    // Simplificação para manter a interface mockada
-    return [];
-  }
-
   private mapGeoJsonMunicipiosComConectividade(
     geojson: GeoJsonFeatureCollectionModel,
-    resumos: MapaMunicipioResumoModel[],
-    municipiosFiltro: any[],
   ): MapaMunicipioGeoJsonCollectionModel {
     return {
       type: 'FeatureCollection',

@@ -7,16 +7,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { PainelResponse } from '../../models/painel-response';
+import { PainelEscolasResponse } from '../../models/painel-escolas-response';
 
-export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
+export interface GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params {
   /**
-   * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+   * Ano do censo escolar (ex: 2024). Se omitido, usa o censo mais recente de cada escola.
    */
   ano?: number | null;
 
   /**
-   * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
+   * Lista de municípios (até 4). Use o parâmetro repetido.
    */
   municipios?: Array<string> | null;
 
@@ -24,21 +24,23 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
    * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
    */
   variaveis?: Array<
-    | 'in_acessibilidade_rampas'
-    | 'in_acessibilidade_corrimao'
-    | 'in_acessibilidade_elevador'
-    | 'in_acessibilidade_pisos_tateis'
-    | 'in_acessibilidade_vao_livre'
-    | 'qt_salas_utilizadas_acessiveis'
-    | 'in_acessibilidade_inexistente'
-    | 'in_acessibilidade_sinal_tatil'
-    | 'in_acessibilidade_sinal_sonoro'
-    | 'in_acessibilidade_sinal_visual'
-    | 'tp_aee'
-    | 'in_sala_atendimento_especial'
-    | 'in_reserva_pcd'
-    | 'qt_prof_psicologo'
-    | 'qt_prof_assist_social'
+    | 'in_internet'
+    | 'in_internet_alunos'
+    | 'in_internet_administrativo'
+    | 'in_internet_aprendizagem'
+    | 'in_internet_comunidade'
+    | 'in_banda_larga'
+    | 'in_acesso_internet_computador'
+    | 'in_aces_internet_disp_pessoais'
+    | 'tp_rede_local'
+    | 'in_computador'
+    | 'in_desktop_aluno'
+    | 'qt_desktop_aluno'
+    | 'in_comp_portatil_aluno'
+    | 'qt_comp_portatil_aluno'
+    | 'in_tablet_aluno'
+    | 'qt_tablet_aluno'
+    | 'in_redes_sociais'
   > | null;
 
   /**
@@ -55,17 +57,27 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
    * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
    */
   pibid?: boolean | null;
+
+  /**
+   * Página (base 0).
+   */
+  page?: number;
+
+  /**
+   * Escolas por página (1–50).
+   */
+  page_size?: number;
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(
+export function getPainelEscolasConectividadeConectividadePainelEscolasGet(
   http: HttpClient,
   rootUrl: string,
-  params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
+  params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params,
   context?: HttpContext,
-): Observable<StrictHttpResponse<PainelResponse>> {
+): Observable<StrictHttpResponse<PainelEscolasResponse>> {
   const rb = new RequestBuilder(
     rootUrl,
-    getPainelAcessibilidadeAcessibilidadePainelGet.PATH,
+    getPainelEscolasConectividadeConectividadePainelEscolasGet.PATH,
     'get',
   );
   if (params) {
@@ -75,14 +87,16 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(
     rb.query('rede_ensino', params.rede_ensino, {});
     rb.query('tp_localizacao', params.tp_localizacao, {});
     rb.query('pibid', params.pibid, {});
+    rb.query('page', params.page, {});
+    rb.query('page_size', params.page_size, {});
   }
 
   return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<PainelResponse>;
+      return r as StrictHttpResponse<PainelEscolasResponse>;
     }),
   );
 }
 
-getPainelAcessibilidadeAcessibilidadePainelGet.PATH = '/acessibilidade/painel';
+getPainelEscolasConectividadeConectividadePainelEscolasGet.PATH = '/conectividade/painel/escolas';

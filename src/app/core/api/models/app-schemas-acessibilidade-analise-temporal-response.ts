@@ -6,7 +6,7 @@ import { AnaliseTemporalData } from '../models/analise-temporal-data';
 /**
  * Resposta da análise temporal por tipo de localização.
  */
-export interface AnaliseTemporalResponse {
+export interface AppSchemasAcessibilidadeAnaliseTemporalResponse {
   data: AnaliseTemporalData;
 
   /**

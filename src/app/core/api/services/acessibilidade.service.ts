@@ -9,14 +9,17 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { AnaliseTemporalResponse } from '../models/analise-temporal-response';
+import { AppSchemasAcessibilidadeAnaliseTemporalResponse } from '../models/app-schemas-acessibilidade-analise-temporal-response';
+import { AppSchemasAcessibilidadeMapaResponse } from '../models/app-schemas-acessibilidade-mapa-response';
 import { getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet } from '../fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
 import { GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params } from '../fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
 import { getMapaAcessibilidadeAcessibilidadeMapaGet } from '../fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 import { GetMapaAcessibilidadeAcessibilidadeMapaGet$Params } from '../fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 import { getPainelAcessibilidadeAcessibilidadePainelGet } from '../fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
 import { GetPainelAcessibilidadeAcessibilidadePainelGet$Params } from '../fn/acessibilidade/get-painel-acessibilidade-acessibilidade-painel-get';
-import { MapaResponse } from '../models/mapa-response';
+import { getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet } from '../fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
+import { GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params } from '../fn/acessibilidade/get-painel-escolas-acessibilidade-acessibilidade-painel-escolas-get';
+import { PainelEscolasResponse } from '../models/painel-escolas-response';
 import { PainelResponse } from '../models/painel-response';
 
 @Injectable({ providedIn: 'root' })
@@ -73,16 +76,69 @@ export class AcessibilidadeService extends BaseService {
     return resp.then((r: StrictHttpResponse<PainelResponse>): PainelResponse => r.body);
   }
 
+  /** Path part for operation `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet()` */
+  static readonly GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGetPath =
+    '/acessibilidade/painel/escolas';
+
+  /**
+   * Gráfico paginado de métricas de acessibilidade por escola.
+   *
+   * Retorna uma página do gráfico de métricas por escola (barras empilhadas,
+   * ordenado por score DESC) + metadados de paginação. Pensado para o frontend
+   * navegar as demais escolas sem reprocessar o painel inteiro.
+   *
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(
+    params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
+    context?: HttpContext,
+  ): Promise<StrictHttpResponse<PainelEscolasResponse>> {
+    const obs = getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
+      this.http,
+      this.rootUrl,
+      params,
+      context,
+    );
+    return firstValueFrom(obs);
+  }
+
+  /**
+   * Gráfico paginado de métricas de acessibilidade por escola.
+   *
+   * Retorna uma página do gráfico de métricas por escola (barras empilhadas,
+   * ordenado por score DESC) + metadados de paginação. Pensado para o frontend
+   * navegar as demais escolas sem reprocessar o painel inteiro.
+   *
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
+    params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
+    context?: HttpContext,
+  ): Promise<PainelEscolasResponse> {
+    const resp = this.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(
+      params,
+      context,
+    );
+    return resp.then(
+      (r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body,
+    );
+  }
+
   /** Path part for operation `getMapaAcessibilidadeAcessibilidadeMapaGet()` */
   static readonly GetMapaAcessibilidadeAcessibilidadeMapaGetPath = '/acessibilidade/mapa';
 
   /**
-   * Pontos georreferenciados de escolas com score de acessibilidade.
+   * Escolas com score e classificação de acessibilidade pré-computados.
    *
-   * Retorna lista de escolas georreferenciadas (latitude/longitude) com
-   * score (0-11) e classificação (Boa/Média/Baixa/Inexistente) de
-   * acessibilidade calculados em SQL a partir de silver.fato_acessibilidade
-   * e dimensões associadas.
+   * Retorna as linhas de gold.fato_score_acessibilidade (uma por escola por
+   * ano censo) com as 15 métricas e o score (0-15) e classificação
+   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getMapaAcessibilidadeAcessibilidadeMapaGet()` instead.
@@ -92,7 +148,7 @@ export class AcessibilidadeService extends BaseService {
   getMapaAcessibilidadeAcessibilidadeMapaGet$Response(
     params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
     context?: HttpContext,
-  ): Promise<StrictHttpResponse<MapaResponse>> {
+  ): Promise<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
     const obs = getMapaAcessibilidadeAcessibilidadeMapaGet(
       this.http,
       this.rootUrl,
@@ -103,12 +159,11 @@ export class AcessibilidadeService extends BaseService {
   }
 
   /**
-   * Pontos georreferenciados de escolas com score de acessibilidade.
+   * Escolas com score e classificação de acessibilidade pré-computados.
    *
-   * Retorna lista de escolas georreferenciadas (latitude/longitude) com
-   * score (0-11) e classificação (Boa/Média/Baixa/Inexistente) de
-   * acessibilidade calculados em SQL a partir de silver.fato_acessibilidade
-   * e dimensões associadas.
+   * Retorna as linhas de gold.fato_score_acessibilidade (uma por escola por
+   * ano censo) com as 15 métricas e o score (0-15) e classificação
+   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
    *
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getMapaAcessibilidadeAcessibilidadeMapaGet$Response()` instead.
@@ -118,9 +173,13 @@ export class AcessibilidadeService extends BaseService {
   getMapaAcessibilidadeAcessibilidadeMapaGet(
     params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
     context?: HttpContext,
-  ): Promise<MapaResponse> {
+  ): Promise<AppSchemasAcessibilidadeMapaResponse> {
     const resp = this.getMapaAcessibilidadeAcessibilidadeMapaGet$Response(params, context);
-    return resp.then((r: StrictHttpResponse<MapaResponse>): MapaResponse => r.body);
+    return resp.then(
+      (
+        r: StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>,
+      ): AppSchemasAcessibilidadeMapaResponse => r.body,
+    );
   }
 
   /** Path part for operation `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()` */
@@ -128,11 +187,13 @@ export class AcessibilidadeService extends BaseService {
     '/acessibilidade/analise-temporal';
 
   /**
-   * Evolução temporal da acessibilidade por tipo de localização.
+   * Evolução temporal da acessibilidade (por localização e por dependência).
    *
-   * Retorna o gráfico de evolução temporal por tipo de localização
-   * (uma linha por urbana/rural ao longo dos anos censo) + opções de
-   * filtro de métrica para popular dropdowns do frontend.
+   * Retorna os gráficos de evolução temporal: por tipo de localização
+   * (uma linha por urbana/rural) e por tipo de dependência administrativa
+   * (uma linha por Federal/Estadual/Municipal/Privada), ambos ao longo
+   * dos anos censo + opções de filtro de métrica para popular dropdowns
+   * do frontend.
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()` instead.
@@ -142,7 +203,7 @@ export class AcessibilidadeService extends BaseService {
   getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
     params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
     context?: HttpContext,
-  ): Promise<StrictHttpResponse<AnaliseTemporalResponse>> {
+  ): Promise<StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>> {
     const obs = getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
       this.http,
       this.rootUrl,
@@ -153,11 +214,13 @@ export class AcessibilidadeService extends BaseService {
   }
 
   /**
-   * Evolução temporal da acessibilidade por tipo de localização.
+   * Evolução temporal da acessibilidade (por localização e por dependência).
    *
-   * Retorna o gráfico de evolução temporal por tipo de localização
-   * (uma linha por urbana/rural ao longo dos anos censo) + opções de
-   * filtro de métrica para popular dropdowns do frontend.
+   * Retorna os gráficos de evolução temporal: por tipo de localização
+   * (uma linha por urbana/rural) e por tipo de dependência administrativa
+   * (uma linha por Federal/Estadual/Municipal/Privada), ambos ao longo
+   * dos anos censo + opções de filtro de métrica para popular dropdowns
+   * do frontend.
    *
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response()` instead.
@@ -167,13 +230,15 @@ export class AcessibilidadeService extends BaseService {
   getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
     params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
     context?: HttpContext,
-  ): Promise<AnaliseTemporalResponse> {
+  ): Promise<AppSchemasAcessibilidadeAnaliseTemporalResponse> {
     const resp = this.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
       params,
       context,
     );
     return resp.then(
-      (r: StrictHttpResponse<AnaliseTemporalResponse>): AnaliseTemporalResponse => r.body,
+      (
+        r: StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>,
+      ): AppSchemasAcessibilidadeAnaliseTemporalResponse => r.body,
     );
   }
 }

@@ -7,16 +7,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { PainelResponse } from '../../models/painel-response';
+import { PainelEscolasResponse } from '../../models/painel-escolas-response';
 
-export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
+export interface GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params {
   /**
-   * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+   * Ano do censo escolar (ex: 2023). Se omitido, usa o censo mais recente de cada escola.
    */
   ano?: number | null;
 
   /**
-   * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
+   * Lista de municípios (até 4). Use o parâmetro repetido.
    */
   municipios?: Array<string> | null;
 
@@ -55,17 +55,27 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
    * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
    */
   pibid?: boolean | null;
+
+  /**
+   * Página (base 0).
+   */
+  page?: number;
+
+  /**
+   * Escolas por página (1–50).
+   */
+  page_size?: number;
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(
+export function getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
   http: HttpClient,
   rootUrl: string,
-  params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
+  params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
   context?: HttpContext,
-): Observable<StrictHttpResponse<PainelResponse>> {
+): Observable<StrictHttpResponse<PainelEscolasResponse>> {
   const rb = new RequestBuilder(
     rootUrl,
-    getPainelAcessibilidadeAcessibilidadePainelGet.PATH,
+    getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH,
     'get',
   );
   if (params) {
@@ -75,14 +85,17 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(
     rb.query('rede_ensino', params.rede_ensino, {});
     rb.query('tp_localizacao', params.tp_localizacao, {});
     rb.query('pibid', params.pibid, {});
+    rb.query('page', params.page, {});
+    rb.query('page_size', params.page_size, {});
   }
 
   return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<PainelResponse>;
+      return r as StrictHttpResponse<PainelEscolasResponse>;
     }),
   );
 }
 
-getPainelAcessibilidadeAcessibilidadePainelGet.PATH = '/acessibilidade/painel';
+getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH =
+  '/acessibilidade/painel/escolas';
