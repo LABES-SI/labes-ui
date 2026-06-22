@@ -105,15 +105,15 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
 
   carregarFiltrosIniciais(): void {
     this.facade
-      .listarPainel()
+      .listarFiltros()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((painel) => {
-        this.anos = (painel.dadosFiltros.anos ?? []).sort((a, b) => b - a);
-        this.municipios = painel.dadosFiltros.municipios ?? [];
-        this.metricas = painel.dadosFiltros.metricas ?? [];
-        this.redesEnsino = painel.dadosFiltros.rede_ensino ?? [];
-        this.tpLocalizacoes = painel.dadosFiltros.tp_localizacao ?? [];
-        this.situacaoConectividade = painel.dadosFiltros.situacao_conectividade ?? [];
+      .subscribe((filtros) => {
+        this.anos = (filtros.anos ?? []).sort((a, b) => b - a);
+        this.municipios = filtros.municipios ?? [];
+        this.metricas = filtros.metricas ?? [];
+        this.redesEnsino = filtros.rede_ensino ?? [];
+        this.tpLocalizacoes = filtros.tp_localizacao ?? [];
+        this.situacaoConectividade = [];
 
         if (this.anos.length > 0) {
           this.selectedAno = this.anos[0];
@@ -228,20 +228,29 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     this.cd.markForCheck();
   }
 
-  private buildParams(): Record<string, string | number | boolean | string[] | null> {
+  private buildParams(): {
+    ano: number | null;
+    variaveis: string[] | null;
+    municipios: string[] | null;
+    rede_ensino: string[] | null;
+    tp_localizacao: string[] | null;
+  } {
     return {
       ano: this.selectedAno,
       variaveis: this.selectedMetricas.length ? this.selectedMetricas : null,
       municipios: this.selectedMunicipios.length ? this.selectedMunicipios : null,
       rede_ensino: this.selectedRedeEnsino.length ? this.selectedRedeEnsino : null,
       tp_localizacao: this.selectedTpLocalizacao.length ? this.selectedTpLocalizacao : null,
-      situacao_conectividade: this.selectedSituacaoConectividade.length
-        ? this.selectedSituacaoConectividade
-        : null,
     };
   }
 
-  private loadResumo(params: Record<string, string | number | boolean | string[] | null>): void {
+  private loadResumo(params: {
+    ano: number | null;
+    variaveis: string[] | null;
+    municipios: string[] | null;
+    rede_ensino: string[] | null;
+    tp_localizacao: string[] | null;
+  }): void {
     this.facade
       .listarPainel(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -251,9 +260,13 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
       });
   }
 
-  private loadMapAndTable(
-    params: Record<string, string | number | boolean | string[] | null>,
-  ): void {
+  private loadMapAndTable(params: {
+    ano: number | null;
+    variaveis: string[] | null;
+    municipios: string[] | null;
+    rede_ensino: string[] | null;
+    tp_localizacao: string[] | null;
+  }): void {
     this.facade
       .listarMapaMunicipalGeoJsonComPontos(params)
       .pipe(takeUntilDestroyed(this.destroyRef))

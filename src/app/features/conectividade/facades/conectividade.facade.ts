@@ -1,19 +1,33 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom, Observable, from, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ConectividadeService } from '../services/conectividade.service';
-import {
-  GeoJsonFeatureCollectionModel,
-  MapaMunicipioGeoJsonCollectionModel,
-  PainelConectividadeModel,
-  MapaConectividadeModel,
-  AnaliseTemporalModel,
-  MapaPontoModel,
-  ClassificacaoConectividadeModel,
-} from '../models/conectividade.models';
+import { firstValueFrom, from, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-type ApiParams = Record<string, string | number | boolean | string[] | null | undefined>;
+import { ConectividadeService } from '../../../core/api/services/conectividade.service';
+import { FiltrosService } from '../../../core/api/services/filtros.service';
+import type {
+  GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params,
+  GetPainelConectividadeConectividadePainelGet$Params,
+} from '../../../core/api';
+import {
+  AnaliseTemporalModel,
+  DadosFiltrosModel,
+  EscolaGeoEntryModel,
+  GeoJsonFeatureCollectionModel,
+  MapaConectividadeModel,
+  MapaMunicipioGeoJsonCollectionModel,
+  MapaMunicipioResumoModel,
+  MapaPontoModel,
+  PainelConectividadeModel,
+} from '../models/conectividade.models';
+import {
+  mapAnaliseTemporalResponseToModel,
+  mapFiltrosResponseToModel,
+  mapGeoJsonMunicipiosComConectividade,
+  mapMapaMunicipioResumoFromPontos,
+  mapMapaResponseToModel,
+  mapPainelResponseToModel,
+} from '../mappers/conectividade.mapper';
 
 type MapaMunicipalComPontosModel = {
   collection: MapaMunicipioGeoJsonCollectionModel;
@@ -23,49 +37,95 @@ type MapaMunicipalComPontosModel = {
 @Injectable({ providedIn: 'root' })
 export class ConectividadeFacade {
   private readonly api = inject(ConectividadeService);
+  private readonly filtrosApi = inject(FiltrosService);
   private readonly http = inject(HttpClient);
 
-  listarPainel(params?: ApiParams): Observable<PainelConectividadeModel> {
-    return this.api.getPainel(params).pipe(
+  private escolasGeoMap$: Promise<Map<number, EscolaGeoEntryModel>> | null = null;
+
+  private getEscolasGeoMap(): Promise<Map<number, EscolaGeoEntryModel>> {
+    if (!this.escolasGeoMap$) {
+      this.escolasGeoMap$ = firstValueFrom(
+        this.http.get<EscolaGeoEntryModel[]>('assets/geojson/escolas_geo.json'),
+      ).then((entries) => new Map(entries.map((e) => [e.co_entidade, e])));
+    }
+    return this.escolasGeoMap$;
+  }
+
+  listarFiltros(): Observable<DadosFiltrosModel> {
+    return from(this.filtrosApi.getFiltrosFiltrosGet({ painel: 'conectividade' })).pipe(
+      map(mapFiltrosResponseToModel),
       catchError(() =>
-        of({
-          descricao: '',
-          dadosFiltros: {
-            anos: [],
-            metricas: [],
-            municipios: [],
-            rede_ensino: [],
-            tp_localizacao: [],
-            situacao_conectividade: [],
-          },
-          graficos: {},
-        }),
+        of({ anos: [], metricas: [], municipios: [], rede_ensino: [], tp_localizacao: [] }),
       ),
     );
   }
 
-  listarMapa(params?: ApiParams): Observable<MapaConectividadeModel> {
-    return this.api.getMapa(params).pipe(catchError(() => of({ descricao: '', pontos: [] })));
-  }
-
-  listarAnaliseTemporal(params?: ApiParams): Observable<AnaliseTemporalModel> {
-    return this.api
-      .getAnaliseTemporal(params)
-      .pipe(
-        catchError(() =>
-          of({ descricao: '', dadosFiltros: { metricas: [] }, graficos: {}, listaGraficos: [] }),
-        ),
-      );
-  }
-
-  listarMapaMunicipalGeoJsonComPontos(params?: ApiParams): Observable<MapaMunicipalComPontosModel> {
+  listarPainel(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+  }): Observable<PainelConectividadeModel> {
     const call = async () => {
-      const [, mapa, geojson] = await Promise.all([
-        firstValueFrom(this.listarPainel(params)),
+      const apiResp = await this.api.getPainelConectividadeConectividadePainelGet({
+        ano: params?.ano ?? null,
+        variaveis:
+          params?.variaveis as GetPainelConectividadeConectividadePainelGet$Params['variaveis'],
+        municipios: params?.municipios as string[],
+        rede_ensino:
+          params?.rede_ensino as GetPainelConectividadeConectividadePainelGet$Params['rede_ensino'],
+        tp_localizacao:
+          params?.tp_localizacao as GetPainelConectividadeConectividadePainelGet$Params['tp_localizacao'],
+      });
+      return mapPainelResponseToModel(apiResp);
+    };
+
+    return from(call()).pipe(catchError(() => of({ descricao: '', graficos: {} })));
+  }
+
+  listarMapa(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+  }): Observable<MapaConectividadeModel> {
+    const call = async () => {
+      const [apiResp, geoMap] = await Promise.all([
+        this.api.getMapaConectividadeConectividadeMapaGet({
+          ano: params?.ano ?? null,
+          variaveis:
+            params?.variaveis as GetPainelConectividadeConectividadePainelGet$Params['variaveis'],
+        }),
+        this.getEscolasGeoMap(),
+      ]);
+      return mapMapaResponseToModel(apiResp, geoMap);
+    };
+
+    return from(call()).pipe(catchError(() => of({ descricao: '', pontos: [] })));
+  }
+
+  listarAnaliseTemporal(params?: { metrica?: string | null }): Observable<AnaliseTemporalModel> {
+    return from(
+      this.api.getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet({
+        metrica: (params?.metrica ??
+          undefined) as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params['metrica'],
+      }),
+    ).pipe(
+      map(mapAnaliseTemporalResponseToModel),
+      catchError(() => of({ descricao: '', graficos: {}, listaGraficos: [] })),
+    );
+  }
+
+  listarMapaMunicipalGeoJsonComPontos(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+  }): Observable<MapaMunicipalComPontosModel> {
+    const call = async () => {
+      const [mapa, geojson] = await Promise.all([
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
           this.http
-            .get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_2025.json')
+            .get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_Pibid_2025.json')
             .pipe(
               catchError(() =>
                 of({ type: 'FeatureCollection', features: [] } as GeoJsonFeatureCollectionModel),
@@ -74,8 +134,13 @@ export class ConectividadeFacade {
         ),
       ]);
 
+      const resumos: MapaMunicipioResumoModel[] = mapMapaMunicipioResumoFromPontos(mapa.pontos);
       return {
-        collection: this.mapGeoJsonMunicipiosComConectividade(geojson),
+        collection: mapGeoJsonMunicipiosComConectividade(
+          geojson,
+          resumos,
+          params?.municipios?.map((nome) => ({ nome })) ?? null,
+        ),
         pontos: mapa.pontos,
       };
     };
@@ -91,26 +156,5 @@ export class ConectividadeFacade {
         }),
       ),
     );
-  }
-
-  private mapGeoJsonMunicipiosComConectividade(
-    geojson: GeoJsonFeatureCollectionModel,
-  ): MapaMunicipioGeoJsonCollectionModel {
-    return {
-      type: 'FeatureCollection',
-      features: geojson.features.map((feature) => ({
-        ...feature,
-        properties: {
-          ...feature.properties,
-          CD_MUN: String(feature.properties['CD_MUN']),
-          NM_MUN: String(feature.properties['NM_MUN']),
-          media_score: 0,
-          quantidade_escolas: 0,
-          classificacao_conectividade_municipio:
-            'Sem Conectividade' as ClassificacaoConectividadeModel,
-          cor: '#cccccc',
-        },
-      })),
-    } as MapaMunicipioGeoJsonCollectionModel;
   }
 }
