@@ -411,8 +411,8 @@ button:hover {
   box-shadow: none;
 }
 
-.indicadores-main .search-result-item,
-.indicadores-main .search-result-item:hover {
+.dashboard-main .search-result-item,
+.dashboard-main .search-result-item:hover {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   width: 100%;
@@ -429,33 +429,33 @@ button:hover {
   box-shadow: none;
 }
 
-.indicadores-main .search-result-item:hover {
+.dashboard-main .search-result-item:hover {
   background: #f5f9ff;
 }
 
-.indicadores-main .search-result-item:first-child {
+.dashboard-main .search-result-item:first-child {
   border-left: 3px solid var(--sie-color-primary);
   background: #f8fbff;
 }
 
-.indicadores-main .escola-info {
+.dashboard-main .escola-info {
   min-width: 0;
   overflow: hidden;
 }
 
-.indicadores-main .escola-nome,
-.indicadores-main .escola-municipio {
+.dashboard-main .escola-nome,
+.dashboard-main .escola-municipio {
   display: block;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.indicadores-main .escola-nome {
+.dashboard-main .escola-nome {
   white-space: normal;
 }
 
-.indicadores-main .escola-municipio {
+.dashboard-main .escola-municipio {
   white-space: nowrap;
 }
 
@@ -691,7 +691,7 @@ button:hover {
     grid-column: span 2;
   }
 
-  .indicadores-main {
+  .dashboard-main {
     grid-template-columns: 300px minmax(0, 1fr);
   }
 
@@ -707,7 +707,7 @@ button:hover {
   }
 
   .filter-bar,
-  .indicadores-main {
+  .dashboard-main {
     grid-template-columns: 1fr;
   }
 
