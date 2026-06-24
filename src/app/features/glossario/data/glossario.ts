@@ -834,4 +834,4 @@ const GLOSSARIO_ENTRADA: TermoGlossarioEntrada[] = [
   },
 ];
 
-export const GLOSSARIO_MOCK: TermoGlossario[] = adicionarIdsUnicos(GLOSSARIO_ENTRADA);
+export const GLOSSARIO_TERMOS: TermoGlossario[] = adicionarIdsUnicos(GLOSSARIO_ENTRADA);

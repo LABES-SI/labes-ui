@@ -10,10 +10,11 @@ import {
   Renderer2,
   inject,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { GLOSSARIO_MOCK } from '../../data/glossario';
+import { GlossarioFacade } from '../../facades/glossario.facade';
 import { CategoriaGlossario, TermoGlossario } from '../../models/glossario.models';
 import { GlossarioTermoCard } from '../glossario-termo-card/glossario-termo-card';
 
@@ -33,17 +34,15 @@ interface CategoriaPill {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlossarioDrawerComponent {
+  private readonly facade = inject(GlossarioFacade);
   private renderer = inject(Renderer2);
 
-  // Estados principais
   readonly isOpen = signal(false);
   readonly searchTerm = signal('');
   readonly selectedCategory = signal<CategoriaFiltro>('todos');
 
-  // Fonte de dados (poderia vir de um serviço, mas o mock está disponível)
-  readonly termos = signal<TermoGlossario[]>(GLOSSARIO_MOCK);
+  readonly termos = toSignal(this.facade.listarTodos(), { initialValue: [] as TermoGlossario[] });
 
-  // Configuração das Pills (Filtros)
   readonly categories: CategoriaPill[] = [
     { id: 'todos', label: 'Todos' },
     { id: 'desempenho', label: 'Desempenho' },
@@ -51,15 +50,12 @@ export class GlossarioDrawerComponent {
     { id: 'infraestrutura', label: 'Infraestrutura' },
   ];
 
-  // ViewChild para auto-focus no input de busca ao abrir
   searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   constructor() {
-    // Efeito para travar o scroll da página quando o modal estiver aberto
     effect(() => {
       if (this.isOpen()) {
         this.renderer.setStyle(document.body, 'overflow', 'hidden');
-        // Usar setTimeout para garantir que o elemento já foi renderizado pelo @if
         setTimeout(() => this.searchInput()?.nativeElement.focus(), 50);
       } else {
         this.renderer.removeStyle(document.body, 'overflow');
@@ -67,7 +63,6 @@ export class GlossarioDrawerComponent {
     });
   }
 
-  // Lógica Reativa de Filtragem Cruzada
   readonly filteredTerms = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
     const category = this.selectedCategory();
@@ -82,7 +77,6 @@ export class GlossarioDrawerComponent {
     });
   });
 
-  // Ações da Interface
   toggleDrawer(): void {
     this.isOpen.update((v) => !v);
   }
@@ -90,7 +84,7 @@ export class GlossarioDrawerComponent {
   closeDrawer(): void {
     if (this.isOpen()) {
       this.isOpen.set(false);
-      this.searchTerm.set(''); // Limpa a busca ao fechar (opcional, dependendo da UX desejada)
+      this.searchTerm.set('');
     }
   }
 
@@ -102,7 +96,6 @@ export class GlossarioDrawerComponent {
     this.searchTerm.set(term);
   }
 
-  // Acessibilidade: fechar com ESC
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.closeDrawer();
