@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 
 import { FooterComponent } from './core/layout/footer/footer.component';
 import { HeaderComponent } from './core/layout/header/header.component';
+import { GlossarioDrawerComponent } from './features/glossario/components/glossario-drawer/glossario-drawer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [FooterComponent, HeaderComponent, RouterOutlet],
+  imports: [FooterComponent, HeaderComponent, RouterOutlet, GlossarioDrawerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
