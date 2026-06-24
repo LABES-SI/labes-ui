@@ -66,6 +66,7 @@ export class ConectividadeFacade {
     municipios?: string[] | null;
     rede_ensino?: string[] | null;
     tp_localizacao?: string[] | null;
+    pibid?: boolean | null;
   }): Observable<PainelConectividadeModel> {
     const call = async () => {
       const apiResp = await this.api.getPainelConectividadeConectividadePainelGet({
@@ -77,6 +78,7 @@ export class ConectividadeFacade {
           params?.rede_ensino as GetPainelConectividadeConectividadePainelGet$Params['rede_ensino'],
         tp_localizacao:
           params?.tp_localizacao as GetPainelConectividadeConectividadePainelGet$Params['tp_localizacao'],
+        pibid: params?.pibid ?? undefined,
       });
       return mapPainelResponseToModel(apiResp);
     };
@@ -87,6 +89,7 @@ export class ConectividadeFacade {
   listarMapa(params?: {
     ano?: number | null;
     variaveis?: string[] | null;
+    pibid?: boolean | null;
   }): Observable<MapaConectividadeModel> {
     const call = async () => {
       const [apiResp, geoMap] = await Promise.all([
@@ -94,6 +97,7 @@ export class ConectividadeFacade {
           ano: params?.ano ?? null,
           variaveis:
             params?.variaveis as GetPainelConectividadeConectividadePainelGet$Params['variaveis'],
+          pibid: params?.pibid ?? undefined,
         }),
         this.getEscolasGeoMap(),
       ]);
@@ -103,11 +107,15 @@ export class ConectividadeFacade {
     return from(call()).pipe(catchError(() => of({ descricao: '', pontos: [] })));
   }
 
-  listarAnaliseTemporal(params?: { metrica?: string | null }): Observable<AnaliseTemporalModel> {
+  listarAnaliseTemporal(params?: {
+    metrica?: string | null;
+    pibid?: boolean | null;
+  }): Observable<AnaliseTemporalModel> {
     return from(
       this.api.getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet({
         metrica: (params?.metrica ??
           undefined) as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params['metrica'],
+        pibid: params?.pibid ?? undefined,
       }),
     ).pipe(
       map(mapAnaliseTemporalResponseToModel),
@@ -119,6 +127,7 @@ export class ConectividadeFacade {
     ano?: number | null;
     variaveis?: string[] | null;
     municipios?: string[] | null;
+    pibid?: boolean | null;
   }): Observable<MapaMunicipalComPontosModel> {
     const call = async () => {
       const [mapa, geojson] = await Promise.all([

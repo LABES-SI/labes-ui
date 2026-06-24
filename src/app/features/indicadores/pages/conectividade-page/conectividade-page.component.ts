@@ -1,34 +1,39 @@
-import {
+﻿import {
   Component,
   ChangeDetectionStrategy,
   inject,
   OnInit,
-  OnDestroy,
   ChangeDetectorRef,
   ViewChild,
-  AfterViewInit,
-  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppInputComponent } from '../../../../shared/ui/input/app-input.component';
-import * as L from 'leaflet';
 import { ConectividadeFacade } from '../../facades/conectividade.facade';
-import { ConectividadeFiltersComponent } from '../../components/filters/conectividade-filters.component';
+import { IndicadoresFiltersComponent } from '../../components/filters/indicadores-filters.component';
 import {
-  ConectividadeChartsComponent,
+  IndicadoresChartsComponent,
   GraficoApresentacao,
-} from '../../components/charts/conectividade-charts.component';
+} from '../../components/charts/indicadores-charts.component';
+import {
+  IndicadoresMapaComponent,
+  LEGENDA_PADRAO,
+} from '../../components/mapa/indicadores-mapa.component';
 import {
   MetricaFiltroModel,
   MunicipioFiltroModel,
   MapaPontoModel,
-  MapaMunicipioGeoJsonCollectionModel,
   GraficoModel,
 } from '../../models/conectividade.models';
+import {
+  MapaPontoBaseModel,
+  LegendaItemModel,
+  GeoJsonFeatureCollectionModel,
+} from '../../models/indicadores.models';
 import { PlotlyFigure } from '../../../../core/api/models/plotly-figure';
+import { AppToastService } from '../../../../shared/ui/toast/app-toast.service';
 
 @Component({
   selector: 'app-conectividade-page',
@@ -37,70 +42,63 @@ import { PlotlyFigure } from '../../../../core/api/models/plotly-figure';
     CommonModule,
     FormsModule,
     AppInputComponent,
-    ConectividadeFiltersComponent,
-    ConectividadeChartsComponent,
+    IndicadoresFiltersComponent,
+    IndicadoresMapaComponent,
+    IndicadoresChartsComponent,
   ],
   templateUrl: './conectividade-page.component.html',
   styleUrl: './conectividade-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>;
+export class ConectividadePageComponent implements OnInit {
+  @ViewChild(IndicadoresMapaComponent) private mapaComponent?: IndicadoresMapaComponent;
 
   private readonly facade = inject(ConectividadeFacade);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cd = inject(ChangeDetectorRef);
-  private map?: L.Map;
-  private municipalitiesLayer?: L.GeoJSON;
-  private schoolMarkersLayer?: L.FeatureGroup;
-  private schoolMarkersById = new Map<number, L.Marker>();
+  private readonly toast = inject(AppToastService);
 
-  // Filtros Disponíveis
+  private pendingRequests = 0;
+  private showToastOnComplete = false;
+
   anos: number[] = [];
   municipios: MunicipioFiltroModel[] = [];
   metricas: MetricaFiltroModel[] = [];
   redesEnsino: string[] = [];
   tpLocalizacoes: string[] = [];
-  situacaoConectividade: string[] = [];
 
-  // Filtros Selecionados
   selectedAno: number | null = null;
   selectedMunicipios: string[] = [];
   selectedMetricas: string[] = [];
   selectedRedeEnsino: string[] = [];
   selectedTpLocalizacao: string[] = [];
-  selectedSituacaoConectividade: string[] = [];
+  selectedPibid: boolean | null = null;
+  isLoading = true;
+  isLoadingFilters = false;
 
-  // Dados para componentes
   graficosAnaliseTemporal: GraficoApresentacao[] = [];
   graficos: GraficoApresentacao[] = [];
-  mapaCollection?: MapaMunicipioGeoJsonCollectionModel;
+  geoCollection: GeoJsonFeatureCollectionModel | null = null;
   escolasPontos: MapaPontoModel[] = [];
+  mostrarMarcadores = false;
+  readonly legendaItems: LegendaItemModel[] = LEGENDA_PADRAO;
 
-  // Busca
-  searchTerm: string = '';
+  searchTerm = '';
   searchResults: MapaPontoModel[] = [];
   searchPage = 1;
   readonly searchPageSize = 5;
 
-  ngAfterViewInit(): void {
-    this.map = L.map(this.mapContainer.nativeElement, {
-      center: L.latLng(-3.5, -52.5),
-      zoom: 6,
-      preferCanvas: true,
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(this.map!);
-  }
+  protected buildPopupHtml = (ponto: MapaPontoBaseModel): string => {
+    const escola = ponto as unknown as MapaPontoModel;
+    const score = Number(escola.score ?? 0).toFixed(1);
+    const classificacao = String(escola.classificacao ?? '—');
+    const esc = (v: unknown) =>
+      String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `<strong>${esc(escola.nome)}</strong><br>Município: ${esc(escola.municipio ?? '—')}<br>Score: ${score}<br>Situação: ${esc(classificacao)}`;
+  };
 
   ngOnInit(): void {
     this.carregarFiltrosIniciais();
-  }
-
-  ngOnDestroy(): void {
-    this.map?.remove();
   }
 
   carregarFiltrosIniciais(): void {
@@ -113,22 +111,22 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
         this.metricas = filtros.metricas ?? [];
         this.redesEnsino = filtros.rede_ensino ?? [];
         this.tpLocalizacoes = filtros.tp_localizacao ?? [];
-        this.situacaoConectividade = [];
 
         if (this.anos.length > 0) {
           this.selectedAno = this.anos[0];
         }
 
+        this.isLoading = false;
+        this.cd.markForCheck();
         this.aplicarFiltros();
       });
   }
 
-  onFilterChange(): void {}
-
-  aplicarFiltros(): void {
+  aplicarFiltros(userAction = false): void {
+    this.showToastOnComplete = userAction;
     const params = this.buildParams();
     this.loadResumo(params);
-    this.loadMapAndTable(params);
+    this.loadMapa(params);
     this.loadAnaliseTemporal();
   }
 
@@ -138,13 +136,13 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     this.selectedMetricas = [];
     this.selectedRedeEnsino = [];
     this.selectedTpLocalizacao = [];
-    this.selectedSituacaoConectividade = [];
+    this.selectedPibid = null;
     this.aplicarFiltros();
   }
 
   buscarEscola(): void {
     const termo = this.searchTerm.toLowerCase().trim();
-    if (termo.length === 0) {
+    if (!termo) {
       this.searchResults = [];
       this.searchPage = 1;
       this.cd.markForCheck();
@@ -152,7 +150,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     }
 
     this.searchResults = this.escolasPontos.filter((escola) =>
-      String(escola.nome || '')
+      String(escola.nome ?? '')
         .toLowerCase()
         .includes(termo),
     );
@@ -170,15 +168,11 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   get searchPageNumbers(): number[] {
-    const visiblePages = 3;
-    const totalPages = this.totalSearchPages;
-    const halfWindow = Math.floor(visiblePages / 2);
-    const start = Math.min(
-      Math.max(this.searchPage - halfWindow, 1),
-      Math.max(totalPages - visiblePages + 1, 1),
-    );
-    const end = Math.min(start + visiblePages - 1, totalPages);
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+    const total = this.totalSearchPages;
+    const half = 1;
+    const start = Math.min(Math.max(this.searchPage - half, 1), Math.max(total - 2, 1));
+    const end = Math.min(start + 2, total);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
   setSearchPage(page: number): void {
@@ -187,8 +181,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   scoreBadgeClass(escola: MapaPontoModel): string {
-    const classificacao = String(escola.classificacao || '').toLowerCase();
-
+    const classificacao = String(escola.classificacao ?? '').toLowerCase();
     if (
       classificacao.includes('conectada') &&
       !classificacao.includes('parcial') &&
@@ -196,148 +189,80 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
     ) {
       return 'score-badge--alta';
     }
-    if (classificacao.includes('parcial')) {
-      return 'score-badge--media';
-    }
+    if (classificacao.includes('parcial')) return 'score-badge--media';
     if (classificacao.includes('sem conectividade') || classificacao.includes('inexistente')) {
       return 'score-badge--muito-baixa';
     }
-
     return 'score-badge--baixa';
   }
 
   onRowClick(escola: MapaPontoModel): void {
-    if (!this.map || !Number.isFinite(escola.latitude) || !Number.isFinite(escola.longitude)) {
-      this.cd.markForCheck();
-      return;
-    }
-
-    this.map.setView([escola.latitude, escola.longitude], 15);
-    const marker = this.getOrCreateSchoolMarker(escola);
-    if (marker) {
-      marker.openPopup();
-    }
+    this.mapaComponent?.focarPonto(escola as unknown as MapaPontoBaseModel);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.cd.markForCheck();
   }
 
-  fecharPopups(): void {
-    for (const marker of this.schoolMarkersById.values()) {
-      marker.closePopup();
-    }
-    this.cd.markForCheck();
-  }
-
-  private buildParams(): {
-    ano: number | null;
-    variaveis: string[] | null;
-    municipios: string[] | null;
-    rede_ensino: string[] | null;
-    tp_localizacao: string[] | null;
-  } {
+  private buildParams() {
     return {
       ano: this.selectedAno,
       variaveis: this.selectedMetricas.length ? this.selectedMetricas : null,
       municipios: this.selectedMunicipios.length ? this.selectedMunicipios : null,
       rede_ensino: this.selectedRedeEnsino.length ? this.selectedRedeEnsino : null,
       tp_localizacao: this.selectedTpLocalizacao.length ? this.selectedTpLocalizacao : null,
+      pibid: this.selectedPibid,
     };
   }
 
-  private loadResumo(params: {
-    ano: number | null;
-    variaveis: string[] | null;
-    municipios: string[] | null;
-    rede_ensino: string[] | null;
-    tp_localizacao: string[] | null;
-  }): void {
+  private onLoadStart(): void {
+    this.pendingRequests++;
+    this.isLoadingFilters = true;
+    this.cd.markForCheck();
+  }
+
+  private onLoadEnd(): void {
+    this.pendingRequests = Math.max(0, this.pendingRequests - 1);
+    if (this.pendingRequests === 0) {
+      this.isLoadingFilters = false;
+      if (this.showToastOnComplete) {
+        this.toast.success('Filtros aplicados com sucesso');
+        this.showToastOnComplete = false;
+      }
+      this.cd.markForCheck();
+    }
+  }
+
+  private loadResumo(params: ReturnType<typeof this.buildParams>): void {
+    this.onLoadStart();
     this.facade
       .listarPainel(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
         this.graficos = this.mapGraficosPainel(painel.graficos ?? {});
-        this.cd.markForCheck();
+        this.onLoadEnd();
       });
   }
 
-  private loadMapAndTable(params: {
-    ano: number | null;
-    variaveis: string[] | null;
-    municipios: string[] | null;
-    rede_ensino: string[] | null;
-    tp_localizacao: string[] | null;
-  }): void {
+  private loadMapa(params: ReturnType<typeof this.buildParams>): void {
+    this.onLoadStart();
     this.facade
       .listarMapaMunicipalGeoJsonComPontos(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => {
-        this.mapaCollection = data.collection;
-        this.escolasPontos = data.pontos || [];
-
-        if (!this.map) return;
-
-        if (this.municipalitiesLayer) {
-          this.municipalitiesLayer.removeFrom(this.map);
-        }
-        if (this.schoolMarkersLayer) {
-          this.schoolMarkersLayer.removeFrom(this.map);
-        }
-
-        this.schoolMarkersById.clear();
-
-        this.municipalitiesLayer = L.geoJSON(
-          this.mapaCollection as Parameters<typeof L.geoJSON>[0],
-          {
-            style: (feature) => ({
-              color: '#4a6fa5',
-              weight: 1,
-              fillColor: (feature?.properties as { cor?: string })?.cor ?? '#cccccc',
-              fillOpacity: 0.55,
-            }),
-          },
-        ).addTo(this.map);
-
-        this.schoolMarkersLayer = L.featureGroup().addTo(this.map);
-
-        for (const escola of this.escolasPontos) {
-          if (Number.isFinite(escola.latitude) && Number.isFinite(escola.longitude)) {
-            this.getOrCreateSchoolMarker(escola);
-          }
-        }
-
-        this.cd.markForCheck();
+        this.geoCollection = data.collection as unknown as GeoJsonFeatureCollectionModel;
+        this.escolasPontos = (data.pontos ?? []).filter(
+          (p) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude),
+        );
+        this.mostrarMarcadores = (params.municipios?.length ?? 0) > 0;
+        this.onLoadEnd();
       });
   }
 
-  private getOrCreateSchoolMarker(escola: MapaPontoModel): L.Marker | undefined {
-    if (!this.map || !this.schoolMarkersLayer) return undefined;
-
-    const existing = this.schoolMarkersById.get(escola.co_entidade);
-    if (existing) return existing;
-
-    const classificacao = String(escola.classificacao ?? '');
-    const score = Number(escola.score ?? 0).toFixed(1);
-    const popup = `
-      <strong>${String(escola.nome ?? '')}</strong><br>
-      Município: ${String(escola.municipio ?? '—')}<br>
-      Score: ${score}<br>
-      Situação: ${classificacao}
-    `;
-
-    const marker = L.marker([escola.latitude, escola.longitude])
-      .bindPopup(popup)
-      .addTo(this.schoolMarkersLayer);
-
-    this.schoolMarkersById.set(escola.co_entidade, marker);
-    return marker;
-  }
-
   private loadAnaliseTemporal(): void {
-    const analiseParams = {
-      metrica: this.selectedMetricas.length ? this.selectedMetricas[0] : null,
-    };
+    this.onLoadStart();
     this.facade
-      .listarAnaliseTemporal(analiseParams)
+      .listarAnaliseTemporal({
+        metrica: this.selectedMetricas.length ? this.selectedMetricas[0] : null,
+        pibid: this.selectedPibid,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((analise) => {
         this.graficosAnaliseTemporal = (analise.listaGraficos ?? []).map((g) => ({
@@ -346,7 +271,7 @@ export class ConectividadePageComponent implements OnInit, OnDestroy, AfterViewI
           tipo: g.tipo,
           plotly: this.normalizarGraficoPlotly(g.plotly),
         }));
-        this.cd.markForCheck();
+        this.onLoadEnd();
       });
   }
 

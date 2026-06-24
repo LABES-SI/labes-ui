@@ -1,0 +1,41 @@
+@if (graficosAnaliseTemporal.length > 0) {
+  <section class="graficos-section--acordeao">
+    @for (grafico of graficosAnaliseTemporal; track grafico.chave) {
+      <details class="acordeao">
+        <summary class="acordeao__titulo">
+          <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
+          {{ grafico.titulo }}
+        </summary>
+        <div class="acordeao__conteudo">
+          <plotly-plot
+            [data]="grafico.plotly.data"
+            [layout]="grafico.plotly.layout"
+            [useResizeHandler]="true"
+            [style]="{ position: 'relative', width: '100%', height: '320px' }"
+          ></plotly-plot>
+        </div>
+      </details>
+    }
+  </section>
+}
+
+@if (graficos.length > 0) {
+  <section class="graficos-section--acordeao">
+    @for (grafico of graficos; track grafico.chave; let i = $index) {
+      <details class="acordeao">
+        <summary class="acordeao__titulo">
+          <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
+          {{ grafico.titulo }}
+        </summary>
+        <div class="acordeao__conteudo">
+          <plotly-plot
+            [data]="grafico.plotly.data"
+            [layout]="grafico.plotly.layout"
+            [useResizeHandler]="true"
+            [style]="{ position: 'relative', width: '100%', height: i < 2 ? '240px' : '340px' }"
+          ></plotly-plot>
+        </div>
+      </details>
+    }
+  </section>
+}

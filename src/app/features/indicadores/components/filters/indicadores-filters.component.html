@@ -1,3 +1,7 @@
+﻿@if (isLoading) {
+  <div class="progress-bar" role="progressbar" aria-label="Carregando dados"></div>
+}
+
 <section class="filter-panel" aria-label="Filtros dos indicadores">
   <header class="filter-panel__header">
     <div class="filter-panel__title-group">
@@ -8,8 +12,30 @@
     </div>
 
     <div class="filter-actions">
-      <button type="button" (click)="apply.emit()">Aplicar filtros</button>
-      <button type="button" (click)="resetar.emit()" class="btn-reset">Limpar</button>
+      <label class="filter-toggle-pibid">
+        <input
+          type="checkbox"
+          [checked]="selectedPibid === true"
+          (change)="onPibidChange($event)"
+        />
+        <span>Apenas PIBID</span>
+      </label>
+      <button
+        type="button"
+        (click)="apply.emit()"
+        [disabled]="isLoading"
+        [class.btn-loading]="isLoading"
+      >
+        @if (isLoading) {
+          <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+          Aplicando...
+        } @else {
+          Aplicar filtros
+        }
+      </button>
+      <button type="button" (click)="resetar.emit()" class="btn-reset" [disabled]="isLoading">
+        Limpar
+      </button>
     </div>
   </header>
 
@@ -108,41 +134,36 @@
     </div>
 
     <div class="filter-item">
-      <label>Situação da Conectividade</label>
+      <label>Tipo de Localização</label>
       <details class="filter-select">
         <summary>
           <span class="filter-select__chips">
-            @for (situacao of visibleValues(selectedSituacaoConectividade, 2); track situacao) {
+            @for (localizacao of visibleValues(selectedTpLocalizacao, 2); track localizacao) {
               <span class="filter-chip">
-                <span class="filter-chip__label">{{ situacao }}</span>
+                <span class="filter-chip__label">{{ localizacao }}</span>
                 <button
                   type="button"
-                  (click)="removeValue(selectedSituacaoConectividade, situacao, $event, 'situacao')"
+                  (click)="removeValue(selectedTpLocalizacao, localizacao, $event, 'localizacao')"
                 >
                   ×
                 </button>
               </span>
             }
-            @if (hiddenCount(selectedSituacaoConectividade, 2) > 0) {
-              <span class="filter-chip filter-chip--count"
-                >+{{ hiddenCount(selectedSituacaoConectividade, 2) }}</span
-              >
-            }
-            @if (selectedSituacaoConectividade.length === 0) {
+            @if (selectedTpLocalizacao.length === 0) {
               <span class="filter-select__placeholder">Todas</span>
             }
           </span>
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
-          @for (situacao of situacaoConectividade; track situacao) {
+          @for (localizacao of tpLocalizacoes; track localizacao) {
             <label>
               <input
                 type="checkbox"
-                [checked]="selectedSituacaoConectividade.includes(situacao)"
-                (change)="toggleValue(selectedSituacaoConectividade, situacao, 'situacao')"
+                [checked]="selectedTpLocalizacao.includes(localizacao)"
+                (change)="toggleValue(selectedTpLocalizacao, localizacao, 'localizacao')"
               />
-              {{ situacao }}
+              {{ localizacao }}
             </label>
           }
         </div>

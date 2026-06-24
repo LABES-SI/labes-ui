@@ -31,11 +31,13 @@
 .indicadores-hero__eyebrow {
   margin: 0;
   color: #35d04f;
+  font-size: var(--sie-section-eyebrow-font-size);
 }
 
 h1 {
   margin: 24px 0 0;
   color: #ffffff;
+  font-size: var(--sie-section-title-font-size);
   text-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
 }
 
@@ -43,6 +45,7 @@ h1 {
   max-width: 720px;
   margin: 24px auto 0;
   color: rgba(255, 255, 255, 0.94);
+  font-size: clamp(1rem, 1.3vw, 1.16rem);
 }
 
 @media (max-width: 760px) {

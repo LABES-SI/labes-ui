@@ -1,47 +1,53 @@
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MetricaFiltroModel, MunicipioFiltroModel } from '../../models/conectividade.models';
+
+import { MetricaFiltroModel, MunicipioFiltroModel } from '../../models/indicadores.models';
 
 @Component({
-  selector: 'app-conectividade-filters',
+  selector: 'app-indicadores-filters',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './conectividade-filters.component.html',
-  styleUrl: './conectividade-filters.component.scss',
+  templateUrl: './indicadores-filters.component.html',
+  styleUrl: './indicadores-filters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConectividadeFiltersComponent {
+export class IndicadoresFiltersComponent {
   @Input() anos: number[] = [];
   @Input() municipios: MunicipioFiltroModel[] = [];
   @Input() metricas: MetricaFiltroModel[] = [];
   @Input() redesEnsino: string[] = [];
   @Input() tpLocalizacoes: string[] = [];
-  @Input() situacaoConectividade: string[] = [];
 
   @Input() selectedAno: number | null = null;
   @Input() selectedMunicipios: string[] = [];
   @Input() selectedMetricas: string[] = [];
   @Input() selectedRedeEnsino: string[] = [];
   @Input() selectedTpLocalizacao: string[] = [];
-  @Input() selectedSituacaoConectividade: string[] = [];
+  @Input() selectedPibid: boolean | null = null;
 
   @Output() selectedAnoChange = new EventEmitter<number | null>();
   @Output() selectedMunicipiosChange = new EventEmitter<string[]>();
   @Output() selectedMetricasChange = new EventEmitter<string[]>();
   @Output() selectedRedeEnsinoChange = new EventEmitter<string[]>();
   @Output() selectedTpLocalizacaoChange = new EventEmitter<string[]>();
-  @Output() selectedSituacaoConectividadeChange = new EventEmitter<string[]>();
+  @Output() selectedPibidChange = new EventEmitter<boolean | null>();
 
-  @Output() filterChange = new EventEmitter<void>();
+  @Input() isLoading = false;
+
   @Output() apply = new EventEmitter<void>();
   @Output() resetar = new EventEmitter<void>();
+
+  onPibidChange(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.selectedPibid = checked ? true : null;
+    this.selectedPibidChange.emit(this.selectedPibid);
+  }
 
   onAnoChange(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;
     this.selectedAno = val ? Number(val) : null;
     this.selectedAnoChange.emit(this.selectedAno);
-    this.filterChange.emit();
   }
 
   toggleValue(values: string[], value: string, type: string): void {
@@ -52,18 +58,29 @@ export class ConectividadeFiltersComponent {
       values.push(value);
     }
     this.emitChange(type, values);
-    this.filterChange.emit();
   }
 
   removeValue(values: string[], value: string, event: Event, type: string): void {
     event.preventDefault();
     event.stopPropagation();
     const index = values.indexOf(value);
-    if (index >= 0) {
-      values.splice(index, 1);
-    }
+    if (index >= 0) values.splice(index, 1);
     this.emitChange(type, values);
-    this.filterChange.emit();
+  }
+
+  visibleValues(values: string[], limit: number): string[] {
+    return values.slice(0, limit);
+  }
+
+  hiddenCount(values: string[], visibleLimit: number): number {
+    return Math.max(values.length - visibleLimit, 0);
+  }
+
+  visibleMetricLabels(limit: number): MetricaFiltroModel[] {
+    const metricasByKey = new Map(this.metricas.map((m) => [m.chave, m]));
+    return this.selectedMetricas
+      .slice(0, limit)
+      .map((chave) => ({ chave, label: metricasByKey.get(chave)?.label ?? chave }));
   }
 
   private emitChange(type: string, values: string[]): void {
@@ -80,25 +97,6 @@ export class ConectividadeFiltersComponent {
       case 'localizacao':
         this.selectedTpLocalizacaoChange.emit([...values]);
         break;
-      case 'situacao':
-        this.selectedSituacaoConectividadeChange.emit([...values]);
-        break;
     }
-  }
-
-  visibleValues(values: string[], limit: number): string[] {
-    return values.slice(0, limit);
-  }
-
-  hiddenCount(values: string[], visibleLimit: number): number {
-    return Math.max(values.length - visibleLimit, 0);
-  }
-
-  visibleMetricLabels(limit: number): MetricaFiltroModel[] {
-    const metricasByKey = new Map(this.metricas.map((m) => [m.chave, m]));
-    return this.selectedMetricas.slice(0, limit).map((chave) => ({
-      chave,
-      label: metricasByKey.get(chave)?.label ?? chave,
-    }));
   }
 }

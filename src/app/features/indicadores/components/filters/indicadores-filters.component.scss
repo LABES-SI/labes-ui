@@ -2,6 +2,34 @@
   display: block;
 }
 
+@keyframes progress-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  z-index: 9999;
+  background: linear-gradient(
+    90deg,
+    #0a3fa8 0%,
+    #075be8 35%,
+    #3b82f6 60%,
+    #075be8 80%,
+    #0a3fa8 100%
+  );
+  background-size: 300% 100%;
+  animation: progress-shimmer 1.6s linear infinite;
+}
+
 .filter-panel {
   position: relative;
   z-index: 10;
@@ -234,6 +262,28 @@
   border-left: 1px solid #e0e7f0;
 }
 
+.filter-toggle-pibid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 0;
+  border-right: 1px solid #e0e7f0;
+  color: #26395f;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    accent-color: var(--sie-color-primary);
+    cursor: pointer;
+  }
+}
+
 button {
   min-height: 42px;
   min-width: 42px;
@@ -259,6 +309,18 @@ button:hover {
   min-height: 42px;
   min-width: 42px;
   padding: 0 18px;
+}
+
+button[disabled] {
+  opacity: 0.72;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-reset {
