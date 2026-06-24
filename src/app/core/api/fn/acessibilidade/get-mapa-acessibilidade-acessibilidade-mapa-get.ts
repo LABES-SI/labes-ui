@@ -7,53 +7,59 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { MapaResponse } from '../../models/mapa-response';
+import { AppSchemasAcessibilidadeMapaResponse } from '../../models/app-schemas-acessibilidade-mapa-response';
 
 export interface GetMapaAcessibilidadeAcessibilidadeMapaGet$Params {
+  /**
+   * Ano do censo escolar (nu_ano_censo). Se omitido, retorna todos os anos.
+   */
+  ano?: number | null;
 
-/**
- * Ano do censo escolar. Se omitido, retorna todos os anos.
- */
-  ano?: (number | null);
+  /**
+   * Filtro AND: a escola precisa ter TODAS as variáveis marcadas > 0. Conjunto das 15 métricas gold. Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
+   */
+  variaveis?: Array<
+    | 'in_acessibilidade_rampas'
+    | 'in_acessibilidade_corrimao'
+    | 'in_acessibilidade_elevador'
+    | 'in_acessibilidade_pisos_tateis'
+    | 'in_acessibilidade_vao_livre'
+    | 'qt_salas_utilizadas_acessiveis'
+    | 'in_acessibilidade_inexistente'
+    | 'in_acessibilidade_sinal_tatil'
+    | 'in_acessibilidade_sinal_sonoro'
+    | 'in_acessibilidade_sinal_visual'
+    | 'tp_aee'
+    | 'in_sala_atendimento_especial'
+    | 'in_reserva_pcd'
+    | 'qt_prof_psicologo'
+    | 'qt_prof_assist_social'
+  > | null;
 
-/**
- * Filtra por nome de município (parâmetro repetido).
- */
-  municipios?: (Array<string> | null);
-
-/**
- * Filtro AND: a escola precisa ter TODAS as variáveis marcadas = 1. Conjunto silver (inclui in_banheiro_pne, in_acessibilidade_sinalizacao e os in_prof_*). Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
- */
-  variaveis?: (Array<'in_banheiro_pne' | 'in_sala_atendimento_especial' | 'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'in_acessibilidade_sinalizacao' | 'in_prof_psicologo' | 'in_prof_trad_libras' | 'in_prof_revisor_braille' | 'in_prof_assist_social' | 'in_prof_fonaudiologo'> | null);
-
-/**
- * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
- */
-  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
-
-/**
- * Localização da escola: Urbana ou Rural.
- */
-  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
+  /**
+   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+   */
+  pibid?: boolean | null;
 }
 
-export function getMapaAcessibilidadeAcessibilidadeMapaGet(http: HttpClient, rootUrl: string, params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Observable<StrictHttpResponse<MapaResponse>> {
+export function getMapaAcessibilidadeAcessibilidadeMapaGet(
+  http: HttpClient,
+  rootUrl: string,
+  params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
+  context?: HttpContext,
+): Observable<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
   const rb = new RequestBuilder(rootUrl, getMapaAcessibilidadeAcessibilidadeMapaGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
-    rb.query('municipios', params.municipios, {});
     rb.query('variaveis', params.variaveis, {});
-    rb.query('rede_ensino', params.rede_ensino, {});
-    rb.query('tp_localizacao', params.tp_localizacao, {});
+    rb.query('pibid', params.pibid, {});
   }
 
-  return http.request(
-    rb.build({ responseType: 'json', accept: 'application/json', context })
-  ).pipe(
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MapaResponse>;
-    })
+      return r as StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>;
+    }),
   );
 }
 

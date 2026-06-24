@@ -10,63 +10,92 @@ import { RequestBuilder } from '../../request-builder';
 import { PainelEscolasResponse } from '../../models/painel-escolas-response';
 
 export interface GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params {
+  /**
+   * Ano do censo escolar (ex: 2023). Se omitido, usa o censo mais recente de cada escola.
+   */
+  ano?: number | null;
 
-/**
- * Ano do censo escolar (ex: 2023). Se omitido, usa o censo mais recente de cada escola.
- */
-  ano?: (number | null);
+  /**
+   * Lista de municípios (até 4). Use o parâmetro repetido.
+   */
+  municipios?: Array<string> | null;
 
-/**
- * Lista de municípios (até 4). Use o parâmetro repetido.
- */
-  municipios?: (Array<string> | null);
+  /**
+   * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
+   */
+  variaveis?: Array<
+    | 'in_acessibilidade_rampas'
+    | 'in_acessibilidade_corrimao'
+    | 'in_acessibilidade_elevador'
+    | 'in_acessibilidade_pisos_tateis'
+    | 'in_acessibilidade_vao_livre'
+    | 'qt_salas_utilizadas_acessiveis'
+    | 'in_acessibilidade_inexistente'
+    | 'in_acessibilidade_sinal_tatil'
+    | 'in_acessibilidade_sinal_sonoro'
+    | 'in_acessibilidade_sinal_visual'
+    | 'tp_aee'
+    | 'in_sala_atendimento_especial'
+    | 'in_reserva_pcd'
+    | 'qt_prof_psicologo'
+    | 'qt_prof_assist_social'
+  > | null;
 
-/**
- * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
- */
-  variaveis?: (Array<'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'qt_salas_utilizadas_acessiveis' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'tp_aee' | 'in_sala_atendimento_especial' | 'in_reserva_pcd' | 'qt_prof_psicologo' | 'qt_prof_assist_social'> | null);
+  /**
+   * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
+   */
+  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null;
 
-/**
- * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
- */
-  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
+  /**
+   * Localização da escola: Urbana ou Rural.
+   */
+  tp_localizacao?: Array<'Urbana' | 'Rural'> | null;
 
-/**
- * Localização da escola: Urbana ou Rural.
- */
-  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
+  /**
+   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+   */
+  pibid?: boolean | null;
 
-/**
- * Página (base 0).
- */
+  /**
+   * Página (base 0).
+   */
   page?: number;
 
-/**
- * Escolas por página (1–50).
- */
+  /**
+   * Escolas por página (1–50).
+   */
   page_size?: number;
 }
 
-export function getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(http: HttpClient, rootUrl: string, params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelEscolasResponse>> {
-  const rb = new RequestBuilder(rootUrl, getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH, 'get');
+export function getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
+  http: HttpClient,
+  rootUrl: string,
+  params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
+  context?: HttpContext,
+): Observable<StrictHttpResponse<PainelEscolasResponse>> {
+  const rb = new RequestBuilder(
+    rootUrl,
+    getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH,
+    'get',
+  );
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
     rb.query('variaveis', params.variaveis, {});
     rb.query('rede_ensino', params.rede_ensino, {});
     rb.query('tp_localizacao', params.tp_localizacao, {});
+    rb.query('pibid', params.pibid, {});
     rb.query('page', params.page, {});
     rb.query('page_size', params.page_size, {});
   }
 
-  return http.request(
-    rb.build({ responseType: 'json', accept: 'application/json', context })
-  ).pipe(
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<PainelEscolasResponse>;
-    })
+    }),
   );
 }
 
-getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH = '/acessibilidade/painel/escolas';
+getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet.PATH =
+  '/acessibilidade/painel/escolas';

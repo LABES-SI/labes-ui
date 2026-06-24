@@ -31,7 +31,10 @@ export class HealthService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  healthCheckGet$Response(params?: HealthCheckGet$Params, context?: HttpContext): Promise<StrictHttpResponse<any>> {
+  healthCheckGet$Response(
+    params?: HealthCheckGet$Params,
+    context?: HttpContext,
+  ): Promise<StrictHttpResponse<any>> {
     const obs = healthCheckGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
@@ -50,5 +53,4 @@ export class HealthService extends BaseService {
     const resp = this.healthCheckGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<any>): any => r.body);
   }
-
 }

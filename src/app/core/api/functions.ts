@@ -11,5 +11,13 @@ export type { GetMapaAcessibilidadeAcessibilidadeMapaGet$Params as GetMapaAcessi
 export { getMapaAcessibilidadeAcessibilidadeMapaGet as getMapaAcessibilidadeAcessibilidadeMapaGet } from './fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 export type { GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params as GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
 export { getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet as getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
+export type { GetPainelConectividadeConectividadePainelGet$Params as GetPainelConectividadeConectividadePainelGet$Params } from './fn/conectividade/get-painel-conectividade-conectividade-painel-get';
+export { getPainelConectividadeConectividadePainelGet as getPainelConectividadeConectividadePainelGet } from './fn/conectividade/get-painel-conectividade-conectividade-painel-get';
+export type { GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params as GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params } from './fn/conectividade/get-painel-escolas-conectividade-conectividade-painel-escolas-get';
+export { getPainelEscolasConectividadeConectividadePainelEscolasGet as getPainelEscolasConectividadeConectividadePainelEscolasGet } from './fn/conectividade/get-painel-escolas-conectividade-conectividade-painel-escolas-get';
+export type { GetMapaConectividadeConectividadeMapaGet$Params as GetMapaConectividadeConectividadeMapaGet$Params } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
+export { getMapaConectividadeConectividadeMapaGet as getMapaConectividadeConectividadeMapaGet } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
+export type { GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
+export { getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet as getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
 export type { GetFiltrosFiltrosGet$Params as GetFiltrosFiltrosGet$Params } from './fn/filtros/get-filtros-filtros-get';
 export { getFiltrosFiltrosGet as getFiltrosFiltrosGet } from './fn/filtros/get-filtros-filtros-get';

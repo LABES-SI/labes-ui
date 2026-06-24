@@ -1,0 +1,54 @@
+<section class="indicadores-section" aria-labelledby="indicadores-indicadores-title">
+  <div class="sie-section-shell indicadores-shell">
+    <div class="sie-section-heading sie-section-heading--left indicadores-heading">
+      <h2 id="indicadores-indicadores-title" class="sie-section-title indicadores-heading__title">
+        Selecione um indicador para visualizar
+      </h2>
+    </div>
+
+    <div class="indicadores-grid">
+      @for (indicador of indicadores; track indicador.title) {
+        @if (indicador.active && indicador.route) {
+          <a
+            class="indicadores-card"
+            [routerLink]="indicador.route"
+            [style.--indicador-bg]="indicador.background"
+            [style.--indicador-color]="indicador.color"
+            [attr.aria-label]="'Abrir indicador de ' + indicador.title"
+          >
+            <ng-container
+              [ngTemplateOutlet]="indicadorContent"
+              [ngTemplateOutletContext]="{ indicador: indicador }"
+            />
+          </a>
+        } @else {
+          <article
+            class="indicadores-card indicadores-card--disabled"
+            [style.--indicador-bg]="indicador.background"
+            [style.--indicador-color]="indicador.color"
+            aria-disabled="true"
+          >
+            <ng-container
+              [ngTemplateOutlet]="indicadorContent"
+              [ngTemplateOutletContext]="{ indicador: indicador }"
+            />
+            <span class="status-pill">Em breve</span>
+          </article>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<ng-template #indicadorContent let-indicador="indicador">
+  <span class="icon-badge" aria-hidden="true">
+    <lucide-icon [img]="indicador.icon" />
+  </span>
+  <div class="indicador-copy">
+    <h3>{{ indicador.title }}</h3>
+    <p>{{ indicador.description }}</p>
+  </div>
+  <span class="indicador-arrow" aria-hidden="true">
+    <lucide-icon [img]="arrowRightIcon" />
+  </span>
+</ng-template>

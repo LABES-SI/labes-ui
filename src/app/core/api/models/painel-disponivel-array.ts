@@ -6,6 +6,4 @@ import { PainelDisponivel } from './painel-disponivel';
 /**
  * Each possible value of `PainelDisponivel`
  */
-export const PAINEL_DISPONIVEL: PainelDisponivel[] = [
-  'acessibilidade'
-];
+export const PAINEL_DISPONIVEL: PainelDisponivel[] = ['acessibilidade', 'conectividade'];

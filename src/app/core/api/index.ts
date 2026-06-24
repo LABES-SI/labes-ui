@@ -5,16 +5,19 @@ export { ApiConfiguration } from './api-configuration';
 export { RequestBuilder } from './request-builder';
 export type { StrictHttpResponse } from './strict-http-response';
 
-
 export type { AnaliseTemporalData } from './models/analise-temporal-data';
-export type { AnaliseTemporalResponse } from './models/analise-temporal-response';
+export type { AppSchemasAcessibilidadeAnaliseTemporalResponse } from './models/app-schemas-acessibilidade-analise-temporal-response';
+export type { AppSchemasAcessibilidadeMapaData } from './models/app-schemas-acessibilidade-mapa-data';
+export type { AppSchemasAcessibilidadeMapaPonto } from './models/app-schemas-acessibilidade-mapa-ponto';
+export type { AppSchemasAcessibilidadeMapaResponse } from './models/app-schemas-acessibilidade-mapa-response';
+export type { AppSchemasConectividadeAnaliseTemporalResponse } from './models/app-schemas-conectividade-analise-temporal-response';
+export type { AppSchemasConectividadeMapaData } from './models/app-schemas-conectividade-mapa-data';
+export type { AppSchemasConectividadeMapaPonto } from './models/app-schemas-conectividade-mapa-ponto';
+export type { AppSchemasConectividadeMapaResponse } from './models/app-schemas-conectividade-mapa-response';
 export type { FiltrosData } from './models/filtros-data';
 export type { FiltrosResponse } from './models/filtros-response';
 export type { Grafico } from './models/grafico';
 export type { HttpValidationError } from './models/http-validation-error';
-export type { MapaData } from './models/mapa-data';
-export type { MapaPonto } from './models/mapa-ponto';
-export type { MapaResponse } from './models/mapa-response';
 export type { MetricaFiltro } from './models/metrica-filtro';
 export type { MunicipioFiltro } from './models/municipio-filtro';
 export type { Paginacao } from './models/paginacao';
@@ -28,6 +31,7 @@ export type { ValidationError } from './models/validation-error';
 export { BaseService } from './base-service';
 export { HealthService } from './services/health.service';
 export { AcessibilidadeService } from './services/acessibilidade.service';
+export { ConectividadeService } from './services/conectividade.service';
 export { FiltrosService } from './services/filtros.service';
 
 export type { HealthCheckGet$Params as HealthCheckGet$Params } from './fn/health/health-check-get';
@@ -40,5 +44,13 @@ export type { GetMapaAcessibilidadeAcessibilidadeMapaGet$Params as GetMapaAcessi
 export { getMapaAcessibilidadeAcessibilidadeMapaGet as getMapaAcessibilidadeAcessibilidadeMapaGet } from './fn/acessibilidade/get-mapa-acessibilidade-acessibilidade-mapa-get';
 export type { GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params as GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
 export { getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet as getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet } from './fn/acessibilidade/get-analise-temporal-acessibilidade-acessibilidade-analise-temporal-get';
+export type { GetPainelConectividadeConectividadePainelGet$Params as GetPainelConectividadeConectividadePainelGet$Params } from './fn/conectividade/get-painel-conectividade-conectividade-painel-get';
+export { getPainelConectividadeConectividadePainelGet as getPainelConectividadeConectividadePainelGet } from './fn/conectividade/get-painel-conectividade-conectividade-painel-get';
+export type { GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params as GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params } from './fn/conectividade/get-painel-escolas-conectividade-conectividade-painel-escolas-get';
+export { getPainelEscolasConectividadeConectividadePainelEscolasGet as getPainelEscolasConectividadeConectividadePainelEscolasGet } from './fn/conectividade/get-painel-escolas-conectividade-conectividade-painel-escolas-get';
+export type { GetMapaConectividadeConectividadeMapaGet$Params as GetMapaConectividadeConectividadeMapaGet$Params } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
+export { getMapaConectividadeConectividadeMapaGet as getMapaConectividadeConectividadeMapaGet } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
+export type { GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
+export { getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet as getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
 export type { GetFiltrosFiltrosGet$Params as GetFiltrosFiltrosGet$Params } from './fn/filtros/get-filtros-filtros-get';
 export { getFiltrosFiltrosGet as getFiltrosFiltrosGet } from './fn/filtros/get-filtros-filtros-get';

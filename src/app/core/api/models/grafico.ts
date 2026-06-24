@@ -7,7 +7,6 @@ import { PlotlyFigure } from '../models/plotly-figure';
  * Envelope de um gráfico do painel.
  */
 export interface Grafico {
-
   /**
    * Figura Plotly (data + layout).
    */

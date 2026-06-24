@@ -1,0 +1,67 @@
+:host {
+  display: block;
+}
+
+.indicadores-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: clamp(360px, 39vw, 500px);
+  overflow: hidden;
+  place-items: center;
+  background: #062f78 url('/assets/generic_hero_background.png') center / cover no-repeat;
+}
+
+.indicadores-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(8, 57, 130, 0.12), rgba(2, 23, 67, 0.24) 72%),
+    linear-gradient(180deg, rgba(3, 28, 77, 0.08), rgba(3, 28, 77, 0.18));
+  content: '';
+}
+
+.indicadores-hero__content {
+  width: min(820px, calc(100% - 32px));
+  padding: 136px 0 64px;
+  text-align: center;
+}
+
+.indicadores-hero__eyebrow {
+  margin: 0;
+  color: #35d04f;
+  font-size: var(--sie-section-eyebrow-font-size);
+}
+
+h1 {
+  margin: 24px 0 0;
+  color: #ffffff;
+  font-size: var(--sie-section-title-font-size);
+  text-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
+}
+
+.indicadores-hero__description {
+  max-width: 720px;
+  margin: 24px auto 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: clamp(1rem, 1.3vw, 1.16rem);
+}
+
+@media (max-width: 760px) {
+  .indicadores-hero {
+    min-height: 430px;
+  }
+
+  .indicadores-hero__content {
+    padding: 184px 0 56px;
+  }
+
+  h1 {
+    margin-top: 22px;
+  }
+
+  .indicadores-hero__description {
+    margin-top: 20px;
+  }
+}

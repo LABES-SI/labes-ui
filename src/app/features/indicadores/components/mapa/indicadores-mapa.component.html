@@ -1,0 +1,22 @@
+<section class="map-panel" [attr.aria-label]="ariaLabel()">
+  <div #mapContainer class="map-container"></div>
+
+  <button
+    type="button"
+    class="map-close-popups"
+    aria-label="Fechar pop-ups"
+    (click)="fecharPopups()"
+  >
+    <i class="pi pi-window-minimize" aria-hidden="true"></i>
+  </button>
+
+  <div class="map-legend" aria-label="Legenda">
+    @for (item of legendaItems(); track item.label) {
+      <span>
+        <i [class]="'legend-dot ' + item.classe" aria-hidden="true"></i>
+        {{ item.label }}
+        <small class="legend-range">{{ item.range }}</small>
+      </span>
+    }
+  </div>
+</section>
