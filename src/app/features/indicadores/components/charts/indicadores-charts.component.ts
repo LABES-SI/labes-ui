@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyComponent, PlotlyService } from 'angular-plotly.js';
@@ -18,6 +18,6 @@ export type { GraficoApresentacao };
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndicadoresChartsComponent {
-  @Input() graficosAnaliseTemporal: GraficoApresentacao[] = [];
-  @Input() graficos: GraficoApresentacao[] = [];
+  readonly graficosAnaliseTemporal = input<GraficoApresentacao[]>([]);
+  readonly graficos = input<GraficoApresentacao[]>([]);
 }

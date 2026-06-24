@@ -1,6 +1,6 @@
-@if (graficosAnaliseTemporal.length > 0) {
+@if (graficosAnaliseTemporal().length > 0) {
   <section class="graficos-section--acordeao">
-    @for (grafico of graficosAnaliseTemporal; track grafico.chave) {
+    @for (grafico of graficosAnaliseTemporal(); track grafico.chave) {
       <details class="acordeao">
         <summary class="acordeao__titulo">
           <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
@@ -19,9 +19,9 @@
   </section>
 }
 
-@if (graficos.length > 0) {
+@if (graficos().length > 0) {
   <section class="graficos-section--acordeao">
-    @for (grafico of graficos; track grafico.chave; let i = $index) {
+    @for (grafico of graficos(); track grafico.chave; let i = $index) {
       <details class="acordeao">
         <summary class="acordeao__titulo">
           <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>

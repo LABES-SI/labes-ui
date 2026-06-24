@@ -1,4 +1,4 @@
-﻿@if (isLoading) {
+@if (isLoading()) {
   <div class="progress-bar" role="progressbar" aria-label="Carregando dados"></div>
 }
 
@@ -15,7 +15,7 @@
       <label class="filter-toggle-pibid">
         <input
           type="checkbox"
-          [checked]="selectedPibid === true"
+          [checked]="selectedPibid() === true"
           (change)="onPibidChange($event)"
         />
         <span>Apenas PIBID</span>
@@ -23,17 +23,17 @@
       <button
         type="button"
         (click)="apply.emit()"
-        [disabled]="isLoading"
-        [class.btn-loading]="isLoading"
+        [disabled]="isLoading()"
+        [class.btn-loading]="isLoading()"
       >
-        @if (isLoading) {
+        @if (isLoading()) {
           <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
           Aplicando...
         } @else {
           Aplicar filtros
         }
       </button>
-      <button type="button" (click)="resetar.emit()" class="btn-reset" [disabled]="isLoading">
+      <button type="button" (click)="resetar.emit()" class="btn-reset" [disabled]="isLoading()">
         Limpar
       </button>
     </div>
@@ -42,8 +42,8 @@
   <div class="filter-bar">
     <div class="filter-item filter-item--year">
       <label>Ano</label>
-      <select [value]="selectedAno ?? ''" (change)="onAnoChange($event)">
-        @for (a of anos; track a) {
+      <select [value]="selectedAno() ?? ''" (change)="onAnoChange($event)">
+        @for (a of anos(); track a) {
           <option [value]="a">{{ a }}</option>
         }
       </select>
@@ -54,35 +54,35 @@
       <details class="filter-select">
         <summary>
           <span class="filter-select__chips">
-            @for (municipio of visibleValues(selectedMunicipios, 2); track municipio) {
+            @for (municipio of visibleValues(selectedMunicipios(), 2); track municipio) {
               <span class="filter-chip">
                 <span class="filter-chip__label">{{ municipio }}</span>
                 <button
                   type="button"
-                  (click)="removeValue(selectedMunicipios, municipio, $event, 'municipios')"
+                  (click)="removeValue(selectedMunicipios(), municipio, $event, 'municipios')"
                 >
                   ×
                 </button>
               </span>
             }
-            @if (hiddenCount(selectedMunicipios, 2) > 0) {
+            @if (hiddenCount(selectedMunicipios(), 2) > 0) {
               <span class="filter-chip filter-chip--count"
-                >+{{ hiddenCount(selectedMunicipios, 2) }}</span
+                >+{{ hiddenCount(selectedMunicipios(), 2) }}</span
               >
             }
-            @if (selectedMunicipios.length === 0) {
+            @if (selectedMunicipios().length === 0) {
               <span class="filter-select__placeholder">Todos</span>
             }
           </span>
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
-          @for (municipio of municipios; track municipio.nome) {
+          @for (municipio of municipios(); track municipio.nome) {
             <label>
               <input
                 type="checkbox"
-                [checked]="selectedMunicipios.includes(municipio.nome)"
-                (change)="toggleValue(selectedMunicipios, municipio.nome, 'municipios')"
+                [checked]="selectedMunicipios().includes(municipio.nome)"
+                (change)="toggleValue(selectedMunicipios(), municipio.nome, 'municipios')"
               />
               {{ municipio.nome }}
             </label>
@@ -96,35 +96,35 @@
       <details class="filter-select">
         <summary>
           <span class="filter-select__chips">
-            @for (rede of visibleValues(selectedRedeEnsino, 2); track rede) {
+            @for (rede of visibleValues(selectedRedeEnsino(), 2); track rede) {
               <span class="filter-chip">
                 <span class="filter-chip__label">{{ rede }}</span>
                 <button
                   type="button"
-                  (click)="removeValue(selectedRedeEnsino, rede, $event, 'rede')"
+                  (click)="removeValue(selectedRedeEnsino(), rede, $event, 'rede')"
                 >
                   ×
                 </button>
               </span>
             }
-            @if (hiddenCount(selectedRedeEnsino, 2) > 0) {
+            @if (hiddenCount(selectedRedeEnsino(), 2) > 0) {
               <span class="filter-chip filter-chip--count"
-                >+{{ hiddenCount(selectedRedeEnsino, 2) }}</span
+                >+{{ hiddenCount(selectedRedeEnsino(), 2) }}</span
               >
             }
-            @if (selectedRedeEnsino.length === 0) {
+            @if (selectedRedeEnsino().length === 0) {
               <span class="filter-select__placeholder">Todas</span>
             }
           </span>
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
-          @for (rede of redesEnsino; track rede) {
+          @for (rede of redesEnsino(); track rede) {
             <label>
               <input
                 type="checkbox"
-                [checked]="selectedRedeEnsino.includes(rede)"
-                (change)="toggleValue(selectedRedeEnsino, rede, 'rede')"
+                [checked]="selectedRedeEnsino().includes(rede)"
+                (change)="toggleValue(selectedRedeEnsino(), rede, 'rede')"
               />
               {{ rede }}
             </label>
@@ -138,30 +138,30 @@
       <details class="filter-select">
         <summary>
           <span class="filter-select__chips">
-            @for (localizacao of visibleValues(selectedTpLocalizacao, 2); track localizacao) {
+            @for (localizacao of visibleValues(selectedTpLocalizacao(), 2); track localizacao) {
               <span class="filter-chip">
                 <span class="filter-chip__label">{{ localizacao }}</span>
                 <button
                   type="button"
-                  (click)="removeValue(selectedTpLocalizacao, localizacao, $event, 'localizacao')"
+                  (click)="removeValue(selectedTpLocalizacao(), localizacao, $event, 'localizacao')"
                 >
                   ×
                 </button>
               </span>
             }
-            @if (selectedTpLocalizacao.length === 0) {
+            @if (selectedTpLocalizacao().length === 0) {
               <span class="filter-select__placeholder">Todas</span>
             }
           </span>
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
-          @for (localizacao of tpLocalizacoes; track localizacao) {
+          @for (localizacao of tpLocalizacoes(); track localizacao) {
             <label>
               <input
                 type="checkbox"
-                [checked]="selectedTpLocalizacao.includes(localizacao)"
-                (change)="toggleValue(selectedTpLocalizacao, localizacao, 'localizacao')"
+                [checked]="selectedTpLocalizacao().includes(localizacao)"
+                (change)="toggleValue(selectedTpLocalizacao(), localizacao, 'localizacao')"
               />
               {{ localizacao }}
             </label>
@@ -180,30 +180,30 @@
                 <span class="filter-chip__label">{{ metrica.label }}</span>
                 <button
                   type="button"
-                  (click)="removeValue(selectedMetricas, metrica.chave, $event, 'metricas')"
+                  (click)="removeValue(selectedMetricas(), metrica.chave, $event, 'metricas')"
                 >
                   ×
                 </button>
               </span>
             }
-            @if (hiddenCount(selectedMetricas, 3) > 0) {
+            @if (hiddenCount(selectedMetricas(), 3) > 0) {
               <span class="filter-chip filter-chip--count"
-                >+{{ hiddenCount(selectedMetricas, 3) }}</span
+                >+{{ hiddenCount(selectedMetricas(), 3) }}</span
               >
             }
-            @if (selectedMetricas.length === 0) {
+            @if (selectedMetricas().length === 0) {
               <span class="filter-select__placeholder">Todas</span>
             }
           </span>
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu filter-select__menu--wide">
-          @for (m of metricas; track m.chave) {
+          @for (m of metricas(); track m.chave) {
             <label>
               <input
                 type="checkbox"
-                [checked]="selectedMetricas.includes(m.chave)"
-                (change)="toggleValue(selectedMetricas, m.chave, 'metricas')"
+                [checked]="selectedMetricas().includes(m.chave)"
+                (change)="toggleValue(selectedMetricas(), m.chave, 'metricas')"
               />
               {{ m.label }}
             </label>

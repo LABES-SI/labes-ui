@@ -3,11 +3,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Input,
+  input,
+  output,
   OnChanges,
   OnDestroy,
-  Output,
-  EventEmitter,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -37,14 +36,14 @@ export const LEGENDA_PADRAO: LegendaItemModel[] = [
 export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLDivElement>;
 
-  @Input() pontos: MapaPontoBaseModel[] = [];
-  @Input() geoCollection: GeoJsonFeatureCollectionModel | null = null;
-  @Input() mostrarMarcadores = false;
-  @Input() legendaItems: LegendaItemModel[] = LEGENDA_PADRAO;
-  @Input() buildPopupHtml?: (ponto: MapaPontoBaseModel) => string;
-  @Input() ariaLabel = 'Mapa de indicadores educacionais';
+  readonly pontos = input<MapaPontoBaseModel[]>([]);
+  readonly geoCollection = input<GeoJsonFeatureCollectionModel | null>(null);
+  readonly mostrarMarcadores = input(false);
+  readonly legendaItems = input<LegendaItemModel[]>(LEGENDA_PADRAO);
+  readonly buildPopupHtml = input<((ponto: MapaPontoBaseModel) => string) | undefined>(undefined);
+  readonly ariaLabel = input('Mapa de indicadores educacionais');
 
-  @Output() pontoSelecionado = new EventEmitter<MapaPontoBaseModel>();
+  readonly pontoSelecionado = output<MapaPontoBaseModel>();
 
   private map?: L.Map;
   private municipalitiesLayer?: L.GeoJSON;
@@ -65,7 +64,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
 
     this.mapReady = true;
 
-    if (this.geoCollection) {
+    if (this.geoCollection()) {
       this.updateLayers();
     }
   }
@@ -95,14 +94,15 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private updateLayers(): void {
-    if (!this.map || !this.geoCollection) return;
+    const geo = this.geoCollection();
+    if (!this.map || !geo) return;
 
     this.municipalitiesLayer?.remove();
     this.schoolMarkersLayer?.remove();
     for (const marker of this.schoolMarkersById.values()) marker.remove();
     this.schoolMarkersById.clear();
 
-    this.municipalitiesLayer = L.geoJSON(this.geoCollection as Parameters<typeof L.geoJSON>[0], {
+    this.municipalitiesLayer = L.geoJSON(geo as Parameters<typeof L.geoJSON>[0], {
       style: (feature) => {
         const cor = String(feature?.properties?.['cor'] ?? '#94a3b8');
         return { color: cor, fillColor: cor, weight: 1, opacity: 1, fillOpacity: 0.65 };
@@ -125,8 +125,8 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       },
     }).addTo(this.map);
 
-    if (this.mostrarMarcadores && this.pontos.length > 0) {
-      const pontosValidos = this.pontos.filter(
+    if (this.mostrarMarcadores() && this.pontos().length > 0) {
+      const pontosValidos = this.pontos().filter(
         (p) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude),
       );
 
@@ -197,8 +197,9 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private buildPopup(ponto: MapaPontoBaseModel, cor: string): string {
-    if (this.buildPopupHtml) {
-      return this.buildPopupHtml(ponto);
+    const popupFn = this.buildPopupHtml();
+    if (popupFn) {
+      return popupFn(ponto);
     }
 
     const escape = (v: unknown) =>
