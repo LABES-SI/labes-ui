@@ -1,4 +1,5 @@
 import type { PlotlyFigure } from '../../../core/api/models/plotly-figure';
+import type { Paginacao } from '../../../core/api/models/paginacao';
 
 export interface MetricaFiltroModel {
   chave: string;
@@ -32,6 +33,11 @@ export interface GraficoListaModel extends GraficoModel {
 export interface PainelAcessibilidadeModel {
   descricao: string;
   graficos: { [key: string]: GraficoModel };
+}
+
+export interface PainelEscolasModel {
+  grafico: GraficoModel;
+  paginacao: Paginacao;
 }
 
 export interface EscolaGeoEntryModel {

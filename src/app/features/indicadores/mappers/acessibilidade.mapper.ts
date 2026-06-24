@@ -1,6 +1,7 @@
 import { AppSchemasAcessibilidadeAnaliseTemporalResponse } from '../../../core/api/models/app-schemas-acessibilidade-analise-temporal-response';
 import { AppSchemasAcessibilidadeMapaResponse } from '../../../core/api/models/app-schemas-acessibilidade-mapa-response';
 import { FiltrosResponse } from '../../../core/api/models/filtros-response';
+import { PainelEscolasResponse } from '../../../core/api/models/painel-escolas-response';
 import { PainelResponse } from '../../../core/api/models/painel-response';
 import {
   AnaliseTemporalModel,
@@ -17,6 +18,7 @@ import {
   MapaMunicipioResumoModel,
   MapaPontoModel,
   PainelAcessibilidadeModel,
+  PainelEscolasModel,
 } from '../models/acessibilidade.models';
 
 function normalizarTexto(texto: string | null | undefined): string {
@@ -201,6 +203,23 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelAcessibilid
   return {
     descricao: api.descricao,
     graficos,
+  };
+}
+
+export function mapPainelEscolasResponseToModel(api: PainelEscolasResponse): PainelEscolasModel {
+  const { grafico, paginacao } = api.data;
+  return {
+    grafico: {
+      plotly: grafico.plotly,
+      tipo: grafico.tipo,
+      titulo: grafico.titulo,
+    },
+    paginacao: {
+      page: paginacao.page,
+      page_size: paginacao.page_size,
+      total_escolas: paginacao.total_escolas,
+      total_paginas: paginacao.total_paginas,
+    },
   };
 }
 

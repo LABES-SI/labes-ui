@@ -8,6 +8,7 @@ import { FiltrosService } from '../../../core/api/services/filtros.service';
 import type {
   GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
   GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
+  GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
 } from '../../../core/api';
 import {
   DadosFiltrosModel,
@@ -17,16 +18,18 @@ import {
   MapaMunicipioGeoJsonCollectionModel,
   MapaMunicipioResumoModel,
   PainelAcessibilidadeModel,
+  PainelEscolasModel,
   AnaliseTemporalModel,
   MapaPontoModel,
 } from '../models/acessibilidade.models';
 import {
+  mapFiltrosResponseToModel,
   mapGeoJsonMunicipiosComAcessibilidade,
   mapMapaMunicipioResumoFromPontos,
   mapPainelResponseToModel,
+  mapPainelEscolasResponseToModel,
   mapMapaResponseToModel,
   mapAnaliseTemporalResponseToModel,
-  mapFiltrosResponseToModel,
 } from '../mappers/acessibilidade.mapper';
 
 type MapaMunicipalComPontosModel = {
@@ -84,6 +87,43 @@ export class AcessibilidadeFacade {
     };
 
     return from(call()).pipe(catchError(() => of({ descricao: '', graficos: {} })));
+  }
+
+  listarPainelEscolas(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+    pibid?: boolean | null;
+    page?: number;
+    page_size?: number;
+  }): Observable<PainelEscolasModel> {
+    const call = async () => {
+      const apiResp = await this.api.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet({
+        ano: params?.ano ?? null,
+        variaveis:
+          params?.variaveis as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['variaveis'],
+        municipios: params?.municipios as string[],
+        rede_ensino:
+          params?.rede_ensino as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['rede_ensino'],
+        tp_localizacao:
+          params?.tp_localizacao as GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params['tp_localizacao'],
+        pibid: params?.pibid ?? undefined,
+        page: params?.page ?? 0,
+        page_size: params?.page_size ?? 5,
+      });
+      return mapPainelEscolasResponseToModel(apiResp);
+    };
+
+    return from(call()).pipe(
+      catchError(() =>
+        of({
+          grafico: { plotly: { data: [], layout: {} }, tipo: '', titulo: '' },
+          paginacao: { page: 0, page_size: 5, total_escolas: 0, total_paginas: 0 },
+        }),
+      ),
+    );
   }
 
   listarMapa(params?: {
