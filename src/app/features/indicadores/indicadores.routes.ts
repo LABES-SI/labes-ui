@@ -17,7 +17,9 @@ export const indicadoresRoutes: Routes = [
   },
   {
     path: 'conectividade',
-    loadChildren: () =>
-      import('../conectividade/conectividade.routes').then((m) => m.conectividadeRoutes),
+    loadComponent: () =>
+      import('./pages/conectividade-page/conectividade-page.component').then(
+        (m) => m.ConectividadePageComponent,
+      ),
   },
 ];
