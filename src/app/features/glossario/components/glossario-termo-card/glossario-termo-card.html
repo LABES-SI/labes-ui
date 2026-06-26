@@ -1,0 +1,19 @@
+<article class="termo-card" [attr.id]="termo().id">
+  <div class="termo-header">
+    <div class="header-titles">
+      <h3>{{ termo().termo }}</h3>
+    </div>
+
+    <span class="badge" [ngClass]="termo().categoria">
+      {{ getCategoriaLabel() }}
+    </span>
+  </div>
+
+  <div class="termo-content">
+    <p class="definicao">{{ termo().definicao }}</p>
+
+    @if (termo().exemplo) {
+      <p class="exemplo"><strong>Exemplo:</strong> {{ termo().exemplo }}</p>
+    }
+  </div>
+</article>

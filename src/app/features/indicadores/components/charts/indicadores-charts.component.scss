@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.graficos-section--acordeao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.acordeao {
+  border: 1px solid #dce5ef;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.acordeao__titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #17213d;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    background: #f5f9ff;
+  }
+}
+
+.acordeao__chevron {
+  font-size: 0.8rem;
+  color: #526586;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.acordeao[open] .acordeao__chevron {
+  transform: rotate(90deg);
+}
+
+.acordeao__conteudo {
+  padding: 0 18px 18px;
+}

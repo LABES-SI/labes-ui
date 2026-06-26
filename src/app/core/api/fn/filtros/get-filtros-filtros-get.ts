@@ -11,26 +11,28 @@ import { FiltrosResponse } from '../../models/filtros-response';
 import { PainelDisponivel } from '../../models/painel-disponivel';
 
 export interface GetFiltrosFiltrosGet$Params {
-
-/**
- * Painel para incluir o catálogo de métricas (ex: acessibilidade). Se omitido, retorna apenas os filtros dimensionais.
- */
-  painel?: (PainelDisponivel | null);
+  /**
+   * Painel para incluir o catálogo de métricas (ex: acessibilidade). Se omitido, retorna apenas os filtros dimensionais.
+   */
+  painel?: PainelDisponivel | null;
 }
 
-export function getFiltrosFiltrosGet(http: HttpClient, rootUrl: string, params?: GetFiltrosFiltrosGet$Params, context?: HttpContext): Observable<StrictHttpResponse<FiltrosResponse>> {
+export function getFiltrosFiltrosGet(
+  http: HttpClient,
+  rootUrl: string,
+  params?: GetFiltrosFiltrosGet$Params,
+  context?: HttpContext,
+): Observable<StrictHttpResponse<FiltrosResponse>> {
   const rb = new RequestBuilder(rootUrl, getFiltrosFiltrosGet.PATH, 'get');
   if (params) {
     rb.query('painel', params.painel, {});
   }
 
-  return http.request(
-    rb.build({ responseType: 'json', accept: 'application/json', context })
-  ).pipe(
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<FiltrosResponse>;
-    })
+    }),
   );
 }
 

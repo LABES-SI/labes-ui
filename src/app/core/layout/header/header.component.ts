@@ -13,7 +13,7 @@ export class HeaderComponent {
 
   protected readonly links = [
     { label: 'Início', route: '/inicio', exact: true },
-    { label: 'Dashboard', route: '/dashboards/acessibilidade', exact: false },
+    { label: 'Indicadores', route: '/indicadores', exact: false },
     { label: 'Colaboradores', route: '/colaboradores', exact: true },
     { label: 'Sobre', route: '/sobre', exact: true },
   ] as const;

@@ -1,0 +1,357 @@
+:host {
+  display: block;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  z-index: 9999;
+  background: linear-gradient(
+    90deg,
+    #0a3fa8 0%,
+    #075be8 35%,
+    #3b82f6 60%,
+    #075be8 80%,
+    #0a3fa8 100%
+  );
+  background-size: 300% 100%;
+  animation: progress-shimmer 1.6s linear infinite;
+}
+
+.filter-panel {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 18px;
+  padding: 22px 22px 24px;
+  border: 1px solid #cfdbea;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(10, 42, 104, 0.08);
+}
+
+.filter-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.filter-panel__title-group {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-panel__header h2 {
+  margin: 0;
+  color: #17213d;
+  font-size: 1.45rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.filter-panel__header p {
+  margin: 6px 0 0;
+  color: #526586;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns:
+    minmax(112px, 0.55fr) minmax(260px, 1.45fr) minmax(230px, 1.3fr) minmax(210px, 1.3fr)
+    minmax(360px, 2.2fr);
+  gap: 18px;
+  align-items: end;
+}
+
+.filter-item {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  align-content: start;
+}
+
+.filter-item label {
+  color: #17213d;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.filter-item select,
+.filter-select summary {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  background: #fff;
+  color: #1b2744;
+  font-size: 0.92rem;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.filter-item select {
+  padding: 8px 16px;
+  font-size: 1.05rem;
+}
+
+.filter-select {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.filter-select summary {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  overflow: hidden;
+  padding: 7px 10px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.filter-select summary > .pi {
+  flex: 0 0 16px;
+  margin-left: auto;
+}
+
+.filter-select summary::-webkit-details-marker {
+  display: none;
+}
+
+.filter-select[open] summary {
+  border-color: var(--sie-color-primary);
+  box-shadow: 0 0 0 3px rgba(7, 91, 232, 0.1);
+}
+
+.filter-select__chips {
+  display: flex;
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.filter-select__placeholder {
+  padding-left: 6px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.filter-chip {
+  display: inline-flex;
+  min-width: 0;
+  max-width: min(150px, 100%);
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #eef4fd;
+  color: #26395f;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-chip__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-chip button,
+.filter-chip button:hover {
+  display: inline-grid;
+  width: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7b8aa4;
+  font-size: 0.9rem;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.filter-chip--count {
+  max-width: none;
+  color: var(--sie-color-primary);
+}
+
+.filter-select__menu {
+  position: absolute;
+  z-index: 11;
+  top: calc(100% + 8px);
+  left: 0;
+  display: grid;
+  width: min(360px, 90vw);
+  max-height: 280px;
+  gap: 2px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid #d8e2ee;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(10, 42, 104, 0.16);
+}
+
+.filter-select__menu--wide {
+  right: 0;
+  left: auto;
+  width: min(520px, 90vw);
+}
+
+.filter-select__menu label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  color: #26395f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.filter-select__menu label:hover {
+  background: #f4f8fe;
+}
+
+.filter-select__menu input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--sie-color-primary);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 26px;
+  border-left: 1px solid #e0e7f0;
+}
+
+.filter-toggle-pibid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 0;
+  border-right: 1px solid #e0e7f0;
+  color: #26395f;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    accent-color: var(--sie-color-primary);
+    cursor: pointer;
+  }
+}
+
+button {
+  min-height: 42px;
+  min-width: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--sie-color-primary);
+  border-radius: 6px;
+  background: var(--sie-color-primary);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filter-actions button {
+  min-height: 50px;
+  min-width: 138px;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+button:hover {
+  border-color: #064ec7;
+  background: #064ec7;
+  min-height: 42px;
+  min-width: 42px;
+  padding: 0 18px;
+}
+
+button[disabled] {
+  opacity: 0.72;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-reset {
+  border-color: #b7c4d6;
+  background: #fff;
+  color: #1d2b4f;
+}
+
+.btn-reset:hover {
+  border-color: var(--sie-color-primary);
+  background: #edf4ff;
+  color: var(--sie-color-primary);
+}
+
+@media (max-width: 1180px) {
+  .filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-actions {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 820px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    grid-column: auto;
+    flex-direction: column;
+  }
+}
