@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-indicadores-hero',
@@ -7,4 +7,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './indicadores-hero.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IndicadoresHeroComponent {}
+export class IndicadoresHeroComponent {
+  readonly eyebrow = input('Indicadores');
+  readonly title = input('Conheça os indicadores');
+  readonly description = input('Explore indicadores organizados em painéis temáticos do SIE.');
+}

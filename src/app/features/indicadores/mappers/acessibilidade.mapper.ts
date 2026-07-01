@@ -29,16 +29,26 @@ function normalizarTexto(texto: string | null | undefined): string {
     .toLocaleLowerCase('pt-BR');
 }
 
+function numeroOuNulo(valor: unknown): number | null {
+  if (valor === null || valor === undefined) return null;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : null;
+}
+
 export function classificarScoreMedio(score: number): ClassificacaoAcessibilidadeModel {
   if (!Number.isFinite(score) || score <= 0) {
     return 'Inexistente';
+  }
+
+  if (score >= 12) {
+    return 'Excelente';
   }
 
   if (score >= 8) {
     return 'Boa';
   }
 
-  if (score >= 5) {
+  if (score >= 4) {
     return 'Média';
   }
 
@@ -47,22 +57,35 @@ export function classificarScoreMedio(score: number): ClassificacaoAcessibilidad
 
 export function corPorClassificacao(classificacao: ClassificacaoAcessibilidadeModel): string {
   switch (classificacao) {
+    case 'Excelente':
+      return '#059669';
     case 'Boa':
-      return '#0f766e';
+      return '#22c55e';
     case 'Média':
       return '#f59e0b';
     case 'Baixa':
-      return '#dc2626';
+      return '#f97316';
     case 'Inexistente':
     default:
-      return '#94a3b8';
+      return '#dc2626';
   }
 }
 
 export function mapMapaMunicipioResumoFromPontos(
   pontos: MapaPontoModel[],
 ): MapaMunicipioResumoModel[] {
-  const agrupados = new Map<string, { municipio: string | null; sum: number; count: number }>();
+  const agrupados = new Map<
+    string,
+    {
+      municipio: string | null;
+      sum: number;
+      count: number;
+      ideb_2023_anos_iniciais_mun: number | null;
+      ideb_2023_anos_finais_mun: number | null;
+      ideb_2023_ensino_medio_mun: number | null;
+      pibid_total: number;
+    }
+  >();
 
   for (const ponto of pontos) {
     if (!ponto.municipio) {
@@ -70,9 +93,18 @@ export function mapMapaMunicipioResumoFromPontos(
     }
 
     const chave = normalizarTexto(ponto.municipio);
-    const atual = agrupados.get(chave) ?? { municipio: ponto.municipio, sum: 0, count: 0 };
+    const atual = agrupados.get(chave) ?? {
+      municipio: ponto.municipio,
+      sum: 0,
+      count: 0,
+      ideb_2023_anos_iniciais_mun: ponto.ideb_2023_anos_iniciais_mun ?? null,
+      ideb_2023_anos_finais_mun: ponto.ideb_2023_anos_finais_mun ?? null,
+      ideb_2023_ensino_medio_mun: ponto.ideb_2023_ensino_medio_mun ?? null,
+      pibid_total: 0,
+    };
     atual.sum += ponto.score ?? 0;
     atual.count += 1;
+    atual.pibid_total += ponto.pibid ?? 0;
     agrupados.set(chave, atual);
   }
 
@@ -87,6 +119,10 @@ export function mapMapaMunicipioResumoFromPontos(
         quantidade_escolas: item.count,
         classificacao,
         cor: corPorClassificacao(classificacao),
+        ideb_2023_anos_iniciais_mun: item.ideb_2023_anos_iniciais_mun,
+        ideb_2023_anos_finais_mun: item.ideb_2023_anos_finais_mun,
+        ideb_2023_ensino_medio_mun: item.ideb_2023_ensino_medio_mun,
+        pibid_total: item.pibid_total,
       };
     })
     .sort((a, b) => b.media_score - a.media_score);
@@ -123,17 +159,6 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
     maxScore = 0;
   }
 
-  const getColorForScore = (score: number, fallback: string) => {
-    if (!Number.isFinite(score)) return fallback;
-    let t = 0.5;
-    if (maxScore !== minScore) {
-      t = (score - minScore) / (maxScore - minScore);
-      t = Math.max(0, Math.min(1, t));
-    }
-    const hue = Math.round(120 * t); // 0 = red, 120 = green
-    return `hsl(${hue}, 75%, 45%)`;
-  };
-
   return {
     type: 'FeatureCollection',
     features: geojson.features
@@ -150,8 +175,7 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
         const nomeMunicipio = String(feature.properties?.['NM_MUN'] ?? '');
         const resumo = resumosPorMunicipio.get(normalizarTexto(nomeMunicipio));
         const classificacao = resumo?.classificacao ?? 'Inexistente';
-        const fallbackCor = corPorClassificacao(classificacao);
-        const cor = resumo ? getColorForScore(resumo.media_score ?? NaN, fallbackCor) : fallbackCor;
+        const cor = corPorClassificacao(classificacao);
 
         const properties: MapaMunicipioGeoJsonPropertiesModel = {
           ...(feature.properties as Record<string, unknown>),
@@ -161,6 +185,10 @@ export function mapGeoJsonMunicipiosComAcessibilidade(
           quantidade_escolas: resumo?.quantidade_escolas ?? 0,
           classificacao_acessibilidade_municipio: classificacao,
           cor,
+          ideb_2023_anos_iniciais_mun: resumo?.ideb_2023_anos_iniciais_mun ?? null,
+          ideb_2023_anos_finais_mun: resumo?.ideb_2023_anos_finais_mun ?? null,
+          ideb_2023_ensino_medio_mun: resumo?.ideb_2023_ensino_medio_mun ?? null,
+          pibid_total: resumo?.pibid_total ?? null,
         };
 
         const featureModel: MapaMunicipioGeoJsonModel = {
@@ -226,12 +254,41 @@ export function mapPainelEscolasResponseToModel(api: PainelEscolasResponse): Pai
 export function mapMapaResponseToModel(
   api: AppSchemasAcessibilidadeMapaResponse,
   geoMap: Map<number, EscolaGeoEntryModel>,
+  filtros?: {
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+  },
 ): MapaAcessibilidadeModel {
+  const cidadesPermitidas = new Set(
+    (filtros?.municipios ?? []).map((item) => normalizarTexto(item)),
+  );
+  const redesPermitidas = new Set(
+    (filtros?.rede_ensino ?? []).map((item) => normalizarTexto(item)),
+  );
+  const localizacoesPermitidas = new Set(
+    (filtros?.tp_localizacao ?? []).map((item) => normalizarTexto(item)),
+  );
+
+  const filtrarMunicipio = cidadesPermitidas.size > 0;
+  const filtrarRede = redesPermitidas.size > 0;
+  const filtrarLocalizacao = localizacoesPermitidas.size > 0;
+
   const pontos: MapaPontoModel[] = [];
 
   for (const p of api.data.pontos || []) {
     const geo = geoMap.get(p.co_entidade);
     if (!geo) continue;
+
+    if (
+      (filtrarMunicipio && !cidadesPermitidas.has(normalizarTexto(geo.no_municipio))) ||
+      (filtrarRede && !redesPermitidas.has(normalizarTexto(geo.no_tp_dependencia))) ||
+      (filtrarLocalizacao && !localizacoesPermitidas.has(normalizarTexto(geo.no_tp_localizacao)))
+    ) {
+      continue;
+    }
+
+    const raw = p as unknown as Record<string, unknown>;
 
     pontos.push({
       co_entidade: p.co_entidade,
@@ -239,9 +296,32 @@ export function mapMapaResponseToModel(
       municipio: geo.no_municipio,
       latitude: geo.latitude,
       longitude: geo.longitude,
-      no_bairro: geo.no_bairro ?? null,
+      no_tp_dependencia: geo.no_tp_dependencia ?? null,
+      no_tp_localizacao: geo.no_tp_localizacao ?? null,
       score: p.score_acessibilidade,
       classificacao: p.classificacao_acessibilidade,
+      ideb_2023_anos_iniciais: numeroOuNulo(raw['ideb_2023_anos_iniciais']),
+      ideb_2023_anos_finais: numeroOuNulo(raw['ideb_2023_anos_finais']),
+      ideb_2023_ensino_medio: numeroOuNulo(raw['ideb_2023_ensino_medio']),
+      ideb_2023_anos_iniciais_mun: numeroOuNulo(raw['ideb_2023_anos_iniciais_mun']),
+      ideb_2023_anos_finais_mun: numeroOuNulo(raw['ideb_2023_anos_finais_mun']),
+      ideb_2023_ensino_medio_mun: numeroOuNulo(raw['ideb_2023_ensino_medio_mun']),
+      pibid: numeroOuNulo(p.pibid),
+      in_acessibilidade_rampas: numeroOuNulo(p.in_acessibilidade_rampas),
+      in_acessibilidade_corrimao: numeroOuNulo(p.in_acessibilidade_corrimao),
+      in_acessibilidade_elevador: numeroOuNulo(p.in_acessibilidade_elevador),
+      in_acessibilidade_pisos_tateis: numeroOuNulo(p.in_acessibilidade_pisos_tateis),
+      in_acessibilidade_vao_livre: numeroOuNulo(p.in_acessibilidade_vao_livre),
+      in_acessibilidade_inexistente: numeroOuNulo(p.in_acessibilidade_inexistente),
+      in_acessibilidade_sinal_tatil: numeroOuNulo(p.in_acessibilidade_sinal_tatil),
+      in_acessibilidade_sinal_sonoro: numeroOuNulo(p.in_acessibilidade_sinal_sonoro),
+      in_acessibilidade_sinal_visual: numeroOuNulo(p.in_acessibilidade_sinal_visual),
+      in_sala_atendimento_especial: numeroOuNulo(p.in_sala_atendimento_especial),
+      in_reserva_pcd: numeroOuNulo(p.in_reserva_pcd),
+      qt_salas_utilizadas_acessiveis: numeroOuNulo(p.qt_salas_utilizadas_acessiveis),
+      tp_aee: numeroOuNulo(p.tp_aee),
+      qt_prof_psicologo: numeroOuNulo(p.qt_prof_psicologo),
+      qt_prof_assist_social: numeroOuNulo(p.qt_prof_assist_social),
     });
   }
 

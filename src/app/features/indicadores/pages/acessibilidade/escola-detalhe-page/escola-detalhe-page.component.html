@@ -1,0 +1,109 @@
+<div class="escola-detalhe-page">
+  <a routerLink="/indicadores/acessibilidade/escolas" class="voltar-link">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    Voltar para escolas
+  </a>
+
+  @if (isLoading) {
+    <div class="skeleton-page">
+      <div class="skeleton-bar skeleton-bar--title"></div>
+      <div class="skeleton-bar skeleton-bar--subtitle"></div>
+      <div class="skeleton-cards">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  } @else if (naoEncontrada) {
+    <div class="empty-state">Escola não encontrada.</div>
+  } @else if (escola) {
+    <header class="escola-header">
+      <div class="escola-header__info">
+        <h1>{{ escola.nome }}</h1>
+        <p>
+          {{ escola.municipio }}
+          @if (escola.no_bairro) {
+            &middot; {{ escola.no_bairro }}
+          }
+        </p>
+      </div>
+      <span class="score-badge">
+        <strong>{{ escola.score | number: '1.2-2' }}</strong>
+        <span>{{ escola.classificacao }}</span>
+        <small class="score-range">{{ scoreIntervaloLabel(escola.classificacao) }}</small>
+      </span>
+    </header>
+
+    <section class="info-grid" aria-label="Informações da escola">
+      <div class="info-card">
+        <span>Rede de ensino</span>
+        <strong>{{ escola.no_tp_dependencia ?? 'Não informado' }}</strong>
+      </div>
+      <div class="info-card">
+        <span>Localização</span>
+        <strong>{{ escola.no_tp_localizacao ?? 'Não informado' }}</strong>
+      </div>
+      <div class="info-card">
+        <span>Código INEP</span>
+        <strong>{{ escola.co_entidade }}</strong>
+      </div>
+      <div class="info-card">
+        <span>PIBID</span>
+        <strong>{{ formatarContagem(escola.pibid) }}</strong>
+      </div>
+    </section>
+
+    <section class="ideb-section" aria-label="IDEB 2023">
+      <h2>IDEB 2023</h2>
+      <div class="ideb-grid">
+        <div class="ideb-card">
+          <span class="ideb-card__eyebrow">Escola</span>
+          <span>Anos iniciais</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_anos_iniciais) }}</strong>
+        </div>
+        <div class="ideb-card">
+          <span class="ideb-card__eyebrow">Escola</span>
+          <span>Anos finais</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_anos_finais) }}</strong>
+        </div>
+        <div class="ideb-card">
+          <span class="ideb-card__eyebrow">Escola</span>
+          <span>Ensino médio</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_ensino_medio) }}</strong>
+        </div>
+        <div class="ideb-card ideb-card--municipio">
+          <span class="ideb-card__eyebrow">Município</span>
+          <span>Anos iniciais</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_anos_iniciais_mun) }}</strong>
+        </div>
+        <div class="ideb-card ideb-card--municipio">
+          <span class="ideb-card__eyebrow">Município</span>
+          <span>Anos finais</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_anos_finais_mun) }}</strong>
+        </div>
+        <div class="ideb-card ideb-card--municipio">
+          <span class="ideb-card__eyebrow">Município</span>
+          <span>Ensino médio</span>
+          <strong>{{ formatarIdeb(escola.ideb_2023_ensino_medio_mun) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="metricas-section" aria-label="Recursos de acessibilidade">
+      <h2>Recursos de acessibilidade</h2>
+      <div class="metricas-grid">
+        @for (m of metricas; track m.chave) {
+          <div class="metrica-card" [class.metrica-card--ativa]="ativaMetrica(m)">
+            <i
+              [class]="ativaMetrica(m) ? 'pi pi-check-circle' : 'pi pi-times-circle'"
+              aria-hidden="true"
+            ></i>
+            <span class="metrica-card__label">{{ m.label }}</span>
+            <span class="metrica-card__valor">{{ valorExibidoMetrica(m) }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

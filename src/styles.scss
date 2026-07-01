@@ -611,20 +611,24 @@ textarea {
   border-radius: 3px;
 }
 
+.legend-dot--muito-alta {
+  background: #059669;
+}
+
 .legend-dot--alta {
   background: #22c55e;
 }
 
 .legend-dot--media {
-  background: #facc15;
+  background: #f59e0b;
 }
 
 .legend-dot--baixa {
-  background: #fb923c;
+  background: #f97316;
 }
 
 .legend-dot--muito-baixa {
-  background: #ef4444;
+  background: #dc2626;
 }
 
 /* Ranking de escolas */

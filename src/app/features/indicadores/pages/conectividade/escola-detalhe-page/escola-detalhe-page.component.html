@@ -1,0 +1,77 @@
+<div class="escola-detalhe-page">
+  <a routerLink="/indicadores/conectividade/escolas" class="voltar-link">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    Voltar para escolas
+  </a>
+
+  @if (isLoading) {
+    <div class="skeleton-page">
+      <div class="skeleton-bar skeleton-bar--title"></div>
+      <div class="skeleton-bar skeleton-bar--subtitle"></div>
+      <div class="skeleton-cards">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  } @else if (naoEncontrada) {
+    <div class="empty-state">Escola não encontrada.</div>
+  } @else if (escola) {
+    <header class="escola-header">
+      <div class="escola-header__info">
+        <h1>{{ escola.nome }}</h1>
+        <p>
+          {{ escola.municipio }}
+          @if (escola.no_bairro) {
+            &middot; {{ escola.no_bairro }}
+          }
+        </p>
+      </div>
+      <span class="score-badge">
+        <strong>{{ escola.score | number: '1.2-2' }}</strong>
+        <span>{{ escola.classificacao }}</span>
+        <small class="score-range">{{ scoreIntervaloLabel(escola.classificacao) }}</small>
+      </span>
+    </header>
+
+    <section class="info-grid" aria-label="Informações da escola">
+      <div class="info-card">
+        <span>Rede de ensino</span>
+        <strong>{{ escola.no_tp_dependencia ?? 'Não informado' }}</strong>
+      </div>
+      <div class="info-card">
+        <span>Localização</span>
+        <strong>{{ escola.no_tp_localizacao ?? 'Não informado' }}</strong>
+      </div>
+      <div class="info-card">
+        <span>Código INEP</span>
+        <strong>{{ escola.co_entidade }}</strong>
+      </div>
+      <div class="info-card">
+        <span>PIBID</span>
+        <strong>{{ formatarContagem(escola.pibid) }}</strong>
+      </div>
+      <div class="info-card">
+        <span>Rede local</span>
+        <strong>{{ formatarTpRedeLocal(escola.tp_rede_local) }}</strong>
+      </div>
+    </section>
+
+    <section class="metricas-section" aria-label="Recursos de conectividade">
+      <h2>Recursos de conectividade</h2>
+      <div class="metricas-grid">
+        @for (m of metricas; track m.chave) {
+          <div class="metrica-card" [class.metrica-card--ativa]="ativaMetrica(m)">
+            <i
+              [class]="ativaMetrica(m) ? 'pi pi-check-circle' : 'pi pi-times-circle'"
+              aria-hidden="true"
+            ></i>
+            <span class="metrica-card__label">{{ m.label }}</span>
+            <span class="metrica-card__valor">{{ valorExibidoMetrica(m) }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

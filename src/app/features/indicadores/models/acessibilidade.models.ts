@@ -47,6 +47,8 @@ export interface EscolaGeoEntryModel {
   latitude: number;
   longitude: number;
   no_municipio: string | null;
+  no_tp_dependencia?: string | null;
+  no_tp_localizacao?: string | null;
 }
 
 export interface MapaPontoModel {
@@ -60,6 +62,28 @@ export interface MapaPontoModel {
   no_bairro?: string | null;
   no_tp_dependencia?: string | null;
   no_tp_localizacao?: string | null;
+  ideb_2023_anos_iniciais?: number | null;
+  ideb_2023_anos_finais?: number | null;
+  ideb_2023_ensino_medio?: number | null;
+  ideb_2023_anos_iniciais_mun?: number | null;
+  ideb_2023_anos_finais_mun?: number | null;
+  ideb_2023_ensino_medio_mun?: number | null;
+  pibid?: number | null;
+  in_acessibilidade_rampas?: number | null;
+  in_acessibilidade_corrimao?: number | null;
+  in_acessibilidade_elevador?: number | null;
+  in_acessibilidade_pisos_tateis?: number | null;
+  in_acessibilidade_vao_livre?: number | null;
+  in_acessibilidade_inexistente?: number | null;
+  in_acessibilidade_sinal_tatil?: number | null;
+  in_acessibilidade_sinal_sonoro?: number | null;
+  in_acessibilidade_sinal_visual?: number | null;
+  in_sala_atendimento_especial?: number | null;
+  in_reserva_pcd?: number | null;
+  qt_salas_utilizadas_acessiveis?: number | null;
+  tp_aee?: number | null;
+  qt_prof_psicologo?: number | null;
+  qt_prof_assist_social?: number | null;
   [key: string]: unknown;
 }
 
@@ -83,7 +107,12 @@ export interface MapaMunicipioModel {
   cor: string;
 }
 
-export type ClassificacaoAcessibilidadeModel = 'Boa' | 'Média' | 'Baixa' | 'Inexistente';
+export type ClassificacaoAcessibilidadeModel =
+  | 'Excelente'
+  | 'Boa'
+  | 'Média'
+  | 'Baixa'
+  | 'Inexistente';
 
 export interface GeoJsonGeometryModel {
   type: string;
@@ -111,6 +140,10 @@ export interface MapaMunicipioResumoModel {
   quantidade_escolas: number;
   classificacao: ClassificacaoAcessibilidadeModel;
   cor: string;
+  ideb_2023_anos_iniciais_mun?: number | null;
+  ideb_2023_anos_finais_mun?: number | null;
+  ideb_2023_ensino_medio_mun?: number | null;
+  pibid_total?: number | null;
 }
 
 export interface MapaMunicipioGeoJsonPropertiesModel extends GeoJsonFeaturePropertiesModel {
@@ -120,6 +153,10 @@ export interface MapaMunicipioGeoJsonPropertiesModel extends GeoJsonFeaturePrope
   quantidade_escolas: number;
   classificacao_acessibilidade_municipio: ClassificacaoAcessibilidadeModel;
   cor: string;
+  ideb_2023_anos_iniciais_mun?: number | null;
+  ideb_2023_anos_finais_mun?: number | null;
+  ideb_2023_ensino_medio_mun?: number | null;
+  pibid_total?: number | null;
 }
 
 export interface MapaMunicipioGeoJsonModel extends GeoJsonFeatureModel {

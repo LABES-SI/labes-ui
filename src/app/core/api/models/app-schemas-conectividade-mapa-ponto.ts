@@ -11,7 +11,7 @@
  * intervalo do mart, cujo cálculo é de responsabilidade da squad de dados.
  */
 export interface AppSchemasConectividadeMapaPonto {
-  classificacao_conectividade: 'Boa' | 'M\xE9dia' | 'Baixa' | 'Inexistente';
+  classificacao_conectividade: 'Excelente' | 'Boa' | 'M\xE9dia' | 'Baixa' | 'Inexistente';
   co_entidade: number;
   dt_carga: string | null;
   in_aces_internet_disp_pessoais: number;

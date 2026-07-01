@@ -11,7 +11,7 @@
   </button>
 
   <div class="map-legend" aria-label="Legenda">
-    @for (item of legendaItems(); track item.label) {
+    @for (item of legendaExibida; track item.label) {
       <span>
         <i [class]="'legend-dot ' + item.classe" aria-hidden="true"></i>
         {{ item.label }}

@@ -42,11 +42,14 @@
   <div class="filter-bar">
     <div class="filter-item filter-item--year">
       <label>Ano</label>
-      <select [value]="selectedAno() ?? ''" (change)="onAnoChange($event)">
-        @for (a of anos(); track a) {
-          <option [value]="a">{{ a }}</option>
-        }
-      </select>
+      <div class="filter-select-native">
+        <select [value]="selectedAno() ?? ''" (change)="onAnoChange($event)">
+          @for (a of anos(); track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+        <i class="pi pi-chevron-down" aria-hidden="true"></i>
+      </div>
     </div>
 
     <div class="filter-item filter-item--municipio">
@@ -77,6 +80,16 @@
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
+          <label class="filter-select__select-all">
+            <input
+              type="checkbox"
+              [checked]="
+                municipios().length > 0 && selectedMunicipios().length === municipios().length
+              "
+              (change)="toggleSelectAll(selectedMunicipios(), municipiosNomes(), 'municipios')"
+            />
+            Selecionar todos
+          </label>
           @for (municipio of municipios(); track municipio.nome) {
             <label>
               <input
@@ -119,6 +132,16 @@
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
+          <label class="filter-select__select-all">
+            <input
+              type="checkbox"
+              [checked]="
+                redesEnsino().length > 0 && selectedRedeEnsino().length === redesEnsino().length
+              "
+              (change)="toggleSelectAll(selectedRedeEnsino(), redesEnsino(), 'rede')"
+            />
+            Selecionar todos
+          </label>
           @for (rede of redesEnsino(); track rede) {
             <label>
               <input
@@ -156,6 +179,17 @@
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu">
+          <label class="filter-select__select-all">
+            <input
+              type="checkbox"
+              [checked]="
+                tpLocalizacoes().length > 0 &&
+                selectedTpLocalizacao().length === tpLocalizacoes().length
+              "
+              (change)="toggleSelectAll(selectedTpLocalizacao(), tpLocalizacoes(), 'localizacao')"
+            />
+            Selecionar todos
+          </label>
           @for (localizacao of tpLocalizacoes(); track localizacao) {
             <label>
               <input
@@ -198,6 +232,14 @@
           <i class="pi pi-chevron-down" aria-hidden="true"></i>
         </summary>
         <div class="filter-select__menu filter-select__menu--wide">
+          <label class="filter-select__select-all">
+            <input
+              type="checkbox"
+              [checked]="metricas().length > 0 && selectedMetricas().length === metricas().length"
+              (change)="toggleSelectAll(selectedMetricas(), metricasChaves(), 'metricas')"
+            />
+            Selecionar todos
+          </label>
           @for (m of metricas(); track m.chave) {
             <label>
               <input

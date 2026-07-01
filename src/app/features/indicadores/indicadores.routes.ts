@@ -16,10 +16,66 @@ export const indicadoresRoutes: Routes = [
       ),
   },
   {
+    path: 'acessibilidade/visao-geral',
+    loadComponent: () =>
+      import('./pages/acessibilidade/visao-geral-page/visao-geral-page.component').then(
+        (m) => m.VisaoGeralPageComponent,
+      ),
+  },
+  {
+    path: 'acessibilidade/analise-temporal',
+    loadComponent: () =>
+      import('./pages/acessibilidade/analise-temporal-page/analise-temporal-page.component').then(
+        (m) => m.AnaliseTemporalPageComponent,
+      ),
+  },
+  {
+    path: 'acessibilidade/escolas',
+    loadComponent: () =>
+      import('./pages/acessibilidade/escolas-page/escolas-page.component').then(
+        (m) => m.EscolasPageComponent,
+      ),
+  },
+  {
+    path: 'acessibilidade/escolas/:id',
+    loadComponent: () =>
+      import('./pages/acessibilidade/escola-detalhe-page/escola-detalhe-page.component').then(
+        (m) => m.EscolaDetalhePageComponent,
+      ),
+  },
+  {
     path: 'conectividade',
     loadComponent: () =>
       import('./pages/conectividade-page/conectividade-page.component').then(
         (m) => m.ConectividadePageComponent,
+      ),
+  },
+  {
+    path: 'conectividade/visao-geral',
+    loadComponent: () =>
+      import('./pages/conectividade/visao-geral-page/visao-geral-page.component').then(
+        (m) => m.VisaoGeralPageComponent,
+      ),
+  },
+  {
+    path: 'conectividade/analise-temporal',
+    loadComponent: () =>
+      import('./pages/conectividade/analise-temporal-page/analise-temporal-page.component').then(
+        (m) => m.AnaliseTemporalPageComponent,
+      ),
+  },
+  {
+    path: 'conectividade/escolas',
+    loadComponent: () =>
+      import('./pages/conectividade/escolas-page/escolas-page.component').then(
+        (m) => m.EscolasPageComponent,
+      ),
+  },
+  {
+    path: 'conectividade/escolas/:id',
+    loadComponent: () =>
+      import('./pages/conectividade/escola-detalhe-page/escola-detalhe-page.component').then(
+        (m) => m.EscolaDetalhePageComponent,
       ),
   },
 ];
