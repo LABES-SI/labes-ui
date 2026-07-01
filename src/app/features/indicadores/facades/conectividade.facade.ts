@@ -45,8 +45,36 @@ export class ConectividadeFacade {
   private getEscolasGeoMap(): Promise<Map<number, EscolaGeoEntryModel>> {
     if (!this.escolasGeoMap$) {
       this.escolasGeoMap$ = firstValueFrom(
-        this.http.get<EscolaGeoEntryModel[]>('assets/geojson/escolas_geo.json'),
-      ).then((entries) => new Map(entries.map((e) => [e.co_entidade, e])));
+        this.http.get<GeoJsonFeatureCollectionModel>('assets/geojson/escolas.geojson'),
+      ).then((geojson) => {
+        const entries = (geojson.features ?? [])
+          .map((feature) => {
+            const properties = feature.properties as Record<string, unknown>;
+            const coordinates = Array.isArray(feature.geometry?.coordinates)
+              ? feature.geometry.coordinates
+              : [];
+
+            return {
+              co_entidade: Number(properties['co_entidade']) || 0,
+              no_entidade: String(properties['no_entidade'] ?? ''),
+              latitude: Number(coordinates[1]) || 0,
+              longitude: Number(coordinates[0]) || 0,
+              no_municipio:
+                properties['no_municipio'] == null ? null : String(properties['no_municipio']),
+              no_tp_dependencia:
+                properties['no_tp_dependencia'] == null
+                  ? null
+                  : String(properties['no_tp_dependencia']),
+              no_tp_localizacao:
+                properties['no_tp_localizacao'] == null
+                  ? null
+                  : String(properties['no_tp_localizacao']),
+            } as EscolaGeoEntryModel;
+          })
+          .filter((entry) => Number.isFinite(entry.co_entidade));
+
+        return new Map(entries.map((entry) => [entry.co_entidade, entry]));
+      });
     }
     return this.escolasGeoMap$;
   }
@@ -89,6 +117,9 @@ export class ConectividadeFacade {
   listarMapa(params?: {
     ano?: number | null;
     variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
     pibid?: boolean | null;
   }): Observable<MapaConectividadeModel> {
     const call = async () => {
@@ -101,7 +132,11 @@ export class ConectividadeFacade {
         }),
         this.getEscolasGeoMap(),
       ]);
-      return mapMapaResponseToModel(apiResp, geoMap);
+      return mapMapaResponseToModel(apiResp, geoMap, {
+        municipios: params?.municipios ?? null,
+        rede_ensino: params?.rede_ensino ?? null,
+        tp_localizacao: params?.tp_localizacao ?? null,
+      });
     };
 
     return from(call()).pipe(catchError(() => of({ descricao: '', pontos: [] })));
@@ -134,7 +169,7 @@ export class ConectividadeFacade {
         firstValueFrom(this.listarMapa(params)),
         firstValueFrom(
           this.http
-            .get<GeoJsonFeatureCollectionModel>('assets/geojson/PA_Municipios_Pibid_2025.json')
+            .get<GeoJsonFeatureCollectionModel>('assets/geojson/municipios_pibid.geojson')
             .pipe(
               catchError(() =>
                 of({ type: 'FeatureCollection', features: [] } as GeoJsonFeatureCollectionModel),

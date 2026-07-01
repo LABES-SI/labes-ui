@@ -25,6 +25,8 @@ export interface EscolaGeoEntryModel {
   latitude: number;
   longitude: number;
   no_municipio: string | null;
+  no_tp_dependencia?: string | null;
+  no_tp_localizacao?: string | null;
 }
 
 export interface GraficoModel {
@@ -44,13 +46,11 @@ export interface PainelConectividadeModel {
 }
 
 export type ClassificacaoConectividadeModel =
+  | 'Excelente'
   | 'Boa'
   | 'Média'
   | 'Baixa'
-  | 'Inexistente'
-  | 'Conectada'
-  | 'Parcial'
-  | 'Sem Conectividade';
+  | 'Inexistente';
 
 export interface MapaPontoModel {
   co_entidade: number;
@@ -60,6 +60,27 @@ export interface MapaPontoModel {
   longitude: number;
   score: number;
   classificacao: ClassificacaoConectividadeModel;
+  no_bairro?: string | null;
+  no_tp_dependencia?: string | null;
+  no_tp_localizacao?: string | null;
+  pibid?: number | null;
+  in_internet?: number | null;
+  in_internet_alunos?: number | null;
+  in_internet_administrativo?: number | null;
+  in_internet_aprendizagem?: number | null;
+  in_internet_comunidade?: number | null;
+  in_banda_larga?: number | null;
+  in_acesso_internet_computador?: number | null;
+  in_aces_internet_disp_pessoais?: number | null;
+  in_computador?: number | null;
+  in_desktop_aluno?: number | null;
+  in_comp_portatil_aluno?: number | null;
+  in_tablet_aluno?: number | null;
+  in_redes_sociais?: number | null;
+  tp_rede_local?: number | null;
+  qt_desktop_aluno?: number | null;
+  qt_comp_portatil_aluno?: number | null;
+  qt_tablet_aluno?: number | null;
   [key: string]: unknown;
 }
 
@@ -109,6 +130,7 @@ export interface MapaMunicipioResumoModel {
   quantidade_escolas: number;
   classificacao: ClassificacaoConectividadeModel;
   cor: string;
+  pibid_total?: number | null;
 }
 
 export interface MapaMunicipioGeoJsonPropertiesModel extends GeoJsonFeaturePropertiesModel {
@@ -118,6 +140,7 @@ export interface MapaMunicipioGeoJsonPropertiesModel extends GeoJsonFeaturePrope
   quantidade_escolas: number;
   classificacao_conectividade_municipio: ClassificacaoConectividadeModel;
   cor: string;
+  pibid_total?: number | null;
 }
 
 export interface MapaMunicipioGeoJsonModel extends GeoJsonFeatureModel {

@@ -6,7 +6,7 @@
  * métricas e score/classificação de acessibilidade já pré-computados.
  */
 export interface AppSchemasAcessibilidadeMapaPonto {
-  classificacao_acessibilidade: 'Boa' | 'M\xE9dia' | 'Baixa' | 'Inexistente';
+  classificacao_acessibilidade: 'Excelente' | 'Boa' | 'M\xE9dia' | 'Baixa' | 'Inexistente';
   co_entidade: number;
   dt_carga: string | null;
   in_acessibilidade_corrimao: number;

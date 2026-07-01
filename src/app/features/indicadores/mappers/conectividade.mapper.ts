@@ -27,42 +27,69 @@ function normalizarTexto(texto: string | null | undefined): string {
     .toLocaleLowerCase('pt-BR');
 }
 
+function numeroOuNulo(valor: unknown): number | null {
+  if (valor === null || valor === undefined) return null;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : null;
+}
+
 export function classificarScoreMedio(score: number): ClassificacaoConectividadeModel {
-  if (!Number.isFinite(score) || score <= 0) return 'Inexistente';
-  if (score >= 11) return 'Boa';
-  if (score >= 6) return 'Média';
+  if (!Number.isFinite(score) || score <= 0) {
+    return 'Inexistente';
+  }
+
+  if (score >= 13) {
+    return 'Excelente';
+  }
+
+  if (score >= 9) {
+    return 'Boa';
+  }
+
+  if (score >= 5) {
+    return 'Média';
+  }
+
   return 'Baixa';
 }
 
 export function corPorClassificacao(classificacao: ClassificacaoConectividadeModel): string {
   switch (classificacao) {
+    case 'Excelente':
+      return '#059669';
     case 'Boa':
-    case 'Conectada':
-      return '#0f766e';
+      return '#22c55e';
     case 'Média':
-    case 'Parcial':
       return '#f59e0b';
     case 'Baixa':
-    case 'Sem Conectividade':
-      return '#dc2626';
+      return '#f97316';
     case 'Inexistente':
     default:
-      return '#94a3b8';
+      return '#dc2626';
   }
 }
 
 export function mapMapaMunicipioResumoFromPontos(
   pontos: MapaPontoModel[],
 ): MapaMunicipioResumoModel[] {
-  const agrupados = new Map<string, { municipio: string | null; sum: number; count: number }>();
+  const agrupados = new Map<
+    string,
+    { municipio: string | null; sum: number; count: number; pibid_total: number }
+  >();
 
   for (const ponto of pontos) {
     if (!ponto.municipio) continue;
 
     const chave = normalizarTexto(ponto.municipio);
-    const atual = agrupados.get(chave) ?? { municipio: ponto.municipio, sum: 0, count: 0 };
+    const atual = agrupados.get(chave) ?? {
+      municipio: ponto.municipio,
+      sum: 0,
+      count: 0,
+      pibid_total: 0,
+    };
     atual.sum += ponto.score ?? 0;
     atual.count += 1;
+    atual.pibid_total += ponto.pibid ?? 0;
     agrupados.set(chave, atual);
   }
 
@@ -76,6 +103,7 @@ export function mapMapaMunicipioResumoFromPontos(
         quantidade_escolas: item.count,
         classificacao,
         cor: corPorClassificacao(classificacao),
+        pibid_total: item.pibid_total,
       };
     })
     .sort((a, b) => b.media_score - a.media_score);
@@ -110,15 +138,6 @@ export function mapGeoJsonMunicipiosComConectividade(
     maxScore = 0;
   }
 
-  const getColorForScore = (score: number, fallback: string) => {
-    if (!Number.isFinite(score)) return fallback;
-    let t = 0.5;
-    if (maxScore !== minScore) {
-      t = Math.max(0, Math.min(1, (score - minScore) / (maxScore - minScore)));
-    }
-    return `hsl(${Math.round(120 * t)}, 75%, 45%)`;
-  };
-
   return {
     type: 'FeatureCollection',
     features: geojson.features
@@ -132,8 +151,7 @@ export function mapGeoJsonMunicipiosComConectividade(
         const nomeMunicipio = String(feature.properties?.['NM_MUN'] ?? '');
         const resumo = resumosPorMunicipio.get(normalizarTexto(nomeMunicipio));
         const classificacao = resumo?.classificacao ?? 'Inexistente';
-        const fallbackCor = corPorClassificacao(classificacao);
-        const cor = resumo ? getColorForScore(resumo.media_score ?? NaN, fallbackCor) : fallbackCor;
+        const cor = corPorClassificacao(classificacao);
 
         const properties: MapaMunicipioGeoJsonPropertiesModel = {
           ...(feature.properties as Record<string, unknown>),
@@ -143,6 +161,7 @@ export function mapGeoJsonMunicipiosComConectividade(
           quantidade_escolas: resumo?.quantidade_escolas ?? 0,
           classificacao_conectividade_municipio: classificacao,
           cor,
+          pibid_total: resumo?.pibid_total ?? null,
         };
 
         const featureModel: MapaMunicipioGeoJsonModel = {
@@ -182,12 +201,39 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelConectivida
 export function mapMapaResponseToModel(
   api: AppSchemasConectividadeMapaResponse,
   geoMap: Map<number, EscolaGeoEntryModel>,
+  filtros?: {
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+  },
 ): MapaConectividadeModel {
+  const cidadesPermitidas = new Set(
+    (filtros?.municipios ?? []).map((item) => normalizarTexto(item)),
+  );
+  const redesPermitidas = new Set(
+    (filtros?.rede_ensino ?? []).map((item) => normalizarTexto(item)),
+  );
+  const localizacoesPermitidas = new Set(
+    (filtros?.tp_localizacao ?? []).map((item) => normalizarTexto(item)),
+  );
+
+  const filtrarMunicipio = cidadesPermitidas.size > 0;
+  const filtrarRede = redesPermitidas.size > 0;
+  const filtrarLocalizacao = localizacoesPermitidas.size > 0;
+
   const pontos: MapaPontoModel[] = [];
 
   for (const p of api.data.pontos || []) {
     const geo = geoMap.get(p.co_entidade);
     if (!geo) continue;
+
+    if (
+      (filtrarMunicipio && !cidadesPermitidas.has(normalizarTexto(geo.no_municipio))) ||
+      (filtrarRede && !redesPermitidas.has(normalizarTexto(geo.no_tp_dependencia))) ||
+      (filtrarLocalizacao && !localizacoesPermitidas.has(normalizarTexto(geo.no_tp_localizacao)))
+    ) {
+      continue;
+    }
 
     pontos.push({
       co_entidade: p.co_entidade,
@@ -195,8 +241,28 @@ export function mapMapaResponseToModel(
       municipio: geo.no_municipio,
       latitude: geo.latitude,
       longitude: geo.longitude,
+      no_tp_dependencia: geo.no_tp_dependencia ?? null,
+      no_tp_localizacao: geo.no_tp_localizacao ?? null,
       score: p.score_conectividade,
       classificacao: p.classificacao_conectividade,
+      pibid: numeroOuNulo(p.pibid),
+      in_internet: numeroOuNulo(p.in_internet),
+      in_internet_alunos: numeroOuNulo(p.in_internet_alunos),
+      in_internet_administrativo: numeroOuNulo(p.in_internet_administrativo),
+      in_internet_aprendizagem: numeroOuNulo(p.in_internet_aprendizagem),
+      in_internet_comunidade: numeroOuNulo(p.in_internet_comunidade),
+      in_banda_larga: numeroOuNulo(p.in_banda_larga),
+      in_acesso_internet_computador: numeroOuNulo(p.in_acesso_internet_computador),
+      in_aces_internet_disp_pessoais: numeroOuNulo(p.in_aces_internet_disp_pessoais),
+      in_computador: numeroOuNulo(p.in_computador),
+      in_desktop_aluno: numeroOuNulo(p.in_desktop_aluno),
+      in_comp_portatil_aluno: numeroOuNulo(p.in_comp_portatil_aluno),
+      in_tablet_aluno: numeroOuNulo(p.in_tablet_aluno),
+      in_redes_sociais: numeroOuNulo(p.in_redes_sociais),
+      tp_rede_local: numeroOuNulo(p.tp_rede_local),
+      qt_desktop_aluno: numeroOuNulo(p.qt_desktop_aluno),
+      qt_comp_portatil_aluno: numeroOuNulo(p.qt_comp_portatil_aluno),
+      qt_tablet_aluno: numeroOuNulo(p.qt_tablet_aluno),
     });
   }
 

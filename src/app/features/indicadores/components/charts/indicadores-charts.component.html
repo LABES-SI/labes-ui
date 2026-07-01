@@ -1,41 +1,108 @@
+@if (
+  graficosLayout() === 'grade' && (graficosAnaliseTemporal().length > 0 || graficos().length > 0)
+) {
+  <div class="graficos-toolbar">
+    <div
+      class="graficos-toolbar__options"
+      role="group"
+      aria-label="Alternar visualização dos gráficos"
+    >
+      <button
+        type="button"
+        [class.is-active]="colunas() === 2"
+        (click)="setColunas(2)"
+        aria-label="Exibir em duas colunas"
+        title="Duas colunas"
+      >
+        <lucide-icon [img]="layoutGridIcon" />
+      </button>
+      <button
+        type="button"
+        [class.is-active]="colunas() === 1"
+        (click)="setColunas(1)"
+        aria-label="Exibir em coluna única"
+        title="Direto"
+      >
+        <lucide-icon [img]="listIcon" />
+      </button>
+    </div>
+  </div>
+}
+
 @if (graficosAnaliseTemporal().length > 0) {
-  <section class="graficos-section--acordeao">
-    @for (grafico of graficosAnaliseTemporal(); track grafico.chave) {
-      <details class="acordeao">
-        <summary class="acordeao__titulo">
-          <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
-          {{ grafico.titulo }}
-        </summary>
-        <div class="acordeao__conteudo">
-          <plotly-plot
-            [data]="grafico.plotly.data"
-            [layout]="grafico.plotly.layout"
-            [useResizeHandler]="true"
-            [style]="{ position: 'relative', width: '100%', height: '320px' }"
-          ></plotly-plot>
+  @if (graficosLayout() === 'grade') {
+    <section class="graficos-section--grade" [style.--graficos-colunas]="colunas()">
+      @for (grafico of graficosAnaliseTemporal(); track grafico.chave + '::' + colunas()) {
+        <div class="grafico-card">
+          <h3>{{ grafico.titulo }}</h3>
+          <div class="grafico-card__scroll">
+            <plotly-plot
+              [data]="grafico.plotly.data"
+              [layout]="grafico.plotly.layout"
+              [useResizeHandler]="true"
+              [style]="{ position: 'relative', width: '100%', height: '460px' }"
+            ></plotly-plot>
+          </div>
         </div>
-      </details>
-    }
-  </section>
+      }
+    </section>
+  } @else {
+    <section class="graficos-section--acordeao">
+      @for (grafico of graficosAnaliseTemporal(); track grafico.chave) {
+        <details class="acordeao">
+          <summary class="acordeao__titulo">
+            <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
+            {{ grafico.titulo }}
+          </summary>
+          <div class="acordeao__conteudo">
+            <plotly-plot
+              [data]="grafico.plotly.data"
+              [layout]="grafico.plotly.layout"
+              [useResizeHandler]="true"
+              [style]="{ position: 'relative', width: '100%', height: '320px' }"
+            ></plotly-plot>
+          </div>
+        </details>
+      }
+    </section>
+  }
 }
 
 @if (graficos().length > 0) {
-  <section class="graficos-section--acordeao">
-    @for (grafico of graficos(); track grafico.chave; let i = $index) {
-      <details class="acordeao">
-        <summary class="acordeao__titulo">
-          <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
-          {{ grafico.titulo }}
-        </summary>
-        <div class="acordeao__conteudo">
-          <plotly-plot
-            [data]="grafico.plotly.data"
-            [layout]="grafico.plotly.layout"
-            [useResizeHandler]="true"
-            [style]="{ position: 'relative', width: '100%', height: i < 2 ? '240px' : '340px' }"
-          ></plotly-plot>
+  @if (graficosLayout() === 'grade') {
+    <section class="graficos-section--grade" [style.--graficos-colunas]="colunas()">
+      @for (grafico of graficos(); track grafico.chave + '::' + colunas()) {
+        <div class="grafico-card">
+          <h3>{{ grafico.titulo }}</h3>
+          <div class="grafico-card__scroll">
+            <plotly-plot
+              [data]="grafico.plotly.data"
+              [layout]="grafico.plotly.layout"
+              [useResizeHandler]="true"
+              [style]="{ position: 'relative', width: '100%', height: '460px' }"
+            ></plotly-plot>
+          </div>
         </div>
-      </details>
-    }
-  </section>
+      }
+    </section>
+  } @else {
+    <section class="graficos-section--acordeao">
+      @for (grafico of graficos(); track grafico.chave; let i = $index) {
+        <details class="acordeao">
+          <summary class="acordeao__titulo">
+            <i class="pi pi-chevron-right acordeao__chevron" aria-hidden="true"></i>
+            {{ grafico.titulo }}
+          </summary>
+          <div class="acordeao__conteudo">
+            <plotly-plot
+              [data]="grafico.plotly.data"
+              [layout]="grafico.plotly.layout"
+              [useResizeHandler]="true"
+              [style]="{ position: 'relative', width: '100%', height: i < 2 ? '240px' : '340px' }"
+            ></plotly-plot>
+          </div>
+        </details>
+      }
+    </section>
+  }
 }

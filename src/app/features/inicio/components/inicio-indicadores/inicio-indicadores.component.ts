@@ -4,13 +4,10 @@ import { RouterLink } from '@angular/router';
 import {
   Accessibility,
   ArrowRight,
-  Banknote,
-  GraduationCap,
   LucideAngularModule,
   LucideIconData,
-  MapPinned,
   School,
-  UsersRound,
+  Wifi,
 } from 'lucide-angular';
 
 import { AppButtonComponent } from '../../../../shared/ui';
@@ -48,48 +45,22 @@ export class InicioIndicadoresComponent {
       active: true,
     },
     {
-      title: 'Desempenho Educacional',
+      title: 'Conectividade',
       description:
-        'Acompanhe os resultados de aprendizagem dos estudantes paraenses em avaliacoes internas e externas.',
+        'Consulte dados sobre acesso à internet, cobertura, e a infraestrutura de rede nas escolas públicas e privadas.',
       color: '#078f61',
       background: 'rgba(26, 163, 111, 0.14)',
-      icon: GraduationCap,
-      active: false,
+      icon: Wifi,
+      route: '/indicadores/conectividade',
+      active: true,
     },
     {
-      title: 'Escolas',
+      title: 'Infraestrutura',
       description:
-        'Explore informacoes sobre escolas da rede publica e privada: infraestrutura, matriculas, IDEB e muito mais.',
+        'Consulte dados sobre a infraestrutura das escolas, incluindo instalações físicas, recursos e equipamentos disponíveis.',
       color: '#7a3fd1',
       background: 'rgba(122, 63, 209, 0.13)',
       icon: School,
-      active: false,
-    },
-    {
-      title: 'Profissionais da Educacao',
-      description:
-        'Dados sobre docentes, gestores e demais profissionais que atuam na educacao basica do Para.',
-      color: '#d48600',
-      background: 'rgba(244, 161, 25, 0.16)',
-      icon: UsersRound,
-      active: false,
-    },
-    {
-      title: 'Financiamento',
-      description:
-        'Informacoes sobre investimentos na educacao publica do Para e execucao orcamentaria.',
-      color: '#087f9c',
-      background: 'rgba(8, 127, 156, 0.13)',
-      icon: Banknote,
-      active: false,
-    },
-    {
-      title: 'Territorios',
-      description:
-        'Compare indicadores educacionais entre municipios, regioes de integracao e redes de ensino.',
-      color: '#dd4d82',
-      background: 'rgba(221, 77, 130, 0.13)',
-      icon: MapPinned,
       active: false,
     },
   ];

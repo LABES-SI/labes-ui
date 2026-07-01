@@ -18,12 +18,34 @@ import {
   MapaPontoBaseModel,
 } from '../../models/indicadores.models';
 
-export const LEGENDA_PADRAO: LegendaItemModel[] = [
-  { label: 'Boa', range: '8–11', classe: 'legend-dot--alta' },
-  { label: 'Média', range: '5–7', classe: 'legend-dot--media' },
-  { label: 'Baixa', range: '1–4', classe: 'legend-dot--baixa' },
+export const LEGENDA_ACESSIBILIDADE: LegendaItemModel[] = [
+  { label: 'Excelente', range: '12-15', classe: 'legend-dot--alta' },
+  { label: 'Boa', range: '8-11', classe: 'legend-dot--alta' },
+  { label: 'Média', range: '4-7', classe: 'legend-dot--media' },
+  { label: 'Baixa', range: '1-3', classe: 'legend-dot--baixa' },
   { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
 ];
+
+export const LEGENDA_CONECTIVIDADE: LegendaItemModel[] = [
+  { label: 'Excelente', range: '13-16', classe: 'legend-dot--alta' },
+  { label: 'Boa', range: '9-12', classe: 'legend-dot--alta' },
+  { label: 'Média', range: '5-8', classe: 'legend-dot--media' },
+  { label: 'Baixa', range: '1-4', classe: 'legend-dot--baixa' },
+  { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
+];
+
+export const LEGENDA_PADRAO: LegendaItemModel[] = LEGENDA_ACESSIBILIDADE;
+
+const DEFAULT_CENTER = L.latLng(-3.5, -52.5);
+const DEFAULT_ZOOM = 6;
+
+const CLASSE_CORES: Record<string, string> = {
+  'legend-dot--muito-alta': '#059669',
+  'legend-dot--alta': '#22c55e',
+  'legend-dot--media': '#f59e0b',
+  'legend-dot--baixa': '#f97316',
+  'legend-dot--muito-baixa': '#dc2626',
+};
 
 @Component({
   selector: 'app-indicadores-mapa',
@@ -39,7 +61,8 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   readonly pontos = input<MapaPontoBaseModel[]>([]);
   readonly geoCollection = input<GeoJsonFeatureCollectionModel | null>(null);
   readonly mostrarMarcadores = input(false);
-  readonly legendaItems = input<LegendaItemModel[]>(LEGENDA_PADRAO);
+  readonly legendaTipo = input<'acessibilidade' | 'conectividade'>('acessibilidade');
+  readonly legendaItems = input<LegendaItemModel[] | null>(null);
   readonly buildPopupHtml = input<((ponto: MapaPontoBaseModel) => string) | undefined>(undefined);
   readonly ariaLabel = input('Mapa de indicadores educacionais');
 
@@ -51,10 +74,19 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   private schoolMarkersById = new Map<number, L.Marker>();
   private mapReady = false;
 
+  protected get legendaExibida(): LegendaItemModel[] {
+    const legendas = this.legendaItems();
+    if (legendas?.length) {
+      return legendas;
+    }
+
+    return this.legendaTipo() === 'conectividade' ? LEGENDA_CONECTIVIDADE : LEGENDA_ACESSIBILIDADE;
+  }
+
   ngAfterViewInit(): void {
     this.map = L.map(this.mapContainer.nativeElement, {
-      center: L.latLng(-3.5, -52.5),
-      zoom: 6,
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
       preferCanvas: true,
     });
 
@@ -93,6 +125,22 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
     }
   }
 
+  resetarVisualizacao(): void {
+    if (!this.map) return;
+
+    this.schoolMarkersLayer?.remove();
+    this.schoolMarkersLayer = undefined;
+    for (const marker of this.schoolMarkersById.values()) marker.remove();
+    this.schoolMarkersById.clear();
+
+    const bounds = this.municipalitiesLayer?.getBounds();
+    if (bounds?.isValid()) {
+      this.map.fitBounds(bounds, { padding: [16, 16] });
+    } else {
+      this.map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    }
+  }
+
   private updateLayers(): void {
     const geo = this.geoCollection();
     if (!this.map || !geo) return;
@@ -118,8 +166,19 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
               '',
           ) || 'Inexistente';
 
+        const idebMun = this.formatarLinhasIdeb(
+          feature.properties?.['ideb_2023_anos_iniciais_mun'],
+          feature.properties?.['ideb_2023_anos_finais_mun'],
+          feature.properties?.['ideb_2023_ensino_medio_mun'],
+        );
+        const pibidTotal = feature.properties?.['pibid_total'];
+        const pibidLinha =
+          pibidTotal !== undefined
+            ? `<br>PIBID: ${this.formatarValorContagem(pibidTotal as number | null)}`
+            : '';
+
         layer.bindTooltip(
-          `${nome}<br>Score médio: ${score}<br>Classificação: ${classificacao}<br>Escolas: ${escolas}`,
+          `${nome}<br>Score médio: ${score}<br>Classificação: ${classificacao}<br>Escolas: ${escolas}${idebMun}${pibidLinha}`,
           { sticky: true },
         );
       },
@@ -130,22 +189,10 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
         (p) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude),
       );
 
-      const scorePorMunicipio = new Map<string, { min: number; max: number }>();
-      for (const p of pontosValidos) {
-        const mun = String(p.municipio ?? '');
-        const s = Number(p.score);
-        if (!mun || !Number.isFinite(s)) continue;
-        const atual = scorePorMunicipio.get(mun) ?? { min: s, max: s };
-        atual.min = Math.min(atual.min, s);
-        atual.max = Math.max(atual.max, s);
-        scorePorMunicipio.set(mun, atual);
-      }
-
       this.schoolMarkersLayer = L.featureGroup().addTo(this.map);
 
       for (const ponto of pontosValidos) {
-        const faixas = scorePorMunicipio.get(String(ponto.municipio ?? ''));
-        const cor = this.getScoreColor(Number(ponto.score), faixas?.min, faixas?.max);
+        const cor = this.getClassificacaoColor(ponto);
         const marker = L.marker([ponto.latitude, ponto.longitude], {
           icon: this.createPinIcon(cor),
         });
@@ -178,8 +225,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
 
     if (!this.map) return null;
 
-    const score = Number(ponto.score);
-    const cor = this.getScoreColor(score, score, score);
+    const cor = this.getClassificacaoColor(ponto);
     const marker = L.marker([ponto.latitude, ponto.longitude], {
       icon: this.createPinIcon(cor),
     });
@@ -210,6 +256,12 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
     const municipio = escape(ponto.municipio ?? 'Não informado');
     const classificacao = escape(ponto.classificacao ?? 'Inexistente');
     const scoreStr = Number.isFinite(score) ? score.toFixed(2) : '0.00';
+    const idebRows = this.buildIdebRows(
+      ponto['ideb_2023_anos_iniciais'],
+      ponto['ideb_2023_anos_finais'],
+      ponto['ideb_2023_ensino_medio'],
+    );
+    const pibidRow = `<tr><th style="text-align:left;padding:2px 8px 2px 0;white-space:nowrap;">PIBID</th><td>${this.formatarValorContagem(ponto['pibid'] as number | null | undefined)}</td></tr>`;
 
     return `
       <div style="min-width:200px;">
@@ -221,18 +273,69 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
           <tr><th style="text-align:left;padding:2px 8px 2px 0;white-space:nowrap;">Município</th><td>${municipio}</td></tr>
           <tr><th style="text-align:left;padding:2px 8px 2px 0;white-space:nowrap;">Score</th><td>${scoreStr}</td></tr>
           <tr><th style="text-align:left;padding:2px 8px 2px 0;white-space:nowrap;">Classificação</th><td>${classificacao}</td></tr>
+          ${idebRows}
+          ${pibidRow}
         </table>
       </div>
     `;
   }
 
-  private getScoreColor(score: number, minScore?: number, maxScore?: number): string {
-    if (!Number.isFinite(score)) return '#94a3b8';
-    const min = minScore ?? score;
-    const max = maxScore ?? score;
-    if (!Number.isFinite(min) || !Number.isFinite(max) || min === max) return '#16a34a';
-    const progress = Math.max(0, Math.min(1, (score - min) / (max - min)));
-    return `hsl(${Math.round(120 * progress)}, 75%, 45%)`;
+  private getClassificacaoColor(ponto: MapaPontoBaseModel): string {
+    const label = String(
+      ponto.classificacao ??
+        ponto['classificacao_acessibilidade'] ??
+        ponto['classificacao_conectividade'] ??
+        '',
+    );
+    const item = this.legendaExibida.find((l) => l.label === label);
+    const cor = item ? CLASSE_CORES[item.classe] : undefined;
+    return cor ?? '#94a3b8';
+  }
+
+  private formatarValorIdeb(valor: unknown): string | null {
+    const numero = Number(valor);
+    if (!Number.isFinite(numero)) return null;
+    return numero === 0 ? 'Sem informação' : numero.toFixed(1);
+  }
+
+  private formatarValorContagem(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined) return 'Sem informação';
+    return String(valor);
+  }
+
+  private buildIdebRows(anosIniciais: unknown, anosFinais: unknown, ensinoMedio: unknown): string {
+    const linhas: Array<[string, unknown]> = [
+      ['IDEB Anos Iniciais', anosIniciais],
+      ['IDEB Anos Finais', anosFinais],
+      ['IDEB Ensino Médio', ensinoMedio],
+    ];
+
+    return linhas
+      .map(([label, valor]): [string, string | null] => [label, this.formatarValorIdeb(valor)])
+      .filter((item): item is [string, string] => item[1] !== null)
+      .map(
+        ([label, valorFormatado]) =>
+          `<tr><th style="text-align:left;padding:2px 8px 2px 0;white-space:nowrap;">${label}</th><td>${valorFormatado}</td></tr>`,
+      )
+      .join('');
+  }
+
+  private formatarLinhasIdeb(
+    anosIniciais: unknown,
+    anosFinais: unknown,
+    ensinoMedio: unknown,
+  ): string {
+    const linhas: Array<[string, unknown]> = [
+      ['IDEB anos iniciais', anosIniciais],
+      ['IDEB anos finais', anosFinais],
+      ['IDEB ensino médio', ensinoMedio],
+    ];
+
+    return linhas
+      .map(([label, valor]): [string, string | null] => [label, this.formatarValorIdeb(valor)])
+      .filter((item): item is [string, string] => item[1] !== null)
+      .map(([label, valorFormatado]) => `<br>${label}: ${valorFormatado}`)
+      .join('');
   }
 
   private createPinIcon(color: string): L.Icon {
