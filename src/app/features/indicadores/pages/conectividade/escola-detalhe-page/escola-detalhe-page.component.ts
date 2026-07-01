@@ -86,6 +86,8 @@ export class EscolaDetalhePageComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    const anoParam = Number(this.route.snapshot.queryParamMap.get('ano'));
+    const anoSelecionado = Number.isFinite(anoParam) && anoParam > 0 ? anoParam : null;
 
     this.facade
       .listarFiltros()
@@ -95,9 +97,10 @@ export class EscolaDetalhePageComponent implements OnInit {
           new Set((filtros.anos ?? []).map((a) => Number(a)).filter((a) => Number.isFinite(a))),
         ).sort((a, b) => b - a);
         const ultimoAno = anos.length > 0 ? anos[0] : null;
+        const ano = anoSelecionado ?? ultimoAno;
 
         this.facade
-          .listarMapa({ ano: ultimoAno })
+          .listarMapa({ ano })
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((mapa) => {
             this.escola = (mapa.pontos ?? []).find((p) => Number(p.co_entidade) === id) ?? null;

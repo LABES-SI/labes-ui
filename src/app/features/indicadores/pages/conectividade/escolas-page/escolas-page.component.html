@@ -160,6 +160,7 @@
               <a
                 class="escola-detalhe-btn"
                 [routerLink]="['/indicadores/conectividade/escolas', escola.co_entidade]"
+                [queryParams]="{ ano: selectedAno }"
                 [attr.aria-label]="'Ver detalhes de ' + escola.nome"
                 title="Ver detalhes da escola"
               >
