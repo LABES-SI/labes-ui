@@ -2,12 +2,12 @@
   <div class="sie-section-shell indicadores-shell">
     <div class="sie-section-heading sie-section-heading--left indicadores-heading">
       <h2 id="indicadores-indicadores-title" class="sie-section-title indicadores-heading__title">
-        Selecione um indicador para visualizar
+        {{ heading() }}
       </h2>
     </div>
 
     <div class="indicadores-grid">
-      @for (indicador of indicadores; track indicador.title) {
+      @for (indicador of items(); track indicador.title) {
         @if (indicador.active && indicador.route) {
           <a
             class="indicadores-card"

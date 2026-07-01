@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, input, output, model } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  output,
+  model,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,6 +22,8 @@ import { MetricaFiltroModel, MunicipioFiltroModel } from '../../models/indicador
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndicadoresFiltersComponent {
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly anos = input<number[]>([]);
   readonly municipios = input<MunicipioFiltroModel[]>([]);
   readonly metricas = input<MetricaFiltroModel[]>([]);
@@ -30,6 +41,19 @@ export class IndicadoresFiltersComponent {
 
   readonly apply = output<void>();
   readonly resetar = output<void>();
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as Node;
+    const openDetails = this.elementRef.nativeElement.querySelectorAll<HTMLDetailsElement>(
+      'details.filter-select[open]',
+    );
+    openDetails.forEach((details: HTMLDetailsElement) => {
+      if (!details.contains(target)) {
+        details.open = false;
+      }
+    });
+  }
 
   onPibidChange(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
@@ -50,6 +74,19 @@ export class IndicadoresFiltersComponent {
       arr.push(value);
     }
     this.emitChange(type, arr);
+  }
+
+  toggleSelectAll(values: string[], allValues: string[], type: string): void {
+    const allSelected = allValues.length > 0 && values.length === allValues.length;
+    this.emitChange(type, allSelected ? [] : [...allValues]);
+  }
+
+  municipiosNomes(): string[] {
+    return this.municipios().map((m) => m.nome);
+  }
+
+  metricasChaves(): string[] {
+    return this.metricas().map((m) => m.chave);
   }
 
   removeValue(values: string[], value: string, event: Event, type: string): void {

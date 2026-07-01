@@ -51,3 +51,76 @@
 .acordeao__conteudo {
   padding: 0 18px 18px;
 }
+
+.graficos-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.graficos-toolbar__options {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid #d7e1ee;
+  border-radius: 8px;
+  background: #f4f8fe;
+}
+
+.graficos-toolbar__options button {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #526586;
+  cursor: pointer;
+}
+
+.graficos-toolbar__options button.is-active {
+  background: #fff;
+  color: #075be8;
+  box-shadow: 0 1px 4px rgba(10, 42, 104, 0.15);
+}
+
+.graficos-toolbar__options lucide-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.graficos-section--grade {
+  display: grid;
+  grid-template-columns: repeat(var(--graficos-colunas, 2), minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.grafico-card {
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid #dce5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.grafico-card h3 {
+  margin: 0 0 10px;
+  color: #17213d;
+  font-size: 0.96rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.grafico-card__scroll {
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+@media (max-width: 720px) {
+  .graficos-section--grade {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,117 @@
+<div class="visao-geral-page">
+  <header class="dashboard-header">
+    <h1>Acessibilidade &middot; Visão Geral</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="skeleton-page">
+      <div class="skeleton-filter-panel">
+        <div class="skeleton-bar skeleton-bar--title"></div>
+        <div class="skeleton-filter-row">
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+        </div>
+      </div>
+      <div class="skeleton-map"></div>
+      <div class="skeleton-charts">
+        <div class="skeleton-chart"></div>
+        <div class="skeleton-chart"></div>
+      </div>
+    </div>
+  }
+
+  <div [class.content-hidden]="isLoading">
+    <app-indicadores-filters
+      [anos]="anos"
+      [municipios]="municipios"
+      [metricas]="metricas"
+      [redesEnsino]="redesEnsino"
+      [tpLocalizacoes]="tpLocalizacoes"
+      [selectedAno]="selectedAno"
+      [selectedMunicipios]="selectedMunicipios"
+      [selectedMetricas]="selectedMetricas"
+      [selectedRedeEnsino]="selectedRedeEnsino"
+      [selectedTpLocalizacao]="selectedTpLocalizacao"
+      [selectedPibid]="selectedPibid"
+      [isLoading]="isLoadingFilters"
+      (selectedAnoChange)="selectedAno = $event"
+      (selectedMunicipiosChange)="selectedMunicipios = $event"
+      (selectedMetricasChange)="selectedMetricas = $event"
+      (selectedRedeEnsinoChange)="selectedRedeEnsino = $event"
+      (selectedTpLocalizacaoChange)="selectedTpLocalizacao = $event"
+      (selectedPibidChange)="selectedPibid = $event"
+      (apply)="aplicarFiltros(true)"
+      (resetar)="resetFiltros()"
+    ></app-indicadores-filters>
+
+    <div class="mapa-search-wrap">
+      <div class="search-input mapa-search">
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <app-input
+          type="text"
+          placeholder="Pesquisar nome da escola no mapa"
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+        />
+        @if (searchTerm) {
+          <button
+            type="button"
+            aria-label="Limpar busca"
+            class="search-input__btn"
+            (click)="onSearchChange('')"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        }
+      </div>
+
+      @if (suggestions.length > 0) {
+        <ul class="mapa-search__suggestions">
+          @for (escola of suggestions; track escola.co_entidade) {
+            <li>
+              <button type="button" (click)="selecionarEscola(escola)">
+                <span class="escola-nome">{{ escola.nome }}</span>
+                <span class="escola-municipio">{{ escola.municipio }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    @if (selectedSchools.length > 0) {
+      <div class="mapa-search__selecionadas">
+        @for (escola of selectedSchools; track escola.co_entidade) {
+          <span class="escola-chip">
+            <span class="escola-chip__label">{{ escola.nome }}</span>
+            <button type="button" (click)="removerEscolaSelecionada(escola)">×</button>
+          </span>
+        }
+      </div>
+    }
+
+    <p class="score-note">
+      <i class="pi pi-info-circle" aria-hidden="true"></i>
+      O score de acessibilidade de cada escola é calculado como a quantidade de métricas de
+      acessibilidade que a escola possui.
+    </p>
+
+    <app-indicadores-mapa
+      [pontos]="pontosExibidos"
+      [geoCollection]="geoCollection"
+      [mostrarMarcadores]="mostrarMarcadoresEfetivo"
+      [legendaItems]="legendaItems"
+      [legendaTipo]="'acessibilidade'"
+      [buildPopupHtml]="buildPopupHtml"
+      ariaLabel="Mapa de acessibilidade escolar"
+    ></app-indicadores-mapa>
+
+    <app-indicadores-charts
+      [graficos]="graficos"
+      graficosLayout="grade"
+      (layoutChange)="onGraficosLayoutChange()"
+    ></app-indicadores-charts>
+  </div>
+</div>

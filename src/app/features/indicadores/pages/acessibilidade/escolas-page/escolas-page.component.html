@@ -1,0 +1,205 @@
+<div class="escolas-page">
+  <header class="dashboard-header">
+    <h1>Acessibilidade &middot; Escolas</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="skeleton-page">
+      <div class="skeleton-filter-panel">
+        <div class="skeleton-bar skeleton-bar--title"></div>
+        <div class="skeleton-filter-row">
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+        </div>
+      </div>
+      <div class="skeleton-list">
+        <div class="skeleton-bar skeleton-bar--row"></div>
+        <div class="skeleton-bar skeleton-bar--row"></div>
+        <div class="skeleton-bar skeleton-bar--row"></div>
+        <div class="skeleton-bar skeleton-bar--row"></div>
+      </div>
+    </div>
+  }
+
+  <div [class.content-hidden]="isLoading">
+    <app-indicadores-filters
+      [anos]="anos"
+      [municipios]="municipios"
+      [metricas]="metricas"
+      [redesEnsino]="redesEnsino"
+      [tpLocalizacoes]="tpLocalizacoes"
+      [selectedAno]="selectedAno"
+      [selectedMunicipios]="selectedMunicipios"
+      [selectedMetricas]="selectedMetricas"
+      [selectedRedeEnsino]="selectedRedeEnsino"
+      [selectedTpLocalizacao]="selectedTpLocalizacao"
+      [selectedPibid]="selectedPibid"
+      [isLoading]="isLoadingFilters"
+      (selectedAnoChange)="selectedAno = $event"
+      (selectedMunicipiosChange)="selectedMunicipios = $event"
+      (selectedMetricasChange)="selectedMetricas = $event"
+      (selectedRedeEnsinoChange)="selectedRedeEnsino = $event"
+      (selectedTpLocalizacaoChange)="selectedTpLocalizacao = $event"
+      (selectedPibidChange)="selectedPibid = $event"
+      (apply)="aplicarFiltros(true)"
+      (resetar)="resetFiltros()"
+    ></app-indicadores-filters>
+
+    <section class="search-panel" aria-label="Escolas">
+      <div class="search-controls">
+        <div class="search-input">
+          <i class="pi pi-search" aria-hidden="true"></i>
+          <app-input
+            type="text"
+            placeholder="Pesquisar nome da escola"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+          />
+          @if (searchTerm) {
+            <button
+              type="button"
+              aria-label="Limpar busca"
+              class="search-input__btn"
+              (click)="searchTerm = ''; buscarEscola()"
+            >
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+
+        <div
+          class="search-classificacao-filter"
+          role="group"
+          aria-label="Filtrar por classificação"
+        >
+          <span class="search-classificacao-label">Classificação</span>
+          <div class="search-classificacao-options">
+            @for (c of classificacoesDisponiveis; track c) {
+              <button
+                type="button"
+                class="classificacao-chip"
+                [class.is-selected]="selectedClassificacoes.includes(c)"
+                [class.classificacao-chip--excelente]="c === 'Excelente'"
+                [class.classificacao-chip--boa]="c === 'Boa'"
+                [class.classificacao-chip--media]="c === 'Média'"
+                [class.classificacao-chip--baixa]="c === 'Baixa'"
+                [class.classificacao-chip--inexistente]="c === 'Inexistente'"
+                (click)="toggleClassificacaoEBuscar(c)"
+                [attr.aria-pressed]="selectedClassificacoes.includes(c)"
+              >
+                {{ c }}
+                <small>{{ scoreIntervaloLabel(c) }}</small>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="search-results-header">
+        <div class="search-results-header__title">
+          <strong>Escolas</strong>
+          <span>{{ searchResults.length }}</span>
+        </div>
+
+        <div class="search-sort" role="group" aria-label="Ordenar escolas">
+          <button
+            type="button"
+            [class.is-active]="sortBy === 'nome'"
+            (click)="setSortBy('nome')"
+            aria-label="Ordenar por nome"
+            title="Nome (A-Z)"
+          >
+            <i class="pi pi-sort-alpha-down" aria-hidden="true"></i>
+          </button>
+          <button
+            type="button"
+            [class.is-active]="sortBy === 'score-desc'"
+            (click)="setSortBy('score-desc')"
+            aria-label="Ordenar por maior score"
+            title="Maior score"
+          >
+            <i class="pi pi-sort-amount-down" aria-hidden="true"></i>
+          </button>
+          <button
+            type="button"
+            [class.is-active]="sortBy === 'score-asc'"
+            (click)="setSortBy('score-asc')"
+            aria-label="Ordenar por menor score"
+            title="Menor score"
+          >
+            <i class="pi pi-sort-amount-up" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="search-results">
+        @if (searchResults.length > 0) {
+          @for (escola of paginatedSearchResults; track escola.co_entidade) {
+            <div class="search-result-item">
+              <span class="escola-info">
+                <span class="escola-nome">{{ escola.nome }}</span>
+                <span class="escola-municipio">{{ escola.municipio }}</span>
+                @if (escola.no_tp_dependencia || escola.no_tp_localizacao) {
+                  <span class="escola-detalhes">
+                    @if (escola.no_tp_dependencia) {
+                      <span>{{ escola.no_tp_dependencia }}</span>
+                    }
+                    @if (escola.no_tp_localizacao) {
+                      <span>{{ escola.no_tp_localizacao }}</span>
+                    }
+                  </span>
+                }
+              </span>
+              <span class="score-badge" [ngClass]="scoreBadgeClass(escola)">
+                <strong>{{ escola.score | number: '1.2-2' }}</strong>
+                <span>{{ escola.classificacao }}</span>
+                <small class="score-range">{{ scoreIntervaloLabel(escola.classificacao) }}</small>
+              </span>
+              <a
+                class="escola-detalhe-btn"
+                [routerLink]="['/indicadores/acessibilidade/escolas', escola.co_entidade]"
+                [queryParams]="{ ano: selectedAno }"
+                [attr.aria-label]="'Ver detalhes de ' + escola.nome"
+                title="Ver detalhes da escola"
+              >
+                <i class="pi pi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          }
+        } @else {
+          <div class="empty-results">Nenhuma escola encontrada para os filtros selecionados.</div>
+        }
+      </div>
+
+      @if (searchResults.length > searchPageSize) {
+        <nav class="search-pagination" aria-label="Paginação das escolas">
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage - 1)"
+            [disabled]="searchPage === 1"
+          >
+            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          </button>
+          @for (page of searchPageNumbers; track page) {
+            <button
+              type="button"
+              [class.is-active]="page === searchPage"
+              (click)="setSearchPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            type="button"
+            (click)="setSearchPage(searchPage + 1)"
+            [disabled]="searchPage === totalSearchPages"
+          >
+            <i class="pi pi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </nav>
+      }
+    </section>
+  </div>
+</div>
