@@ -34,6 +34,13 @@ export const LEGENDA_CONECTIVIDADE: LegendaItemModel[] = [
   { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
 ];
 
+export const LEGENDA_INFRAESTRUTURA: LegendaItemModel[] = [
+  { label: 'Boa', range: '12-17', classe: 'legend-dot--alta' },
+  { label: 'Média', range: '7-11', classe: 'legend-dot--media' },
+  { label: 'Baixa', range: '1-6', classe: 'legend-dot--baixa' },
+  { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
+];
+
 export const LEGENDA_PADRAO: LegendaItemModel[] = LEGENDA_ACESSIBILIDADE;
 
 const DEFAULT_CENTER = L.latLng(-3.5, -52.5);
@@ -61,7 +68,9 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   readonly pontos = input<MapaPontoBaseModel[]>([]);
   readonly geoCollection = input<GeoJsonFeatureCollectionModel | null>(null);
   readonly mostrarMarcadores = input(false);
-  readonly legendaTipo = input<'acessibilidade' | 'conectividade'>('acessibilidade');
+  readonly legendaTipo = input<'acessibilidade' | 'conectividade' | 'infraestrutura'>(
+    'acessibilidade',
+  );
   readonly legendaItems = input<LegendaItemModel[] | null>(null);
   readonly buildPopupHtml = input<((ponto: MapaPontoBaseModel) => string) | undefined>(undefined);
   readonly ariaLabel = input('Mapa de indicadores educacionais');
@@ -80,7 +89,14 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       return legendas;
     }
 
-    return this.legendaTipo() === 'conectividade' ? LEGENDA_CONECTIVIDADE : LEGENDA_ACESSIBILIDADE;
+    switch (this.legendaTipo()) {
+      case 'conectividade':
+        return LEGENDA_CONECTIVIDADE;
+      case 'infraestrutura':
+        return LEGENDA_INFRAESTRUTURA;
+      default:
+        return LEGENDA_ACESSIBILIDADE;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -163,6 +179,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
           String(
             feature.properties?.['classificacao_acessibilidade_municipio'] ??
               feature.properties?.['classificacao_conectividade_municipio'] ??
+              feature.properties?.['classificacao_infraestrutura_municipio'] ??
               '',
           ) || 'Inexistente';
 
@@ -285,6 +302,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       ponto.classificacao ??
         ponto['classificacao_acessibilidade'] ??
         ponto['classificacao_conectividade'] ??
+        ponto['classificacao_infraestrutura'] ??
         '',
     );
     const item = this.legendaExibida.find((l) => l.label === label);
