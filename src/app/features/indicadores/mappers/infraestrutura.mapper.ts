@@ -1,6 +1,7 @@
 import { AppSchemasInfraestruturaAnaliseTemporalResponse } from '../../../core/api/models/app-schemas-infraestrutura-analise-temporal-response';
 import { AppSchemasInfraestruturaMapaResponse } from '../../../core/api/models/app-schemas-infraestrutura-mapa-response';
 import { FiltrosResponse } from '../../../core/api/models/filtros-response';
+import { PainelEscolasResponse } from '../../../core/api/models/painel-escolas-response';
 import { PainelResponse } from '../../../core/api/models/painel-response';
 import {
   AnaliseTemporalModel,
@@ -16,6 +17,7 @@ import {
   MapaMunicipioGeoJsonPropertiesModel,
   MapaMunicipioResumoModel,
   MapaPontoModel,
+  PainelEscolasModel,
   PainelInfraestruturaModel,
 } from '../models/infraestrutura.models';
 
@@ -175,6 +177,23 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelInfraestrut
   );
 
   return { descricao: api.descricao, graficos };
+}
+
+export function mapPainelEscolasResponseToModel(api: PainelEscolasResponse): PainelEscolasModel {
+  const { grafico, paginacao } = api.data;
+  return {
+    grafico: {
+      plotly: grafico.plotly,
+      tipo: grafico.tipo,
+      titulo: grafico.titulo,
+    },
+    paginacao: {
+      page: paginacao.page,
+      page_size: paginacao.page_size,
+      total_escolas: paginacao.total_escolas,
+      total_paginas: paginacao.total_paginas,
+    },
+  };
 }
 
 export function mapMapaResponseToModel(

@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AcessibilidadeFacade } from '../../../facades/acessibilidade.facade';
@@ -23,16 +24,20 @@ import { IndicadoresFiltersComponent } from '../../../components/filters/indicad
 import {
   IndicadoresMapaComponent,
   LEGENDA_ACESSIBILIDADE,
+  linkDetalheEscolaHtml,
 } from '../../../components/mapa/indicadores-mapa.component';
 import {
   IndicadoresChartsComponent,
   GraficoApresentacao,
 } from '../../../components/charts/indicadores-charts.component';
+import { IndicadoresEscolasGraficoComponent } from '../../../components/escolas-grafico/indicadores-escolas-grafico.component';
 import {
   MapaPontoBaseModel,
   LegendaItemModel,
   GeoJsonFeatureCollectionModel,
+  GraficoModel,
 } from '../../../models/indicadores.models';
+import type { Paginacao } from '../../../../../core/api/models/paginacao';
 
 type MetricaFiltroModel = { chave: string; label: string };
 type MunicipioFiltroModel = { codigo: number; nome: string };
@@ -55,6 +60,7 @@ const SCORE_INTERVALO: Record<ClassificacaoAcessibilidadeModel, string> = {
     IndicadoresFiltersComponent,
     IndicadoresMapaComponent,
     IndicadoresChartsComponent,
+    IndicadoresEscolasGraficoComponent,
   ],
   templateUrl: './visao-geral-page.component.html',
   styleUrl: './visao-geral-page.component.scss',
@@ -64,6 +70,7 @@ export class VisaoGeralPageComponent implements OnInit {
   @ViewChild(IndicadoresMapaComponent) private mapaComponent?: IndicadoresMapaComponent;
 
   private readonly facade = inject(AcessibilidadeFacade);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cd = inject(ChangeDetectorRef);
   private readonly toast = inject(AppToastService);
@@ -77,6 +84,9 @@ export class VisaoGeralPageComponent implements OnInit {
   protected redesEnsino: string[] = [];
   protected tpLocalizacoes: string[] = [];
   protected graficos: GraficoApresentacao[] = [];
+  protected graficoEscolas: GraficoModel | null = null;
+  protected paginacaoEscolas: Paginacao | null = null;
+  private readonly escolasPageSize = 10;
 
   protected selectedAno: number | null = null;
   protected selectedMunicipios: string[] = [];
@@ -185,8 +195,19 @@ export class VisaoGeralPageComponent implements OnInit {
       )
       .join('');
 
-    return `<div style="min-width:240px;"><strong>${esc(nome)}</strong><br><table style="width:100%;border-collapse:collapse;font-size:12px;line-height:1.35;margin-top:6px;">${rows}</table></div>`;
+    return `<div style="min-width:240px;"><strong>${esc(nome)}</strong><br><table style="width:100%;border-collapse:collapse;font-size:12px;line-height:1.35;margin-top:6px;">${rows}</table>${linkDetalheEscolaHtml(this.rotaDetalhe(escola.co_entidade))}</div>`;
   };
+
+  private rotaDetalhe(coEntidade: number): string {
+    const ano = this.selectedAno ? `?ano=${this.selectedAno}` : '';
+    return `/indicadores/acessibilidade/escolas/${coEntidade}${ano}`;
+  }
+
+  protected onDetalheSolicitado(ponto: MapaPontoBaseModel): void {
+    this.router.navigate(['/indicadores/acessibilidade/escolas', ponto.co_entidade], {
+      queryParams: this.selectedAno ? { ano: this.selectedAno } : {},
+    });
+  }
 
   private formatarValorIdeb(valor: unknown): string | null {
     const numero = Number(valor);
@@ -226,6 +247,7 @@ export class VisaoGeralPageComponent implements OnInit {
         const params = this.buildParams();
         this.loadPainel(params);
         this.loadMapa(params);
+        this.loadPainelEscolas(params);
         this.cd.markForCheck();
       });
   }
@@ -235,6 +257,11 @@ export class VisaoGeralPageComponent implements OnInit {
     const params = this.buildParams();
     this.loadPainel(params);
     this.loadMapa(params);
+    this.loadPainelEscolas(params);
+  }
+
+  protected onEscolasPageChange(page: number): void {
+    this.loadPainelEscolas(this.buildParams(), page);
   }
 
   protected onGraficosLayoutChange(): void {
@@ -254,6 +281,7 @@ export class VisaoGeralPageComponent implements OnInit {
     const params = this.buildParams();
     this.loadPainel(params);
     this.loadMapa(params, true);
+    this.loadPainelEscolas(params);
   }
 
   private buildParams() {
@@ -292,6 +320,18 @@ export class VisaoGeralPageComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((painel) => {
         this.graficos = this.mapGraficos(painel.graficos ?? {});
+        this.onLoadEnd();
+      });
+  }
+
+  private loadPainelEscolas(params?: ReturnType<typeof this.buildParams>, page = 0): void {
+    this.onLoadStart();
+    this.facade
+      .listarPainelEscolas({ ...params, page, page_size: this.escolasPageSize })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ grafico, paginacao }) => {
+        this.graficoEscolas = { ...grafico, plotly: this.normalizarPlotly(grafico.plotly) };
+        this.paginacaoEscolas = paginacao;
         this.onLoadEnd();
       });
   }

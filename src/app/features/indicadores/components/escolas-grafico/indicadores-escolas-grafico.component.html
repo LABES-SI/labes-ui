@@ -1,0 +1,45 @@
+@if (grafico(); as g) {
+  <section class="escolas-grafico" [class.is-carregando]="carregando()">
+    <h3>{{ g.titulo }}</h3>
+
+    <div class="escolas-grafico__scroll">
+      <plotly-plot
+        [data]="g.plotly.data"
+        [layout]="g.plotly.layout"
+        [useResizeHandler]="true"
+        [style]="{ position: 'relative', width: '100%', height: '460px' }"
+      ></plotly-plot>
+    </div>
+
+    @if (paginacao(); as p) {
+      <nav class="escolas-grafico__paginacao" aria-label="Paginação das escolas">
+        <button
+          type="button"
+          class="paginacao-btn"
+          [disabled]="!temAnterior() || carregando()"
+          (click)="anterior()"
+          aria-label="Página anterior"
+        >
+          <i class="pi pi-chevron-left" aria-hidden="true"></i>
+          Anterior
+        </button>
+
+        <span class="paginacao-info" aria-live="polite">
+          Página {{ paginaAtual() }} de {{ totalPaginas() }}
+          <small>{{ p.total_escolas }} escolas ordenadas por score</small>
+        </span>
+
+        <button
+          type="button"
+          class="paginacao-btn"
+          [disabled]="!temProxima() || carregando()"
+          (click)="proxima()"
+          aria-label="Próxima página"
+        >
+          Próxima
+          <i class="pi pi-chevron-right" aria-hidden="true"></i>
+        </button>
+      </nav>
+    }
+  </section>
+}

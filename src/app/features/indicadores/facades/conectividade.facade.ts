@@ -8,6 +8,7 @@ import { FiltrosService } from '../../../core/api/services/filtros.service';
 import type {
   GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params,
   GetPainelConectividadeConectividadePainelGet$Params,
+  GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params,
 } from '../../../core/api';
 import {
   AnaliseTemporalModel,
@@ -19,6 +20,7 @@ import {
   MapaMunicipioResumoModel,
   MapaPontoModel,
   PainelConectividadeModel,
+  PainelEscolasModel,
 } from '../models/conectividade.models';
 import {
   mapAnaliseTemporalResponseToModel,
@@ -26,6 +28,7 @@ import {
   mapGeoJsonMunicipiosComConectividade,
   mapMapaMunicipioResumoFromPontos,
   mapMapaResponseToModel,
+  mapPainelEscolasResponseToModel,
   mapPainelResponseToModel,
 } from '../mappers/conectividade.mapper';
 
@@ -112,6 +115,43 @@ export class ConectividadeFacade {
     };
 
     return from(call()).pipe(catchError(() => of({ descricao: '', graficos: {} })));
+  }
+
+  listarPainelEscolas(params?: {
+    ano?: number | null;
+    variaveis?: string[] | null;
+    municipios?: string[] | null;
+    rede_ensino?: string[] | null;
+    tp_localizacao?: string[] | null;
+    pibid?: boolean | null;
+    page?: number;
+    page_size?: number;
+  }): Observable<PainelEscolasModel> {
+    const call = async () => {
+      const apiResp = await this.api.getPainelEscolasConectividadeConectividadePainelEscolasGet({
+        ano: params?.ano ?? null,
+        variaveis:
+          params?.variaveis as GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params['variaveis'],
+        municipios: params?.municipios as string[],
+        rede_ensino:
+          params?.rede_ensino as GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params['rede_ensino'],
+        tp_localizacao:
+          params?.tp_localizacao as GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params['tp_localizacao'],
+        pibid: params?.pibid ?? undefined,
+        page: params?.page ?? 0,
+        page_size: params?.page_size ?? 5,
+      });
+      return mapPainelEscolasResponseToModel(apiResp);
+    };
+
+    return from(call()).pipe(
+      catchError(() =>
+        of({
+          grafico: { plotly: { data: [], layout: {} }, tipo: '', titulo: '' },
+          paginacao: { page: 0, page_size: 5, total_escolas: 0, total_paginas: 0 },
+        }),
+      ),
+    );
   }
 
   listarMapa(params?: {
