@@ -19,5 +19,13 @@ export type { GetMapaConectividadeConectividadeMapaGet$Params as GetMapaConectiv
 export { getMapaConectividadeConectividadeMapaGet as getMapaConectividadeConectividadeMapaGet } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
 export type { GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
 export { getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet as getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
+export type { GetPainelInfraestruturaInfraestruturaPainelGet$Params as GetPainelInfraestruturaInfraestruturaPainelGet$Params } from './fn/infraestrutura/get-painel-infraestrutura-infraestrutura-painel-get';
+export { getPainelInfraestruturaInfraestruturaPainelGet as getPainelInfraestruturaInfraestruturaPainelGet } from './fn/infraestrutura/get-painel-infraestrutura-infraestrutura-painel-get';
+export type { GetPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet$Params as GetPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet$Params } from './fn/infraestrutura/get-painel-escolas-infraestrutura-infraestrutura-painel-escolas-get';
+export { getPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet as getPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet } from './fn/infraestrutura/get-painel-escolas-infraestrutura-infraestrutura-painel-escolas-get';
+export type { GetMapaInfraestruturaInfraestruturaMapaGet$Params as GetMapaInfraestruturaInfraestruturaMapaGet$Params } from './fn/infraestrutura/get-mapa-infraestrutura-infraestrutura-mapa-get';
+export { getMapaInfraestruturaInfraestruturaMapaGet as getMapaInfraestruturaInfraestruturaMapaGet } from './fn/infraestrutura/get-mapa-infraestrutura-infraestrutura-mapa-get';
+export type { GetAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet$Params as GetAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet$Params } from './fn/infraestrutura/get-analise-temporal-infraestrutura-infraestrutura-analise-temporal-get';
+export { getAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet as getAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet } from './fn/infraestrutura/get-analise-temporal-infraestrutura-infraestrutura-analise-temporal-get';
 export type { GetFiltrosFiltrosGet$Params as GetFiltrosFiltrosGet$Params } from './fn/filtros/get-filtros-filtros-get';
 export { getFiltrosFiltrosGet as getFiltrosFiltrosGet } from './fn/filtros/get-filtros-filtros-get';

@@ -10,44 +10,24 @@ import { RequestBuilder } from '../../request-builder';
 import { AppSchemasAcessibilidadeMapaResponse } from '../../models/app-schemas-acessibilidade-mapa-response';
 
 export interface GetMapaAcessibilidadeAcessibilidadeMapaGet$Params {
-  /**
-   * Ano do censo escolar (nu_ano_censo). Se omitido, retorna todos os anos.
-   */
-  ano?: number | null;
 
-  /**
-   * Filtro AND: a escola precisa ter TODAS as variáveis marcadas > 0. Conjunto das 15 métricas gold. Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
-   */
-  variaveis?: Array<
-    | 'in_acessibilidade_rampas'
-    | 'in_acessibilidade_corrimao'
-    | 'in_acessibilidade_elevador'
-    | 'in_acessibilidade_pisos_tateis'
-    | 'in_acessibilidade_vao_livre'
-    | 'qt_salas_utilizadas_acessiveis'
-    | 'in_acessibilidade_inexistente'
-    | 'in_acessibilidade_sinal_tatil'
-    | 'in_acessibilidade_sinal_sonoro'
-    | 'in_acessibilidade_sinal_visual'
-    | 'tp_aee'
-    | 'in_sala_atendimento_especial'
-    | 'in_reserva_pcd'
-    | 'qt_prof_psicologo'
-    | 'qt_prof_assist_social'
-  > | null;
+/**
+ * Ano do censo escolar (nu_ano_censo). Se omitido, retorna todos os anos.
+ */
+  ano?: (number | null);
 
-  /**
-   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
-   */
-  pibid?: boolean | null;
+/**
+ * Filtro AND: a escola precisa ter TODAS as variáveis marcadas > 0. Conjunto das 15 métricas gold. Use o parâmetro repetido: ?variaveis=in_acessibilidade_rampas&variaveis=in_acessibilidade_elevador.
+ */
+  variaveis?: (Array<'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'qt_salas_utilizadas_acessiveis' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'tp_aee' | 'in_sala_atendimento_especial' | 'in_reserva_pcd' | 'qt_prof_psicologo' | 'qt_prof_assist_social'> | null);
+
+/**
+ * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+ */
+  pibid?: (boolean | null);
 }
 
-export function getMapaAcessibilidadeAcessibilidadeMapaGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
+export function getMapaAcessibilidadeAcessibilidadeMapaGet(http: HttpClient, rootUrl: string, params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Observable<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
   const rb = new RequestBuilder(rootUrl, getMapaAcessibilidadeAcessibilidadeMapaGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
@@ -55,11 +35,13 @@ export function getMapaAcessibilidadeAcessibilidadeMapaGet(
     rb.query('pibid', params.pibid, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>;
-    }),
+    })
   );
 }
 

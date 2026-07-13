@@ -3,10 +3,11 @@
 
 import { Grafico } from '../models/grafico';
 export interface PainelData {
+
   /**
    * Mapa de gráficos do painel, indexados por chave semântica.
    */
   graficos: {
-    [key: string]: Grafico;
-  };
+[key: string]: Grafico;
+};
 }

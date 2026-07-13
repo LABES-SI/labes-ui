@@ -10,61 +10,39 @@ import { RequestBuilder } from '../../request-builder';
 import { PainelResponse } from '../../models/painel-response';
 
 export interface GetPainelConectividadeConectividadePainelGet$Params {
-  /**
-   * Ano do censo escolar (ex: 2024). Se omitido, agrega todos os censos.
-   */
-  ano?: number | null;
 
-  /**
-   * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
-   */
-  municipios?: Array<string> | null;
+/**
+ * Ano do censo escolar (ex: 2024). Se omitido, agrega todos os censos.
+ */
+  ano?: (number | null);
 
-  /**
-   * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
-   */
-  variaveis?: Array<
-    | 'in_internet'
-    | 'in_internet_alunos'
-    | 'in_internet_administrativo'
-    | 'in_internet_aprendizagem'
-    | 'in_internet_comunidade'
-    | 'in_banda_larga'
-    | 'in_acesso_internet_computador'
-    | 'in_aces_internet_disp_pessoais'
-    | 'tp_rede_local'
-    | 'in_computador'
-    | 'in_desktop_aluno'
-    | 'qt_desktop_aluno'
-    | 'in_comp_portatil_aluno'
-    | 'qt_comp_portatil_aluno'
-    | 'in_tablet_aluno'
-    | 'qt_tablet_aluno'
-    | 'in_redes_sociais'
-  > | null;
+/**
+ * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
+ */
+  municipios?: (Array<string> | null);
 
-  /**
-   * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
-   */
-  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null;
+/**
+ * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
+ */
+  variaveis?: (Array<'in_internet' | 'in_internet_alunos' | 'in_internet_administrativo' | 'in_internet_aprendizagem' | 'in_internet_comunidade' | 'in_banda_larga' | 'in_acesso_internet_computador' | 'in_aces_internet_disp_pessoais' | 'tp_rede_local' | 'in_computador' | 'in_desktop_aluno' | 'qt_desktop_aluno' | 'in_comp_portatil_aluno' | 'qt_comp_portatil_aluno' | 'in_tablet_aluno' | 'qt_tablet_aluno' | 'in_redes_sociais'> | null);
 
-  /**
-   * Localização da escola: Urbana ou Rural.
-   */
-  tp_localizacao?: Array<'Urbana' | 'Rural'> | null;
+/**
+ * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
+ */
+  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
 
-  /**
-   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
-   */
-  pibid?: boolean | null;
+/**
+ * Localização da escola: Urbana ou Rural.
+ */
+  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
+
+/**
+ * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+ */
+  pibid?: (boolean | null);
 }
 
-export function getPainelConectividadeConectividadePainelGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetPainelConectividadeConectividadePainelGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<PainelResponse>> {
+export function getPainelConectividadeConectividadePainelGet(http: HttpClient, rootUrl: string, params?: GetPainelConectividadeConectividadePainelGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelResponse>> {
   const rb = new RequestBuilder(rootUrl, getPainelConectividadeConectividadePainelGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
@@ -75,11 +53,13 @@ export function getPainelConectividadeConectividadePainelGet(
     rb.query('pibid', params.pibid, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<PainelResponse>;
-    }),
+    })
   );
 }
 

@@ -9,10 +9,10 @@ import { RequestBuilder } from '../../request-builder';
 
 import { PainelResponse } from '../../models/painel-response';
 
-export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
+export interface GetPainelInfraestruturaInfraestruturaPainelGet$Params {
 
 /**
- * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+ * Ano do censo escolar (ex: 2024). Se omitido, agrega todos os censos.
  */
   ano?: (number | null);
 
@@ -24,7 +24,7 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
 /**
  * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
  */
-  variaveis?: (Array<'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'qt_salas_utilizadas_acessiveis' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'tp_aee' | 'in_sala_atendimento_especial' | 'in_reserva_pcd' | 'qt_prof_psicologo' | 'qt_prof_assist_social'> | null);
+  variaveis?: (Array<'in_agua_potavel' | 'in_energia_rede_publica' | 'in_esgoto_rede_publica' | 'in_lixo_servico_coleta' | 'in_banheiro' | 'in_banheiro_pne' | 'in_biblioteca' | 'in_sala_leitura' | 'in_laboratorio_ciencias' | 'in_laboratorio_informatica' | 'in_sala_multiuso' | 'in_sala_atendimento_especial' | 'in_cozinha' | 'in_refeitorio' | 'in_quadra_esportes' | 'in_patio_coberto' | 'in_auditorio'> | null);
 
 /**
  * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
@@ -42,8 +42,8 @@ export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
   pibid?: (boolean | null);
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(http: HttpClient, rootUrl: string, params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelResponse>> {
-  const rb = new RequestBuilder(rootUrl, getPainelAcessibilidadeAcessibilidadePainelGet.PATH, 'get');
+export function getPainelInfraestruturaInfraestruturaPainelGet(http: HttpClient, rootUrl: string, params?: GetPainelInfraestruturaInfraestruturaPainelGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelResponse>> {
+  const rb = new RequestBuilder(rootUrl, getPainelInfraestruturaInfraestruturaPainelGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
@@ -63,4 +63,4 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(http: HttpClient,
   );
 }
 
-getPainelAcessibilidadeAcessibilidadePainelGet.PATH = '/acessibilidade/painel';
+getPainelInfraestruturaInfraestruturaPainelGet.PATH = '/infraestrutura/painel';
