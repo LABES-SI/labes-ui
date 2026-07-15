@@ -69,6 +69,12 @@ export interface MapaPontoModel {
   no_bairro?: string | null;
   no_tp_dependencia?: string | null;
   no_tp_localizacao?: string | null;
+  ideb_2023_anos_iniciais?: number | null;
+  ideb_2023_anos_finais?: number | null;
+  ideb_2023_ensino_medio?: number | null;
+  ideb_2023_anos_iniciais_mun?: number | null;
+  ideb_2023_anos_finais_mun?: number | null;
+  ideb_2023_ensino_medio_mun?: number | null;
   pibid?: number | null;
   in_internet?: number | null;
   in_internet_alunos?: number | null;

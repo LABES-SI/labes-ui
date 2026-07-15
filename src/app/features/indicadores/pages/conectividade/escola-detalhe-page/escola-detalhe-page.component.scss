@@ -128,15 +128,56 @@
   font-weight: 800;
 }
 
+.ideb-section,
 .metricas-section {
   margin-bottom: 24px;
 }
 
+.ideb-section h2,
 .metricas-section h2 {
   margin: 0 0 12px;
   color: var(--sie-color-deep);
   font-size: 1.1rem;
   font-weight: 900;
+}
+
+.ideb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ideb-card {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid #d7e1ee;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ideb-card__eyebrow {
+  color: var(--sie-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ideb-card span:not(.ideb-card__eyebrow) {
+  color: var(--sie-color-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ideb-card strong {
+  color: #17213d;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.ideb-card--municipio {
+  background: #f8fafc;
 }
 
 .metricas-grid {
@@ -184,7 +225,8 @@
 }
 
 @media (max-width: 900px) {
-  .info-grid {
+  .info-grid,
+  .ideb-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -195,6 +237,7 @@
 
 @media (max-width: 560px) {
   .info-grid,
+  .ideb-grid,
   .metricas-grid,
   .skeleton-cards {
     grid-template-columns: 1fr;

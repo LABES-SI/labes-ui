@@ -1,10 +1,10 @@
 :host {
   display: block;
-  margin-top: -104px;
+  margin-top: calc(var(--sie-header-offset, 104px) * -1);
 }
 
 @media (max-width: 760px) {
   :host {
-    margin-top: -140px;
+    margin-top: calc(var(--sie-header-offset, 140px) * -1);
   }
 }
