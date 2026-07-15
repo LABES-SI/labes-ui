@@ -24,7 +24,7 @@ const DEFAULT_INDICADORES: readonly IndicadoresCardItem[] = [
   {
     title: 'Acessibilidade',
     description:
-      'Consulte dados sobre infraestrutura acessivel, recursos de inclusao e condicoes de acesso nas escolas.',
+      'Consulte dados sobre infraestrutura acessível, recursos de inclusão e condições de acesso nas escolas.',
     color: '#075be8',
     background: 'rgba(7, 91, 232, 0.12)',
     icon: Accessibility,
