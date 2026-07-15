@@ -109,18 +109,25 @@
 
 @media (max-width: 1180px) {
   .commitment-box {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, max-content);
   }
 
   .commitment-box app-button {
     grid-column: 2;
-    justify-self: start;
+    justify-self: end;
+    min-width: 0;
   }
 
   .sie-callout-copy {
+    min-width: 0;
     min-height: 0;
-    padding-right: 0;
-    border-right: 0;
+    padding-right: 24px;
+    border-right: 1px solid rgba(7, 91, 232, 0.16);
+  }
+
+  :host ::ng-deep .commitment-box .app-button.app-button--secondary {
+    min-width: 0;
+    white-space: normal;
   }
 }
 
