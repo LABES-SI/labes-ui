@@ -34,7 +34,23 @@ export const LEGENDA_CONECTIVIDADE: LegendaItemModel[] = [
   { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
 ];
 
+export const LEGENDA_INFRAESTRUTURA: LegendaItemModel[] = [
+  { label: 'Boa', range: '12-17', classe: 'legend-dot--alta' },
+  { label: 'Média', range: '7-11', classe: 'legend-dot--media' },
+  { label: 'Baixa', range: '1-6', classe: 'legend-dot--baixa' },
+  { label: 'Inexistente', range: '0', classe: 'legend-dot--muito-baixa' },
+];
+
 export const LEGENDA_PADRAO: LegendaItemModel[] = LEGENDA_ACESSIBILIDADE;
+
+/**
+ * Link "Ver detalhes" para o popup do mapa. O `data-acao="detalhe"` é o contrato que
+ * o mapa usa para interceptar o clique e emitir `detalheSolicitado`; o `href` real
+ * fica valendo para abrir em nova aba.
+ */
+export function linkDetalheEscolaHtml(href: string): string {
+  return `<a href="${href}" data-acao="detalhe" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:#075be8;text-decoration:none;">Ver detalhes da escola &rsaquo;</a>`;
+}
 
 const DEFAULT_CENTER = L.latLng(-3.5, -52.5);
 const DEFAULT_ZOOM = 6;
@@ -61,12 +77,22 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
   readonly pontos = input<MapaPontoBaseModel[]>([]);
   readonly geoCollection = input<GeoJsonFeatureCollectionModel | null>(null);
   readonly mostrarMarcadores = input(false);
-  readonly legendaTipo = input<'acessibilidade' | 'conectividade'>('acessibilidade');
+  readonly legendaTipo = input<'acessibilidade' | 'conectividade' | 'infraestrutura'>(
+    'acessibilidade',
+  );
   readonly legendaItems = input<LegendaItemModel[] | null>(null);
   readonly buildPopupHtml = input<((ponto: MapaPontoBaseModel) => string) | undefined>(undefined);
   readonly ariaLabel = input('Mapa de indicadores educacionais');
 
   readonly pontoSelecionado = output<MapaPontoBaseModel>();
+
+  /**
+   * Emitido quando o usuário clica no link de detalhes dentro do popup. O popup é
+   * HTML cru fora do Angular, então o link precisa ser interceptado aqui para que
+   * a navegação continue sendo SPA — quem monta o popup marca o link com
+   * `data-acao="detalhe"`.
+   */
+  readonly detalheSolicitado = output<MapaPontoBaseModel>();
 
   private map?: L.Map;
   private municipalitiesLayer?: L.GeoJSON;
@@ -80,7 +106,14 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       return legendas;
     }
 
-    return this.legendaTipo() === 'conectividade' ? LEGENDA_CONECTIVIDADE : LEGENDA_ACESSIBILIDADE;
+    switch (this.legendaTipo()) {
+      case 'conectividade':
+        return LEGENDA_CONECTIVIDADE;
+      case 'infraestrutura':
+        return LEGENDA_INFRAESTRUTURA;
+      default:
+        return LEGENDA_ACESSIBILIDADE;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -163,6 +196,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
           String(
             feature.properties?.['classificacao_acessibilidade_municipio'] ??
               feature.properties?.['classificacao_conectividade_municipio'] ??
+              feature.properties?.['classificacao_infraestrutura_municipio'] ??
               '',
           ) || 'Inexistente';
 
@@ -197,11 +231,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
           icon: this.createPinIcon(cor),
         });
 
-        marker.bindPopup(this.buildPopup(ponto, cor), {
-          autoClose: false,
-          closeOnClick: false,
-          maxWidth: 320,
-        });
+        this.bindPopupComDetalhe(marker, ponto, cor);
 
         marker.on('click', () => this.pontoSelecionado.emit(ponto));
         this.schoolMarkersById.set(Number(ponto.co_entidade), marker);
@@ -230,16 +260,35 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       icon: this.createPinIcon(cor),
     });
 
+    this.bindPopupComDetalhe(marker, ponto, cor);
+
+    this.schoolMarkersById.set(id, marker);
+    (this.schoolMarkersLayer ?? this.map).addLayer(marker);
+
+    return marker;
+  }
+
+  private bindPopupComDetalhe(marker: L.Marker, ponto: MapaPontoBaseModel, cor: string): void {
     marker.bindPopup(this.buildPopup(ponto, cor), {
       autoClose: false,
       closeOnClick: false,
       maxWidth: 320,
     });
 
-    this.schoolMarkersById.set(id, marker);
-    (this.schoolMarkersLayer ?? this.map).addLayer(marker);
+    marker.on('popupopen', (evento: L.PopupEvent) => {
+      const link = evento.popup
+        .getElement()
+        ?.querySelector<HTMLElement>('[data-acao="detalhe"]:not([data-ligado])');
+      if (!link) return;
 
-    return marker;
+      // O Leaflet reaproveita o elemento do popup entre aberturas; sem a marca o
+      // listener seria registrado de novo a cada abertura.
+      link.dataset['ligado'] = 'true';
+      link.addEventListener('click', (clique: Event) => {
+        clique.preventDefault();
+        this.detalheSolicitado.emit(ponto);
+      });
+    });
   }
 
   private buildPopup(ponto: MapaPontoBaseModel, cor: string): string {
@@ -285,6 +334,7 @@ export class IndicadoresMapaComponent implements AfterViewInit, OnChanges, OnDes
       ponto.classificacao ??
         ponto['classificacao_acessibilidade'] ??
         ponto['classificacao_conectividade'] ??
+        ponto['classificacao_infraestrutura'] ??
         '',
     );
     const item = this.legendaExibida.find((l) => l.label === label);

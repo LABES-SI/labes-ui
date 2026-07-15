@@ -10,76 +10,50 @@ import { RequestBuilder } from '../../request-builder';
 import { PainelEscolasResponse } from '../../models/painel-escolas-response';
 
 export interface GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params {
-  /**
-   * Ano do censo escolar (ex: 2024). Se omitido, usa o censo mais recente de cada escola.
-   */
-  ano?: number | null;
 
-  /**
-   * Lista de municípios (até 4). Use o parâmetro repetido.
-   */
-  municipios?: Array<string> | null;
+/**
+ * Ano do censo escolar (ex: 2024). Se omitido, usa o censo mais recente de cada escola.
+ */
+  ano?: (number | null);
 
-  /**
-   * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
-   */
-  variaveis?: Array<
-    | 'in_internet'
-    | 'in_internet_alunos'
-    | 'in_internet_administrativo'
-    | 'in_internet_aprendizagem'
-    | 'in_internet_comunidade'
-    | 'in_banda_larga'
-    | 'in_acesso_internet_computador'
-    | 'in_aces_internet_disp_pessoais'
-    | 'tp_rede_local'
-    | 'in_computador'
-    | 'in_desktop_aluno'
-    | 'qt_desktop_aluno'
-    | 'in_comp_portatil_aluno'
-    | 'qt_comp_portatil_aluno'
-    | 'in_tablet_aluno'
-    | 'qt_tablet_aluno'
-    | 'in_redes_sociais'
-  > | null;
+/**
+ * Lista de municípios (até 4). Use o parâmetro repetido.
+ */
+  municipios?: (Array<string> | null);
 
-  /**
-   * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
-   */
-  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null;
+/**
+ * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
+ */
+  variaveis?: (Array<'in_internet' | 'in_internet_alunos' | 'in_internet_administrativo' | 'in_internet_aprendizagem' | 'in_internet_comunidade' | 'in_banda_larga' | 'in_acesso_internet_computador' | 'in_aces_internet_disp_pessoais' | 'tp_rede_local' | 'in_computador' | 'in_desktop_aluno' | 'qt_desktop_aluno' | 'in_comp_portatil_aluno' | 'qt_comp_portatil_aluno' | 'in_tablet_aluno' | 'qt_tablet_aluno' | 'in_redes_sociais'> | null);
 
-  /**
-   * Localização da escola: Urbana ou Rural.
-   */
-  tp_localizacao?: Array<'Urbana' | 'Rural'> | null;
+/**
+ * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
+ */
+  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
 
-  /**
-   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
-   */
-  pibid?: boolean | null;
+/**
+ * Localização da escola: Urbana ou Rural.
+ */
+  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
 
-  /**
-   * Página (base 0).
-   */
+/**
+ * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+ */
+  pibid?: (boolean | null);
+
+/**
+ * Página (base 0).
+ */
   page?: number;
 
-  /**
-   * Escolas por página (1–50).
-   */
+/**
+ * Escolas por página (1–50).
+ */
   page_size?: number;
 }
 
-export function getPainelEscolasConectividadeConectividadePainelEscolasGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<PainelEscolasResponse>> {
-  const rb = new RequestBuilder(
-    rootUrl,
-    getPainelEscolasConectividadeConectividadePainelEscolasGet.PATH,
-    'get',
-  );
+export function getPainelEscolasConectividadeConectividadePainelEscolasGet(http: HttpClient, rootUrl: string, params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelEscolasResponse>> {
+  const rb = new RequestBuilder(rootUrl, getPainelEscolasConectividadeConectividadePainelEscolasGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
@@ -91,11 +65,13 @@ export function getPainelEscolasConectividadeConectividadePainelEscolasGet(
     rb.query('page_size', params.page_size, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<PainelEscolasResponse>;
-    }),
+    })
   );
 }
 

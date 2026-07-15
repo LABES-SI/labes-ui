@@ -35,10 +35,7 @@ export class FiltrosService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFiltrosFiltrosGet$Response(
-    params?: GetFiltrosFiltrosGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<FiltrosResponse>> {
+  getFiltrosFiltrosGet$Response(params?: GetFiltrosFiltrosGet$Params, context?: HttpContext): Promise<StrictHttpResponse<FiltrosResponse>> {
     const obs = getFiltrosFiltrosGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
@@ -56,11 +53,9 @@ export class FiltrosService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFiltrosFiltrosGet(
-    params?: GetFiltrosFiltrosGet$Params,
-    context?: HttpContext,
-  ): Promise<FiltrosResponse> {
+  getFiltrosFiltrosGet(params?: GetFiltrosFiltrosGet$Params, context?: HttpContext): Promise<FiltrosResponse> {
     const resp = this.getFiltrosFiltrosGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<FiltrosResponse>): FiltrosResponse => r.body);
   }
+
 }

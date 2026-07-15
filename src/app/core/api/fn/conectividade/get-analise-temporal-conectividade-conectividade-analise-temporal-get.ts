@@ -10,57 +10,33 @@ import { RequestBuilder } from '../../request-builder';
 import { AppSchemasConectividadeAnaliseTemporalResponse } from '../../models/app-schemas-conectividade-analise-temporal-response';
 
 export interface GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params {
-  /**
-   * Métrica de conectividade a plotar nos dois gráficos.
-   */
-  metrica?:
-    | 'in_internet'
-    | 'in_internet_alunos'
-    | 'in_internet_administrativo'
-    | 'in_internet_aprendizagem'
-    | 'in_internet_comunidade'
-    | 'in_banda_larga'
-    | 'in_acesso_internet_computador'
-    | 'in_aces_internet_disp_pessoais'
-    | 'tp_rede_local'
-    | 'in_computador'
-    | 'in_desktop_aluno'
-    | 'qt_desktop_aluno'
-    | 'in_comp_portatil_aluno'
-    | 'qt_comp_portatil_aluno'
-    | 'in_tablet_aluno'
-    | 'qt_tablet_aluno'
-    | 'in_redes_sociais';
 
-  /**
-   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
-   */
-  pibid?: boolean | null;
+/**
+ * Métrica de conectividade a plotar nos dois gráficos.
+ */
+  metrica?: 'in_internet' | 'in_internet_alunos' | 'in_internet_administrativo' | 'in_internet_aprendizagem' | 'in_internet_comunidade' | 'in_banda_larga' | 'in_acesso_internet_computador' | 'in_aces_internet_disp_pessoais' | 'tp_rede_local' | 'in_computador' | 'in_desktop_aluno' | 'qt_desktop_aluno' | 'in_comp_portatil_aluno' | 'qt_comp_portatil_aluno' | 'in_tablet_aluno' | 'qt_tablet_aluno' | 'in_redes_sociais';
+
+/**
+ * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+ */
+  pibid?: (boolean | null);
 }
 
-export function getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>> {
-  const rb = new RequestBuilder(
-    rootUrl,
-    getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet.PATH,
-    'get',
-  );
+export function getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(http: HttpClient, rootUrl: string, params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params, context?: HttpContext): Observable<StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>> {
+  const rb = new RequestBuilder(rootUrl, getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet.PATH, 'get');
   if (params) {
     rb.query('metrica', params.metrica, {});
     rb.query('pibid', params.pibid, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>;
-    }),
+    })
   );
 }
 
-getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet.PATH =
-  '/conectividade/analise-temporal';
+getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet.PATH = '/conectividade/analise-temporal';

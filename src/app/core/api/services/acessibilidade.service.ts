@@ -43,16 +43,8 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelAcessibilidadeAcessibilidadePainelGet$Response(
-    params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<PainelResponse>> {
-    const obs = getPainelAcessibilidadeAcessibilidadePainelGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getPainelAcessibilidadeAcessibilidadePainelGet$Response(params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelResponse>> {
+    const obs = getPainelAcessibilidadeAcessibilidadePainelGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -68,17 +60,13 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelAcessibilidadeAcessibilidadePainelGet(
-    params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<PainelResponse> {
+  getPainelAcessibilidadeAcessibilidadePainelGet(params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Promise<PainelResponse> {
     const resp = this.getPainelAcessibilidadeAcessibilidadePainelGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<PainelResponse>): PainelResponse => r.body);
   }
 
   /** Path part for operation `getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet()` */
-  static readonly GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGetPath =
-    '/acessibilidade/painel/escolas';
+  static readonly GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGetPath = '/acessibilidade/painel/escolas';
 
   /**
    * Gráfico paginado de métricas de acessibilidade por escola.
@@ -92,16 +80,8 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(
-    params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<PainelEscolasResponse>> {
-    const obs = getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelEscolasResponse>> {
+    const obs = getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -117,17 +97,9 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(
-    params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params,
-    context?: HttpContext,
-  ): Promise<PainelEscolasResponse> {
-    const resp = this.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(
-      params,
-      context,
-    );
-    return resp.then(
-      (r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body,
-    );
+  getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet(params?: GetPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Params, context?: HttpContext): Promise<PainelEscolasResponse> {
+    const resp = this.getPainelEscolasAcessibilidadeAcessibilidadePainelEscolasGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body);
   }
 
   /** Path part for operation `getMapaAcessibilidadeAcessibilidadeMapaGet()` */
@@ -138,23 +110,15 @@ export class AcessibilidadeService extends BaseService {
    *
    * Retorna as linhas de gold.fato_score_acessibilidade (uma por escola por
    * ano censo) com as 15 métricas e o score (0-15) e classificação
-   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
+   * (Excelente/Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getMapaAcessibilidadeAcessibilidadeMapaGet()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMapaAcessibilidadeAcessibilidadeMapaGet$Response(
-    params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
-    const obs = getMapaAcessibilidadeAcessibilidadeMapaGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getMapaAcessibilidadeAcessibilidadeMapaGet$Response(params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Promise<StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>> {
+    const obs = getMapaAcessibilidadeAcessibilidadeMapaGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -163,28 +127,20 @@ export class AcessibilidadeService extends BaseService {
    *
    * Retorna as linhas de gold.fato_score_acessibilidade (uma por escola por
    * ano censo) com as 15 métricas e o score (0-15) e classificação
-   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
+   * (Excelente/Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados.
    *
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `getMapaAcessibilidadeAcessibilidadeMapaGet$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMapaAcessibilidadeAcessibilidadeMapaGet(
-    params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<AppSchemasAcessibilidadeMapaResponse> {
+  getMapaAcessibilidadeAcessibilidadeMapaGet(params?: GetMapaAcessibilidadeAcessibilidadeMapaGet$Params, context?: HttpContext): Promise<AppSchemasAcessibilidadeMapaResponse> {
     const resp = this.getMapaAcessibilidadeAcessibilidadeMapaGet$Response(params, context);
-    return resp.then(
-      (
-        r: StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>,
-      ): AppSchemasAcessibilidadeMapaResponse => r.body,
-    );
+    return resp.then((r: StrictHttpResponse<AppSchemasAcessibilidadeMapaResponse>): AppSchemasAcessibilidadeMapaResponse => r.body);
   }
 
   /** Path part for operation `getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet()` */
-  static readonly GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGetPath =
-    '/acessibilidade/analise-temporal';
+  static readonly GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGetPath = '/acessibilidade/analise-temporal';
 
   /**
    * Evolução temporal da acessibilidade (por localização e por dependência).
@@ -200,16 +156,8 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
-    params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>> {
-    const obs = getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>> {
+    const obs = getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -227,18 +175,9 @@ export class AcessibilidadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(
-    params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<AppSchemasAcessibilidadeAnaliseTemporalResponse> {
-    const resp = this.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(
-      params,
-      context,
-    );
-    return resp.then(
-      (
-        r: StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>,
-      ): AppSchemasAcessibilidadeAnaliseTemporalResponse => r.body,
-    );
+  getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet(params?: GetAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<AppSchemasAcessibilidadeAnaliseTemporalResponse> {
+    const resp = this.getAnaliseTemporalAcessibilidadeAcessibilidadeAnaliseTemporalGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<AppSchemasAcessibilidadeAnaliseTemporalResponse>): AppSchemasAcessibilidadeAnaliseTemporalResponse => r.body);
   }
+
 }

@@ -5,6 +5,7 @@ export { ApiConfiguration } from './api-configuration';
 export { RequestBuilder } from './request-builder';
 export type { StrictHttpResponse } from './strict-http-response';
 
+
 export type { AnaliseTemporalData } from './models/analise-temporal-data';
 export type { AppSchemasAcessibilidadeAnaliseTemporalResponse } from './models/app-schemas-acessibilidade-analise-temporal-response';
 export type { AppSchemasAcessibilidadeMapaData } from './models/app-schemas-acessibilidade-mapa-data';
@@ -14,6 +15,10 @@ export type { AppSchemasConectividadeAnaliseTemporalResponse } from './models/ap
 export type { AppSchemasConectividadeMapaData } from './models/app-schemas-conectividade-mapa-data';
 export type { AppSchemasConectividadeMapaPonto } from './models/app-schemas-conectividade-mapa-ponto';
 export type { AppSchemasConectividadeMapaResponse } from './models/app-schemas-conectividade-mapa-response';
+export type { AppSchemasInfraestruturaAnaliseTemporalResponse } from './models/app-schemas-infraestrutura-analise-temporal-response';
+export type { AppSchemasInfraestruturaMapaData } from './models/app-schemas-infraestrutura-mapa-data';
+export type { AppSchemasInfraestruturaMapaPonto } from './models/app-schemas-infraestrutura-mapa-ponto';
+export type { AppSchemasInfraestruturaMapaResponse } from './models/app-schemas-infraestrutura-mapa-response';
 export type { FiltrosData } from './models/filtros-data';
 export type { FiltrosResponse } from './models/filtros-response';
 export type { Grafico } from './models/grafico';
@@ -32,6 +37,7 @@ export { BaseService } from './base-service';
 export { HealthService } from './services/health.service';
 export { AcessibilidadeService } from './services/acessibilidade.service';
 export { ConectividadeService } from './services/conectividade.service';
+export { InfraestruturaService } from './services/infraestrutura.service';
 export { FiltrosService } from './services/filtros.service';
 
 export type { HealthCheckGet$Params as HealthCheckGet$Params } from './fn/health/health-check-get';
@@ -52,5 +58,13 @@ export type { GetMapaConectividadeConectividadeMapaGet$Params as GetMapaConectiv
 export { getMapaConectividadeConectividadeMapaGet as getMapaConectividadeConectividadeMapaGet } from './fn/conectividade/get-mapa-conectividade-conectividade-mapa-get';
 export type { GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params as GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
 export { getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet as getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet } from './fn/conectividade/get-analise-temporal-conectividade-conectividade-analise-temporal-get';
+export type { GetPainelInfraestruturaInfraestruturaPainelGet$Params as GetPainelInfraestruturaInfraestruturaPainelGet$Params } from './fn/infraestrutura/get-painel-infraestrutura-infraestrutura-painel-get';
+export { getPainelInfraestruturaInfraestruturaPainelGet as getPainelInfraestruturaInfraestruturaPainelGet } from './fn/infraestrutura/get-painel-infraestrutura-infraestrutura-painel-get';
+export type { GetPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet$Params as GetPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet$Params } from './fn/infraestrutura/get-painel-escolas-infraestrutura-infraestrutura-painel-escolas-get';
+export { getPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet as getPainelEscolasInfraestruturaInfraestruturaPainelEscolasGet } from './fn/infraestrutura/get-painel-escolas-infraestrutura-infraestrutura-painel-escolas-get';
+export type { GetMapaInfraestruturaInfraestruturaMapaGet$Params as GetMapaInfraestruturaInfraestruturaMapaGet$Params } from './fn/infraestrutura/get-mapa-infraestrutura-infraestrutura-mapa-get';
+export { getMapaInfraestruturaInfraestruturaMapaGet as getMapaInfraestruturaInfraestruturaMapaGet } from './fn/infraestrutura/get-mapa-infraestrutura-infraestrutura-mapa-get';
+export type { GetAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet$Params as GetAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet$Params } from './fn/infraestrutura/get-analise-temporal-infraestrutura-infraestrutura-analise-temporal-get';
+export { getAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet as getAnaliseTemporalInfraestruturaInfraestruturaAnaliseTemporalGet } from './fn/infraestrutura/get-analise-temporal-infraestrutura-infraestrutura-analise-temporal-get';
 export type { GetFiltrosFiltrosGet$Params as GetFiltrosFiltrosGet$Params } from './fn/filtros/get-filtros-filtros-get';
 export { getFiltrosFiltrosGet as getFiltrosFiltrosGet } from './fn/filtros/get-filtros-filtros-get';

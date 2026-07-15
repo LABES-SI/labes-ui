@@ -48,7 +48,8 @@ const DEFAULT_INDICADORES: readonly IndicadoresCardItem[] = [
     color: '#7a3fd1',
     background: 'rgba(122, 63, 209, 0.13)',
     icon: School,
-    active: false,
+    route: '/indicadores/infraestrutura',
+    active: true,
   },
 ];
 

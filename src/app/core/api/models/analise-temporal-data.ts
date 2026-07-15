@@ -3,10 +3,11 @@
 
 import { Grafico } from '../models/grafico';
 export interface AnaliseTemporalData {
+
   /**
    * Mapa de gráficos da análise temporal, indexados por chave semântica.
    */
   graficos: {
-    [key: string]: Grafico;
-  };
+[key: string]: Grafico;
+};
 }
