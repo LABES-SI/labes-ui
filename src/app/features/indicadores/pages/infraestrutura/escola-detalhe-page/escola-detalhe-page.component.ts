@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AcessibilidadeFacade } from '../../../facades/acessibilidade.facade';
 import { InfraestruturaFacade } from '../../../facades/infraestrutura.facade';
 import {
   ClassificacaoInfraestruturaModel,
@@ -19,6 +20,15 @@ import {
 interface MetricaCardModel {
   chave: string;
   label: string;
+}
+
+interface IdebModel {
+  ideb_2023_anos_iniciais?: number | null;
+  ideb_2023_anos_finais?: number | null;
+  ideb_2023_ensino_medio?: number | null;
+  ideb_2023_anos_iniciais_mun?: number | null;
+  ideb_2023_anos_finais_mun?: number | null;
+  ideb_2023_ensino_medio_mun?: number | null;
 }
 
 const METRICAS: MetricaCardModel[] = [
@@ -59,11 +69,13 @@ const SCORE_INTERVALO: Record<ClassificacaoInfraestruturaModel, string> = {
 export class EscolaDetalhePageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly facade = inject(InfraestruturaFacade);
+  private readonly acessibilidadeFacade = inject(AcessibilidadeFacade);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cd = inject(ChangeDetectorRef);
 
   protected readonly metricas = METRICAS;
   protected escola: MapaPontoModel | null = null;
+  protected ideb: IdebModel | null = null;
   protected isLoading = true;
   protected naoEncontrada = false;
 
@@ -92,6 +104,26 @@ export class EscolaDetalhePageComponent implements OnInit {
             this.cd.markForCheck();
           });
       });
+
+    // O endpoint de infraestrutura não retorna IDEB; reaproveita o mapa de
+    // acessibilidade (mesma escola, mesmo co_entidade) só para preencher esse dado.
+    this.acessibilidadeFacade
+      .listarMapa()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((mapa) => {
+        const escolaAcessibilidade = (mapa.pontos ?? []).find((p) => Number(p.co_entidade) === id);
+        this.ideb = escolaAcessibilidade
+          ? {
+              ideb_2023_anos_iniciais: escolaAcessibilidade.ideb_2023_anos_iniciais,
+              ideb_2023_anos_finais: escolaAcessibilidade.ideb_2023_anos_finais,
+              ideb_2023_ensino_medio: escolaAcessibilidade.ideb_2023_ensino_medio,
+              ideb_2023_anos_iniciais_mun: escolaAcessibilidade.ideb_2023_anos_iniciais_mun,
+              ideb_2023_anos_finais_mun: escolaAcessibilidade.ideb_2023_anos_finais_mun,
+              ideb_2023_ensino_medio_mun: escolaAcessibilidade.ideb_2023_ensino_medio_mun,
+            }
+          : null;
+        this.cd.markForCheck();
+      });
   }
 
   protected scoreIntervaloLabel(classificacao: ClassificacaoInfraestruturaModel | string): string {
@@ -102,6 +134,12 @@ export class EscolaDetalhePageComponent implements OnInit {
     if (valor === null || valor === undefined) return 'Sem informação';
     const numero = Number(valor);
     return Number.isFinite(numero) ? String(numero) : 'Sem informação';
+  }
+
+  protected formatarIdeb(valor: unknown): string {
+    const numero = Number(valor);
+    if (!Number.isFinite(numero)) return 'Sem informação';
+    return numero === 0 ? 'Sem informação' : numero.toFixed(1);
   }
 
   protected ativaMetrica(m: MetricaCardModel): boolean {

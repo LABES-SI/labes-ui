@@ -121,6 +121,12 @@ export class EscolaDetalhePageComponent implements OnInit {
     return Number.isFinite(numero) ? String(numero) : 'Sem informação';
   }
 
+  protected formatarIdeb(valor: unknown): string {
+    const numero = Number(valor);
+    if (!Number.isFinite(numero)) return 'Sem informação';
+    return numero === 0 ? 'Sem informação' : numero.toFixed(1);
+  }
+
   protected formatarTpRedeLocal(valor: unknown): string {
     if (valor === null || valor === undefined) return 'Sem informação';
     const numero = Number(valor);

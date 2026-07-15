@@ -1,5 +1,12 @@
 :host {
   display: block;
+  margin-top: calc(var(--sie-header-offset, 104px) * -1);
+}
+
+@media (max-width: 760px) {
+  :host {
+    margin-top: calc(var(--sie-header-offset, 140px) * -1);
+  }
 }
 
 .indicadores-hero {

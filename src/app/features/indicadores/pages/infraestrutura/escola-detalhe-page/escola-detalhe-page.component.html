@@ -54,6 +54,44 @@
       </div>
     </section>
 
+    @if (ideb) {
+      <section class="ideb-section" aria-label="IDEB 2023">
+        <h2>IDEB 2023</h2>
+        <div class="ideb-grid">
+          <div class="ideb-card">
+            <span class="ideb-card__eyebrow">Escola</span>
+            <span>Anos iniciais</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_anos_iniciais) }}</strong>
+          </div>
+          <div class="ideb-card">
+            <span class="ideb-card__eyebrow">Escola</span>
+            <span>Anos finais</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_anos_finais) }}</strong>
+          </div>
+          <div class="ideb-card">
+            <span class="ideb-card__eyebrow">Escola</span>
+            <span>Ensino médio</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_ensino_medio) }}</strong>
+          </div>
+          <div class="ideb-card ideb-card--municipio">
+            <span class="ideb-card__eyebrow">Município</span>
+            <span>Anos iniciais</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_anos_iniciais_mun) }}</strong>
+          </div>
+          <div class="ideb-card ideb-card--municipio">
+            <span class="ideb-card__eyebrow">Município</span>
+            <span>Anos finais</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_anos_finais_mun) }}</strong>
+          </div>
+          <div class="ideb-card ideb-card--municipio">
+            <span class="ideb-card__eyebrow">Município</span>
+            <span>Ensino médio</span>
+            <strong>{{ formatarIdeb(ideb.ideb_2023_ensino_medio_mun) }}</strong>
+          </div>
+        </div>
+      </section>
+    }
+
     <section class="metricas-section" aria-label="Recursos de infraestrutura">
       <h2>Recursos de infraestrutura</h2>
       <div class="metricas-grid">
