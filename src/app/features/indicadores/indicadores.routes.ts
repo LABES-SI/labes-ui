@@ -78,4 +78,39 @@ export const indicadoresRoutes: Routes = [
         (m) => m.EscolaDetalhePageComponent,
       ),
   },
+  {
+    path: 'infraestrutura',
+    loadComponent: () =>
+      import('./pages/infraestrutura-page/infraestrutura-page.component').then(
+        (m) => m.InfraestruturaPageComponent,
+      ),
+  },
+  {
+    path: 'infraestrutura/visao-geral',
+    loadComponent: () =>
+      import('./pages/infraestrutura/visao-geral-page/visao-geral-page.component').then(
+        (m) => m.VisaoGeralPageComponent,
+      ),
+  },
+  {
+    path: 'infraestrutura/analise-temporal',
+    loadComponent: () =>
+      import('./pages/infraestrutura/analise-temporal-page/analise-temporal-page.component').then(
+        (m) => m.AnaliseTemporalPageComponent,
+      ),
+  },
+  {
+    path: 'infraestrutura/escolas',
+    loadComponent: () =>
+      import('./pages/infraestrutura/escolas-page/escolas-page.component').then(
+        (m) => m.EscolasPageComponent,
+      ),
+  },
+  {
+    path: 'infraestrutura/escolas/:id',
+    loadComponent: () =>
+      import('./pages/infraestrutura/escola-detalhe-page/escola-detalhe-page.component').then(
+        (m) => m.EscolaDetalhePageComponent,
+      ),
+  },
 ];

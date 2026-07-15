@@ -10,6 +10,10 @@ export type { AppSchemasConectividadeAnaliseTemporalResponse } from './models/ap
 export type { AppSchemasConectividadeMapaData } from './models/app-schemas-conectividade-mapa-data';
 export type { AppSchemasConectividadeMapaPonto } from './models/app-schemas-conectividade-mapa-ponto';
 export type { AppSchemasConectividadeMapaResponse } from './models/app-schemas-conectividade-mapa-response';
+export type { AppSchemasInfraestruturaAnaliseTemporalResponse } from './models/app-schemas-infraestrutura-analise-temporal-response';
+export type { AppSchemasInfraestruturaMapaData } from './models/app-schemas-infraestrutura-mapa-data';
+export type { AppSchemasInfraestruturaMapaPonto } from './models/app-schemas-infraestrutura-mapa-ponto';
+export type { AppSchemasInfraestruturaMapaResponse } from './models/app-schemas-infraestrutura-mapa-response';
 export type { FiltrosData } from './models/filtros-data';
 export type { FiltrosResponse } from './models/filtros-response';
 export type { Grafico } from './models/grafico';

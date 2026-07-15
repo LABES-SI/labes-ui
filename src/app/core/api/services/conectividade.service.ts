@@ -43,16 +43,8 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelConectividadeConectividadePainelGet$Response(
-    params?: GetPainelConectividadeConectividadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<PainelResponse>> {
-    const obs = getPainelConectividadeConectividadePainelGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getPainelConectividadeConectividadePainelGet$Response(params?: GetPainelConectividadeConectividadePainelGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelResponse>> {
+    const obs = getPainelConectividadeConectividadePainelGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -68,17 +60,13 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelConectividadeConectividadePainelGet(
-    params?: GetPainelConectividadeConectividadePainelGet$Params,
-    context?: HttpContext,
-  ): Promise<PainelResponse> {
+  getPainelConectividadeConectividadePainelGet(params?: GetPainelConectividadeConectividadePainelGet$Params, context?: HttpContext): Promise<PainelResponse> {
     const resp = this.getPainelConectividadeConectividadePainelGet$Response(params, context);
     return resp.then((r: StrictHttpResponse<PainelResponse>): PainelResponse => r.body);
   }
 
   /** Path part for operation `getPainelEscolasConectividadeConectividadePainelEscolasGet()` */
-  static readonly GetPainelEscolasConectividadeConectividadePainelEscolasGetPath =
-    '/conectividade/painel/escolas';
+  static readonly GetPainelEscolasConectividadeConectividadePainelEscolasGetPath = '/conectividade/painel/escolas';
 
   /**
    * Gráfico paginado de métricas de conectividade por escola.
@@ -91,16 +79,8 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelEscolasConectividadeConectividadePainelEscolasGet$Response(
-    params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<PainelEscolasResponse>> {
-    const obs = getPainelEscolasConectividadeConectividadePainelEscolasGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getPainelEscolasConectividadeConectividadePainelEscolasGet$Response(params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params, context?: HttpContext): Promise<StrictHttpResponse<PainelEscolasResponse>> {
+    const obs = getPainelEscolasConectividadeConectividadePainelEscolasGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -115,17 +95,9 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPainelEscolasConectividadeConectividadePainelEscolasGet(
-    params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params,
-    context?: HttpContext,
-  ): Promise<PainelEscolasResponse> {
-    const resp = this.getPainelEscolasConectividadeConectividadePainelEscolasGet$Response(
-      params,
-      context,
-    );
-    return resp.then(
-      (r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body,
-    );
+  getPainelEscolasConectividadeConectividadePainelEscolasGet(params?: GetPainelEscolasConectividadeConectividadePainelEscolasGet$Params, context?: HttpContext): Promise<PainelEscolasResponse> {
+    const resp = this.getPainelEscolasConectividadeConectividadePainelEscolasGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<PainelEscolasResponse>): PainelEscolasResponse => r.body);
   }
 
   /** Path part for operation `getMapaConectividadeConectividadeMapaGet()` */
@@ -136,7 +108,7 @@ export class ConectividadeService extends BaseService {
    *
    * Retorna as linhas de gold.fato_score_conectividade (uma por escola por
    * ano censo) com as 17 métricas e o score e classificação
-   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados. O
+   * (Excelente/Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados. O
    * score pré-computado não é binário (colunas qt_* somam quantidade), então
    * excede 17.
    *
@@ -145,10 +117,7 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getMapaConectividadeConectividadeMapaGet$Response(
-    params?: GetMapaConectividadeConectividadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<AppSchemasConectividadeMapaResponse>> {
+  getMapaConectividadeConectividadeMapaGet$Response(params?: GetMapaConectividadeConectividadeMapaGet$Params, context?: HttpContext): Promise<StrictHttpResponse<AppSchemasConectividadeMapaResponse>> {
     const obs = getMapaConectividadeConectividadeMapaGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
@@ -158,7 +127,7 @@ export class ConectividadeService extends BaseService {
    *
    * Retorna as linhas de gold.fato_score_conectividade (uma por escola por
    * ano censo) com as 17 métricas e o score e classificação
-   * (Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados. O
+   * (Excelente/Boa/Média/Baixa/Inexistente) já pré-computados pelo pipeline de dados. O
    * score pré-computado não é binário (colunas qt_* somam quantidade), então
    * excede 17.
    *
@@ -167,21 +136,13 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getMapaConectividadeConectividadeMapaGet(
-    params?: GetMapaConectividadeConectividadeMapaGet$Params,
-    context?: HttpContext,
-  ): Promise<AppSchemasConectividadeMapaResponse> {
+  getMapaConectividadeConectividadeMapaGet(params?: GetMapaConectividadeConectividadeMapaGet$Params, context?: HttpContext): Promise<AppSchemasConectividadeMapaResponse> {
     const resp = this.getMapaConectividadeConectividadeMapaGet$Response(params, context);
-    return resp.then(
-      (
-        r: StrictHttpResponse<AppSchemasConectividadeMapaResponse>,
-      ): AppSchemasConectividadeMapaResponse => r.body,
-    );
+    return resp.then((r: StrictHttpResponse<AppSchemasConectividadeMapaResponse>): AppSchemasConectividadeMapaResponse => r.body);
   }
 
   /** Path part for operation `getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet()` */
-  static readonly GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGetPath =
-    '/conectividade/analise-temporal';
+  static readonly GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGetPath = '/conectividade/analise-temporal';
 
   /**
    * Evolução temporal da conectividade (por localização e por dependência).
@@ -196,16 +157,8 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Response(
-    params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>> {
-    const obs = getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(
-      this.http,
-      this.rootUrl,
-      params,
-      context,
-    );
+  getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Response(params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>> {
+    const obs = getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(this.http, this.rootUrl, params, context);
     return firstValueFrom(obs);
   }
 
@@ -222,18 +175,9 @@ export class ConectividadeService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(
-    params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params,
-    context?: HttpContext,
-  ): Promise<AppSchemasConectividadeAnaliseTemporalResponse> {
-    const resp = this.getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Response(
-      params,
-      context,
-    );
-    return resp.then(
-      (
-        r: StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>,
-      ): AppSchemasConectividadeAnaliseTemporalResponse => r.body,
-    );
+  getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet(params?: GetAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Params, context?: HttpContext): Promise<AppSchemasConectividadeAnaliseTemporalResponse> {
+    const resp = this.getAnaliseTemporalConectividadeConectividadeAnaliseTemporalGet$Response(params, context);
+    return resp.then((r: StrictHttpResponse<AppSchemasConectividadeAnaliseTemporalResponse>): AppSchemasConectividadeAnaliseTemporalResponse => r.body);
   }
+
 }

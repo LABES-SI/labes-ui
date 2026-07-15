@@ -105,6 +105,7 @@
       [legendaItems]="legendaItems"
       [legendaTipo]="'acessibilidade'"
       [buildPopupHtml]="buildPopupHtml"
+      (detalheSolicitado)="onDetalheSolicitado($event)"
       ariaLabel="Mapa de acessibilidade escolar"
     ></app-indicadores-mapa>
 
@@ -113,5 +114,12 @@
       graficosLayout="grade"
       (layoutChange)="onGraficosLayoutChange()"
     ></app-indicadores-charts>
+
+    <app-indicadores-escolas-grafico
+      [grafico]="graficoEscolas"
+      [paginacao]="paginacaoEscolas"
+      [carregando]="isLoadingFilters"
+      (pageChange)="onEscolasPageChange($event)"
+    ></app-indicadores-escolas-grafico>
   </div>
 </div>

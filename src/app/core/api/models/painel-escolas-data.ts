@@ -4,6 +4,7 @@
 import { Grafico } from '../models/grafico';
 import { Paginacao } from '../models/paginacao';
 export interface PainelEscolasData {
+
   /**
    * Gráfico de métricas por escola (página atual).
    */

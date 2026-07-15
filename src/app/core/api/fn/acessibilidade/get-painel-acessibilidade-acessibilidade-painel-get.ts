@@ -10,64 +10,40 @@ import { RequestBuilder } from '../../request-builder';
 import { PainelResponse } from '../../models/painel-response';
 
 export interface GetPainelAcessibilidadeAcessibilidadePainelGet$Params {
-  /**
-   * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
-   */
-  ano?: number | null;
 
-  /**
-   * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
-   */
-  municipios?: Array<string> | null;
+/**
+ * Ano do censo escolar (ex: 2023). Se omitido, agrega todos os censos.
+ */
+  ano?: (number | null);
 
-  /**
-   * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
-   */
-  variaveis?: Array<
-    | 'in_acessibilidade_rampas'
-    | 'in_acessibilidade_corrimao'
-    | 'in_acessibilidade_elevador'
-    | 'in_acessibilidade_pisos_tateis'
-    | 'in_acessibilidade_vao_livre'
-    | 'qt_salas_utilizadas_acessiveis'
-    | 'in_acessibilidade_inexistente'
-    | 'in_acessibilidade_sinal_tatil'
-    | 'in_acessibilidade_sinal_sonoro'
-    | 'in_acessibilidade_sinal_visual'
-    | 'tp_aee'
-    | 'in_sala_atendimento_especial'
-    | 'in_reserva_pcd'
-    | 'qt_prof_psicologo'
-    | 'qt_prof_assist_social'
-  > | null;
+/**
+ * Lista de municípios (até 4). Use o parâmetro repetido: ?municipios=Belém&municipios=Ananindeua. Se omitido, o tab_percent cobre todos os municípios do recorte.
+ */
+  municipios?: (Array<string> | null);
 
-  /**
-   * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
-   */
-  rede_ensino?: Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null;
+/**
+ * Filtro AND: escolas precisam ter TODAS as variáveis marcadas = 1.
+ */
+  variaveis?: (Array<'in_acessibilidade_rampas' | 'in_acessibilidade_corrimao' | 'in_acessibilidade_elevador' | 'in_acessibilidade_pisos_tateis' | 'in_acessibilidade_vao_livre' | 'qt_salas_utilizadas_acessiveis' | 'in_acessibilidade_inexistente' | 'in_acessibilidade_sinal_tatil' | 'in_acessibilidade_sinal_sonoro' | 'in_acessibilidade_sinal_visual' | 'tp_aee' | 'in_sala_atendimento_especial' | 'in_reserva_pcd' | 'qt_prof_psicologo' | 'qt_prof_assist_social'> | null);
 
-  /**
-   * Localização da escola: Urbana ou Rural.
-   */
-  tp_localizacao?: Array<'Urbana' | 'Rural'> | null;
+/**
+ * Rede(s) de ensino: Federal, Estadual, Municipal, Privada.
+ */
+  rede_ensino?: (Array<'Federal' | 'Estadual' | 'Municipal' | 'Privada'> | null);
 
-  /**
-   * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
-   */
-  pibid?: boolean | null;
+/**
+ * Localização da escola: Urbana ou Rural.
+ */
+  tp_localizacao?: (Array<'Urbana' | 'Rural'> | null);
+
+/**
+ * Filtra escolas por participação no PIBID. true = só com PIBID; false = só sem PIBID; omitido = todas.
+ */
+  pibid?: (boolean | null);
 }
 
-export function getPainelAcessibilidadeAcessibilidadePainelGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params,
-  context?: HttpContext,
-): Observable<StrictHttpResponse<PainelResponse>> {
-  const rb = new RequestBuilder(
-    rootUrl,
-    getPainelAcessibilidadeAcessibilidadePainelGet.PATH,
-    'get',
-  );
+export function getPainelAcessibilidadeAcessibilidadePainelGet(http: HttpClient, rootUrl: string, params?: GetPainelAcessibilidadeAcessibilidadePainelGet$Params, context?: HttpContext): Observable<StrictHttpResponse<PainelResponse>> {
+  const rb = new RequestBuilder(rootUrl, getPainelAcessibilidadeAcessibilidadePainelGet.PATH, 'get');
   if (params) {
     rb.query('ano', params.ano, {});
     rb.query('municipios', params.municipios, {});
@@ -77,11 +53,13 @@ export function getPainelAcessibilidadeAcessibilidadePainelGet(
     rb.query('pibid', params.pibid, {});
   }
 
-  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context })).pipe(
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
       return r as StrictHttpResponse<PainelResponse>;
-    }),
+    })
   );
 }
 

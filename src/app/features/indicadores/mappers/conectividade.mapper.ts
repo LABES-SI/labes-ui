@@ -1,6 +1,7 @@
 import { AppSchemasConectividadeAnaliseTemporalResponse } from '../../../core/api/models/app-schemas-conectividade-analise-temporal-response';
 import { AppSchemasConectividadeMapaResponse } from '../../../core/api/models/app-schemas-conectividade-mapa-response';
 import { FiltrosResponse } from '../../../core/api/models/filtros-response';
+import { PainelEscolasResponse } from '../../../core/api/models/painel-escolas-response';
 import { PainelResponse } from '../../../core/api/models/painel-response';
 import {
   AnaliseTemporalModel,
@@ -17,6 +18,7 @@ import {
   MapaMunicipioResumoModel,
   MapaPontoModel,
   PainelConectividadeModel,
+  PainelEscolasModel,
 } from '../models/conectividade.models';
 
 function normalizarTexto(texto: string | null | undefined): string {
@@ -196,6 +198,23 @@ export function mapPainelResponseToModel(api: PainelResponse): PainelConectivida
   );
 
   return { descricao: api.descricao, graficos };
+}
+
+export function mapPainelEscolasResponseToModel(api: PainelEscolasResponse): PainelEscolasModel {
+  const { grafico, paginacao } = api.data;
+  return {
+    grafico: {
+      plotly: grafico.plotly,
+      tipo: grafico.tipo,
+      titulo: grafico.titulo,
+    },
+    paginacao: {
+      page: paginacao.page,
+      page_size: paginacao.page_size,
+      total_escolas: paginacao.total_escolas,
+      total_paginas: paginacao.total_paginas,
+    },
+  };
 }
 
 export function mapMapaResponseToModel(

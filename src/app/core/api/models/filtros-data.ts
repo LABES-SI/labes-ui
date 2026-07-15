@@ -8,6 +8,7 @@ import { MunicipioFiltro } from '../models/municipio-filtro';
  * Opções de filtro aplicáveis, compartilháveis entre painéis.
  */
 export interface FiltrosData {
+
   /**
    * Anos de censo disponíveis.
    */
@@ -16,7 +17,7 @@ export interface FiltrosData {
   /**
    * Catálogo de métricas do painel informado em ?painel. Omitido quando nenhum painel é informado.
    */
-  metricas?: Array<MetricaFiltro> | null;
+  metricas?: (Array<MetricaFiltro> | null);
 
   /**
    * Municípios disponíveis no recorte.
